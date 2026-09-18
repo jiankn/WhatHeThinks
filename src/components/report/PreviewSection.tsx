@@ -52,7 +52,7 @@ export function PreviewSection({ preview: p, compact = false }: { preview: Previ
         </div>
       )}
 
-      {!p.liteMode && <HeadlineCard preview={p} />}
+      {!p.liteMode && !compact && <HeadlineCard preview={p} />}
 
       {!compact && (
         <div className="card px-5 py-5">

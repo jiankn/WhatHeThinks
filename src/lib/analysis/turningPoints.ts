@@ -146,18 +146,29 @@ function windowMsgCount(
   return n;
 }
 
+/**
+ * §9.1：转折点前后各取 perSide 条命中消息，优先离转折点最近的，保证证据能体现"变化前 vs 变化后"。
+ * 以细化后的精确日期（而非周边界）划分前后。
+ */
 function collectEvidence(
   win: WeekVector[],
   buckets: Map<number, WeekBucket>,
-  limit: number,
+  tsById: Map<number, number>,
+  pivot: number,
+  perSide: number,
 ): number[] {
-  const ids: number[] = [];
   const keys = ["conflict", "dry", "planConcrete", "planVague", "planCancel", "affection"];
+  const ids = new Set<number>();
   for (const v of win) {
     const H = buckets.get(v.weekStart)!.H;
-    for (const k of keys) for (const id of H.hits[k] ?? []) ids.push(id);
+    for (const k of keys) for (const id of H.hits[k] ?? []) if (tsById.has(id)) ids.add(id);
   }
-  return [...new Set(ids)].slice(0, limit);
+  const all = [...ids];
+  const nearest = (list: number[]) =>
+    list.sort((a, b) => Math.abs(tsById.get(a)! - pivot) - Math.abs(tsById.get(b)! - pivot)).slice(0, perSide);
+  const before = nearest(all.filter((id) => tsById.get(id)! < pivot));
+  const after = nearest(all.filter((id) => tsById.get(id)! >= pivot));
+  return [...before, ...after].sort((a, b) => tsById.get(a)! - tsById.get(b)!);
 }
 
 export function findTurningPoints(
@@ -165,6 +176,7 @@ export function findTurningPoints(
   msgs: RoleMsg[],
 ): TurningPoint[] {
   const buckets = new Map(weeks.map((w) => [w.weekStart, w]));
+  const tsById = new Map(msgs.map((m) => [m.id, m.ts]));
   const vecs = weeks
     .map(weekVector)
     .filter((v): v is WeekVector => v !== null);
@@ -218,7 +230,7 @@ export function findTurningPoints(
       before: snapshot(before, buckets),
       after: snapshot(after, buckets),
       drivers,
-      evidenceIds: collectEvidence([...before, ...after], buckets, 12),
+      evidenceIds: collectEvidence([...before, ...after], buckets, tsById, date, 6),
       context: {
         yInitShareBefore: mean(
           before.map((v) => yInitShare(buckets.get(v.weekStart)!)),

@@ -11,10 +11,12 @@ export function fmtPct(x: number): string {
 }
 
 /** 分钟 → "12 min" / "2h 31m" / "1d 4h"。 */
-export function fmtMinutes(min: number): string {
-  if (!Number.isFinite(min) || min < 0) return "—";
-  if (min < 1) return "<1 min";
-  if (min < 60) return `${Math.round(min)} min`;
+export function fmtMinutes(raw: number): string {
+  if (!Number.isFinite(raw) || raw < 0) return "—";
+  if (raw < 1) return "<1 min";
+  // 先取整再拆小时，避免 119.6 → "1h 60m"
+  const min = Math.round(raw);
+  if (min < 60) return `${min} min`;
   const h = Math.floor(min / 60);
   if (h < 24) {
     const m = Math.round(min - h * 60);

@@ -134,7 +134,7 @@ Every piece of text in `FullReport` is checked:
 2. **Evidence check:** `evidenceIds ⊆ input evidence`, and each claim `fact` must have a number, a date, or ≥1 evidence (BP §55 Risk 2)
 3. **Banned language** (regex, case-insensitive), on a hit replace with a template or drop:
    `\b(definitely|certainly|100%|guaranteed)\b`, `cheat(ing)?`, `narcissis`, `gaslight`, `avoidant`, `sociopath|psychopath`, `\brun\b[.!]`, `he (loves|doesn't love|does not love) you`, `\d+% chance`, `(will|going to) (break up|fail|end)`, `(leave|dump) him`, `he (thinks|feels|wants) ` (a mind-reading assertion, unless preceded by "he said")
-4. **Interpretation hedge check:** interpretation must contain `may|might|could|can|suggest|consistent with|one possible` or the equivalent
+4. **Interpretation hedge check:** interpretation must contain `may|might|could|can|suggest|consistent with|one possible|often|tend` (implemented in `src/lib/report/claim-checker.ts`)
 5. **Tone:** exclamation marks ≤ 1 per module; no ALL CAPS words (except the turning point headline)
 
 ## 7. Question → emphasis mapping
