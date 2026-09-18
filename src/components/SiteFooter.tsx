@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Logo } from "./Logo";
 
 const LINKS = [
+  { href: "/tools/who-texts-first", label: "Who texts first" },
+  { href: "/tools/reply-time-calculator", label: "Reply time calculator" },
   { href: "/faq", label: "FAQ" },
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" },

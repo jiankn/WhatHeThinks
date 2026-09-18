@@ -47,4 +47,4 @@ npm run deploy
 - [x] M3 /analyze 流程 + 免费预览 + D1
 - [x] M4 mock 报告 + 证据展示
 - [x] M5 Stripe 测试支付 + webhook
-- [ ] M6 首页 + 落地页 + 免费工具
+- [x] M6 首页 + 落地页 + 免费工具

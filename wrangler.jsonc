@@ -19,6 +19,6 @@
     }
   ],
   "vars": {
-    "SITE_URL": "http://localhost:3000"
+    "SITE_URL": "https://whathethinks.com"
   }
 }

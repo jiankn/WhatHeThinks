@@ -104,7 +104,7 @@ Priority: **P0** = ships in launch week (7 money pages + 2 tools), **P1** = with
 4. **Sample output specific to this page** (a static screenshot/component of the report module that matches this intent)
 5. "What we measure for this question": 3–5 metrics tied to this intent
 6. Use cases: 2–3 real scenario descriptions
-7. FAQ: 4–6 questions, marked up with FAQPage JSON-LD (it may not produce rich results, but it helps AI Overviews extract answers)
+7. FAQ: 4–6 questions, content server-rendered in the HTML. **No FAQPage JSON-LD**: since Aug 2023 that rich result only shows for government/health sites, so on this site the markup would render nothing
 8. Privacy statement + CTA
 
 ## 5. Title / meta draft

@@ -5,3 +5,6 @@ STRIPE_WEBHOOK_SECRET=
 RESEND_API_KEY=
 EMAIL_FROM="WhatHeThinks <reports@whathethinks.com>"
 DEV_UNLOCK=1
+
+# 本地覆盖 wrangler.jsonc 里的生产域名
+SITE_URL=http://localhost:3000
