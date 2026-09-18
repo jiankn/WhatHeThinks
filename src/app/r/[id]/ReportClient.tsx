@@ -18,6 +18,7 @@ import type { ReportView } from "@/lib/report/view";
 
 type State =
   | { kind: "loading" }
+  | { kind: "confirming" }
   | { kind: "missing" }
   | { kind: "deleted" }
   | { kind: "error" }
@@ -50,7 +51,22 @@ export function ReportClient({ id }: { id: string }) {
   useEffect(() => {
     window.scrollTo({ top: 0 });
     token.current = tokenFromHash(id);
-    void load();
+    const sessionId = new URLSearchParams(window.location.search).get("session_id");
+    if (!sessionId || !token.current) {
+      void load();
+      return;
+    }
+    // Stripe 支付回跳：先向服务器确认付款，再加载报告，并把 session_id 从地址栏去掉
+    setState({ kind: "confirming" });
+    void (async () => {
+      await fetch("/api/checkout/confirm", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-report-token": token.current ?? "" },
+        body: JSON.stringify({ reportId: id, sessionId }),
+      }).catch(() => null);
+      window.history.replaceState(null, "", `/r/${id}`);
+      await load();
+    })();
   }, [id, load]);
 
   // 已付费但报告仍在生成：轮询。
@@ -99,6 +115,18 @@ export function ReportClient({ id }: { id: string }) {
       setState({ kind: "deleted" });
     }
   };
+
+  if (state.kind === "confirming") {
+    return (
+      <Shell>
+        <div className="card px-5 py-10 text-center" aria-live="polite">
+          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-[3px] border-rose-soft border-t-rose" />
+          <p className="mt-4 font-display text-xl font-semibold">Confirming your payment…</p>
+          <p className="mt-1 text-sm text-muted">Your full report will open in a moment.</p>
+        </div>
+      </Shell>
+    );
+  }
 
   if (state.kind === "loading") {
     return (

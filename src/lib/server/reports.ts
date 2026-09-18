@@ -15,6 +15,7 @@ const EVIDENCE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 export interface ReportRow {
   id: string;
   token_hash: string;
+  alt_token_hash: string | null;
   question: QuestionId;
   custom_question: string | null;
   status: ReportStatus;
@@ -77,9 +78,18 @@ export async function getReportRow(db: D1Database, id: string): Promise<ReportRo
   return db.prepare(`SELECT * FROM reports WHERE id = ?`).bind(id).first<ReportRow>();
 }
 
+/** 接受创建时的 token，或付款后邮件里的第二个 token。 */
 export async function checkToken(row: ReportRow, token: string | null): Promise<boolean> {
   if (!token) return false;
-  return safeEqual(await sha256Hex(token), row.token_hash);
+  const h = await sha256Hex(token);
+  return safeEqual(h, row.token_hash) || (row.alt_token_hash !== null && safeEqual(h, row.alt_token_hash));
+}
+
+/** 生成邮件链接用的第二个 token，只存哈希。 */
+export async function issueEmailToken(db: D1Database, id: string): Promise<string> {
+  const token = newToken();
+  await db.prepare(`UPDATE reports SET alt_token_hash = ? WHERE id = ?`).bind(await sha256Hex(token), id).run();
+  return token;
 }
 
 /** 按 id + token 取报告；不存在或 token 不符都返回 null（不区分，避免枚举）。 */

@@ -68,7 +68,7 @@ Implementations: `MockReportWriter` (MVP) → later `LLMReportWriter(provider)`.
   - `flirt_no_plans` → "Ask for something specific: 'I'd like to actually see you — are you free Thursday?'"
   - initiation cooling → "Ask directly: 'I've noticed things feel different lately — is something going on on your end?'"
 
-Templates live in `lib/report/templates.ts`, with 2–3 variants each, chosen deterministically by a hash of reportId (so the wording doesn't feel identical across users, while the same report always gets the same output).
+Templates live in `src/lib/report/mock-writer.ts`, with 2–3 variants for key sentences, chosen deterministically by a hash of reportId (so the wording doesn't feel identical across users, while the same report always gets the same output).
 
 ## 5. LLM prompts (for later; kept here so we don't have to design them again)
 
