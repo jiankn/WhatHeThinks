@@ -1,0 +1,161 @@
+/**
+ * 报告的 D1 读写。详见 docs/PRD.md §5.7、§6。
+ */
+
+import { nanoid } from "nanoid";
+import type { EvidenceMsg, Preview } from "@/lib/analysis/analysis-types";
+import type { ReportUpload, SlimAnalysis } from "@/lib/report/payload";
+import type { FullReport } from "@/lib/report/types";
+import type { ReportStatus, ReportView } from "@/lib/report/view";
+import type { QuestionId } from "@/lib/questions";
+import { newToken, safeEqual, sha256Hex } from "./crypto";
+
+const EVIDENCE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+export interface ReportRow {
+  id: string;
+  token_hash: string;
+  question: QuestionId;
+  custom_question: string | null;
+  status: ReportStatus;
+  preview_json: string;
+  analysis_json: string;
+  report_json: string | null;
+  email: string | null;
+  created_at: number;
+  paid_at: number | null;
+  evidence_expires_at: number;
+}
+
+export async function createReport(
+  db: D1Database,
+  upload: ReportUpload,
+): Promise<{ id: string; token: string }> {
+  const id = nanoid(12);
+  const token = newToken();
+  const now = Date.now();
+  const { preview, ...analysisRest } = upload.analysis;
+
+  const stmts = [
+    db
+      .prepare(
+        `INSERT INTO reports (id, token_hash, question, custom_question, status, preview_json, analysis_json, created_at, evidence_expires_at)
+         VALUES (?, ?, ?, ?, 'preview', ?, ?, ?, ?)`,
+      )
+      .bind(
+        id,
+        await sha256Hex(token),
+        upload.question,
+        upload.customQuestion ?? null,
+        JSON.stringify(preview),
+        JSON.stringify(analysisRest),
+        now,
+        now + EVIDENCE_TTL_MS,
+      ),
+    ...upload.evidence.map((e) =>
+      db
+        .prepare(`INSERT INTO evidence (report_id, msg_id, ts, sender, text) VALUES (?, ?, ?, ?, ?)`)
+        .bind(id, e.id, e.ts, e.sender, e.text),
+    ),
+  ];
+  await db.batch(stmts);
+  await purgeExpiredEvidence(db, now);
+  return { id, token };
+}
+
+/** 顺带清理过期证据（替代定时任务）。 */
+async function purgeExpiredEvidence(db: D1Database, now: number): Promise<void> {
+  await db
+    .prepare(
+      `DELETE FROM evidence WHERE report_id IN (SELECT id FROM reports WHERE evidence_expires_at < ?)`,
+    )
+    .bind(now)
+    .run();
+}
+
+export async function getReportRow(db: D1Database, id: string): Promise<ReportRow | null> {
+  return db.prepare(`SELECT * FROM reports WHERE id = ?`).bind(id).first<ReportRow>();
+}
+
+export async function checkToken(row: ReportRow, token: string | null): Promise<boolean> {
+  if (!token) return false;
+  return safeEqual(await sha256Hex(token), row.token_hash);
+}
+
+/** 按 id + token 取报告；不存在或 token 不符都返回 null（不区分，避免枚举）。 */
+export async function getAuthorizedRow(
+  db: D1Database,
+  id: string,
+  token: string | null,
+): Promise<ReportRow | null> {
+  if (!/^[\w-]{12}$/.test(id)) return null;
+  const row = await getReportRow(db, id);
+  if (!row || !(await checkToken(row, token))) return null;
+  return row;
+}
+
+export async function getEvidence(db: D1Database, id: string): Promise<EvidenceMsg[]> {
+  const { results } = await db
+    .prepare(`SELECT msg_id, ts, sender, text FROM evidence WHERE report_id = ? ORDER BY ts`)
+    .bind(id)
+    .all<{ msg_id: number; ts: number; sender: "Y" | "H"; text: string }>();
+  return results.map((r) => ({ id: r.msg_id, ts: r.ts, sender: r.sender, text: r.text }));
+}
+
+export function getAnalysis(row: ReportRow): SlimAnalysis {
+  return { ...JSON.parse(row.analysis_json), preview: JSON.parse(row.preview_json) };
+}
+
+/** 构建对外视图：付费前只含 preview。 */
+export async function toView(db: D1Database, row: ReportRow): Promise<ReportView> {
+  const paid = row.paid_at !== null;
+  const view: ReportView = {
+    id: row.id,
+    status: row.status,
+    paid,
+    question: row.question,
+    customQuestion: row.custom_question,
+    createdAt: row.created_at,
+    preview: JSON.parse(row.preview_json) as Preview,
+  };
+  if (paid) {
+    view.evidence = await getEvidence(db, row.id);
+    if (row.status === "ready" && row.report_json) {
+      view.report = JSON.parse(row.report_json) as FullReport;
+    }
+  }
+  return view;
+}
+
+export async function setStatus(db: D1Database, id: string, status: ReportStatus): Promise<void> {
+  await db.prepare(`UPDATE reports SET status = ? WHERE id = ?`).bind(status, id).run();
+}
+
+export async function saveReport(db: D1Database, id: string, report: FullReport): Promise<void> {
+  await db
+    .prepare(`UPDATE reports SET report_json = ?, status = 'ready' WHERE id = ?`)
+    .bind(JSON.stringify(report), id)
+    .run();
+}
+
+/** 标记已付费。已付费则不重复更新（webhook 可能重放）。返回是否本次首次标记。 */
+export async function markPaid(db: D1Database, id: string, email: string | null): Promise<boolean> {
+  const r = await db
+    .prepare(
+      `UPDATE reports SET paid_at = ?, email = COALESCE(?, email), status = 'generating'
+       WHERE id = ? AND paid_at IS NULL`,
+    )
+    .bind(Date.now(), email, id)
+    .run();
+  return (r.meta.changes ?? 0) > 0;
+}
+
+/** 硬删除报告与证据。订单只保留金额/时间/Stripe id 用于记账。 */
+export async function deleteReport(db: D1Database, id: string): Promise<void> {
+  await db.batch([
+    db.prepare(`DELETE FROM evidence WHERE report_id = ?`).bind(id),
+    db.prepare(`DELETE FROM followups WHERE report_id = ?`).bind(id),
+    db.prepare(`DELETE FROM events WHERE report_id = ?`).bind(id),
+    db.prepare(`DELETE FROM reports WHERE id = ?`).bind(id),
+  ]);
+}

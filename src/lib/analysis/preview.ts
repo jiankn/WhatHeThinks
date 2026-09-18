@@ -60,6 +60,7 @@ export function buildPreview(
 ): Preview {
   const tp = pickHeadline(a.turningPoints);
   const totalInit = a.totals.Y.initiations + a.totals.H.initiations;
+  const totalMsgs = a.totals.Y.msgCount + a.totals.H.msgCount;
 
   let headline: Preview["headline"] = null;
   if (tp) {
@@ -72,7 +73,7 @@ export function buildPreview(
   }
 
   return {
-    totalMessages: a.totals.Y.msgCount + a.totals.H.msgCount,
+    totalMessages: totalMsgs,
     activeDays: a.activeDays,
     range: a.range,
     initiation: {
@@ -80,6 +81,11 @@ export function buildPreview(
       him: totalInit ? a.totals.H.initiations / totalInit : 0,
     },
     medianReply: { you: a.totals.Y.replyP50, him: a.totals.H.replyP50 },
+    messageShare: {
+      you: totalMsgs ? a.totals.Y.msgCount / totalMsgs : 0,
+      him: totalMsgs ? a.totals.H.msgCount / totalMsgs : 0,
+    },
+    questionRatio: { you: a.totals.Y.questionRatio, him: a.totals.H.questionRatio },
     headline,
     counts: {
       turningPoints: a.turningPoints.length,

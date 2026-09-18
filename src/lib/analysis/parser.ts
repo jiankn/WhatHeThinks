@@ -124,6 +124,9 @@ const MEDIA_RE =
 const DELETED_RE = /^(This message was deleted|You deleted this message)\.?$/i;
 const CALL_RE = /^(Missed )?(voice|video) call$/i;
 const EDITED_RE = /\s*<This message was edited>\s*$/i;
+// iOS 导出会把部分系统提示挂在某个参与者名下（如首行的加密提示），按正文识别并丢弃。
+const SYSTEM_TEXT_RE =
+  /^(Messages and calls are end-to-end encrypted|Messages to this chat and calls are now secured|Your security code with .+ changed|.+ changed (their|his|her) phone number|You (blocked|unblocked) this contact|Disappearing messages were turned (on|off)|.+ turned (on|off) disappearing messages|Waiting for this message)/i;
 
 function classify(text: string): { type: MsgType; text: string } {
   const clean = text.replace(EDITED_RE, "").trim();
@@ -134,7 +137,12 @@ function classify(text: string): { type: MsgType; text: string } {
 }
 
 // ── 主入口 ───────────────────────────────────────────────────
-export function parseWhatsApp(raw: string): ParseResult {
+export interface ParseOptions {
+  /** 强制日期顺序。用于检测结果为 ambiguous 时，由用户在 UI 中切换。 */
+  forceDateOrder?: "MDY" | "DMY";
+}
+
+export function parseWhatsApp(raw: string, opts: ParseOptions = {}): ParseResult {
   const text = normalize(raw);
   const lines = text.split("\n");
 
@@ -166,7 +174,7 @@ export function parseWhatsApp(raw: string): ParseResult {
   }
 
   const dateOrder = detectDateOrder(raws.map((r) => r.header));
-  const useDMY = dateOrder === "DMY";
+  const useDMY = (opts.forceDateOrder ?? dateOrder) === "DMY";
 
   const messages: Msg[] = [];
   const counts = new Map<string, number>();
@@ -179,6 +187,10 @@ export function parseWhatsApp(raw: string): ParseResult {
     if (Number.isNaN(ts)) return;
 
     const joined = r.lines.join("\n");
+    if (SYSTEM_TEXT_RE.test(joined.trim())) {
+      systemLineCount++;
+      return;
+    }
     const { type, text: cleanText } = classify(joined);
 
     messages.push({
@@ -202,4 +214,44 @@ export function parseWhatsApp(raw: string): ParseResult {
     systemLineCount,
     hadTimestamps: messages.length > 0,
   };
+}
+
+// ── Lite 模式：无时间戳的 "Name: message" 粘贴文本 ─────────────
+// 用于用户直接粘贴对话。时间戳按 1 分钟间隔合成，只作排序用；
+// analyze() 据 hadTimestamps=false 进入 Lite 模式（无回复时间/转折点）。
+const PLAIN_RE = /^([^:\n]{1,40}):\s+(.+)$/;
+const LITE_BASE_TS = Date.UTC(2000, 0, 1);
+
+export function parsePlainLines(raw: string): ParseResult {
+  const lines = normalize(raw).split("\n");
+  const messages: Msg[] = [];
+  const counts = new Map<string, number>();
+  let systemLineCount = 0;
+
+  for (const line of lines) {
+    const m = PLAIN_RE.exec(line.trim());
+    if (m) {
+      const sender = m[1].trim();
+      const { type, text } = classify(m[2]);
+      messages.push({ id: messages.length, ts: LITE_BASE_TS + messages.length * 60_000, sender, text, type });
+      counts.set(sender, (counts.get(sender) ?? 0) + 1);
+    } else if (messages.length > 0 && line.trim()) {
+      messages[messages.length - 1].text += "\n" + line.trim();
+    } else if (line.trim()) {
+      systemLineCount++;
+    }
+  }
+
+  const participants = [...counts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return { messages, participants, dateOrder: "ambiguous", systemLineCount, hadTimestamps: false };
+}
+
+/** 先按 WhatsApp 导出格式解析，失败再退到 Lite 模式。 */
+export function parseAny(raw: string, opts: ParseOptions = {}): ParseResult {
+  const r = parseWhatsApp(raw, opts);
+  if (r.messages.length > 0) return r;
+  return parsePlainLines(raw);
 }

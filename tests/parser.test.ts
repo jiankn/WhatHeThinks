@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseWhatsApp, normalize } from "@/lib/analysis/parser";
+import { parseWhatsApp, normalize, parsePlainLines, parseAny } from "@/lib/analysis/parser";
 
 /** 取某条消息的 UTC 时钟，便于断言（导出无时区，全程按 UTC）。 */
 function clock(ts: number) {
@@ -102,6 +102,12 @@ describe("日期顺序检测", () => {
     expect(r.dateOrder).toBe("ambiguous");
     expect(clock(r.messages[0].ts)).toMatchObject({ mo: 1, day: 5 });
   });
+  it("forceDateOrder=DMY 覆盖 ambiguous 默认值", () => {
+    const chat = "01/05/24, 10:00 - A: x";
+    const r = parseWhatsApp(chat, { forceDateOrder: "DMY" });
+    expect(r.dateOrder).toBe("ambiguous");
+    expect(clock(r.messages[0].ts)).toMatchObject({ mo: 5, day: 1 });
+  });
 });
 
 describe("多行消息", () => {
@@ -166,6 +172,16 @@ describe("系统消息", () => {
     expect(r.messages).toHaveLength(1);
     expect(r.systemLineCount).toBe(1);
   });
+  it("iOS 挂在参与者名下的系统提示也被丢弃", () => {
+    const chat = [
+      "[1/1/24, 10:00:00 AM] Jake: ‎Messages and calls are end-to-end encrypted. Only people in this chat can read them.",
+      "[1/1/24, 10:00:30 AM] Jake: Your security code with Emma changed. Tap to learn more.",
+      "[1/1/24, 10:01:00 AM] Jake: hi",
+    ].join("\n");
+    const r = parseWhatsApp(chat);
+    expect(r.messages.map((m) => m.text)).toEqual(["hi"]);
+    expect(r.systemLineCount).toBe(2);
+  });
 });
 
 describe("群聊（>2 人）", () => {
@@ -189,5 +205,19 @@ describe("含冒号的正文", () => {
     const r = parseWhatsApp(chat);
     expect(r.messages[0].sender).toBe("A");
     expect(r.messages[0].text).toBe("meet at 9:30 tonight?");
+  });
+});
+
+describe("Lite 模式（无时间戳粘贴）", () => {
+  it("解析 Name: message 行，续行合并，hadTimestamps=false", () => {
+    const r = parsePlainLines("Emma: hey\nJake: hi there\nhow are you\nEmma: good");
+    expect(r.hadTimestamps).toBe(false);
+    expect(r.messages.map((m) => m.sender)).toEqual(["Emma", "Jake", "Emma"]);
+    expect(r.messages[1].text).toBe("hi there\nhow are you");
+    expect(r.messages[1].ts).toBeGreaterThan(r.messages[0].ts);
+  });
+  it("parseAny 优先 WhatsApp 格式", () => {
+    expect(parseAny("[1/1/24, 10:00:00 AM] A: x").hadTimestamps).toBe(true);
+    expect(parseAny("A: x\nB: y").hadTimestamps).toBe(false);
   });
 });

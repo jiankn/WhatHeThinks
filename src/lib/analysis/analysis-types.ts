@@ -123,6 +123,10 @@ export interface Preview {
   range: [number, number];
   initiation: { you: number; him: number };
   medianReply: { you: number; him: number };
+  /** 消息数占比（0–1），Lite 模式也可用。 */
+  messageShare: { you: number; him: number };
+  /** 文本消息中提问的比例（0–1）。 */
+  questionRatio: { you: number; him: number };
   headline: {
     date: number;
     metric: "initiation" | "reply" | "volume";

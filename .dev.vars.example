@@ -1,0 +1,7 @@
+# 复制为 .dev.vars（已 gitignore）后填写。本地 `next dev` 与 wrangler 都会读取。
+# 不填 Stripe key 时，支付按钮在开发环境直接解锁（DEV_UNLOCK）。
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+RESEND_API_KEY=
+EMAIL_FROM="WhatHeThinks <reports@whathethinks.com>"
+DEV_UNLOCK=1

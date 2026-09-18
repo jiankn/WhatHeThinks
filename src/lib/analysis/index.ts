@@ -17,7 +17,7 @@ import { selectEvidence } from "./evidence";
 import { buildPreview } from "./preview";
 
 export * from "./analysis-types";
-export { parseWhatsApp } from "./parser";
+export { parseWhatsApp, parsePlainLines, parseAny } from "./parser";
 export { extractChatText } from "./zip";
 
 /** 把原始消息映射为角色消息，只保留 you/him 两人，按 ts 升序。 */
