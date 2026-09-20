@@ -20,7 +20,7 @@ import type {
 import { lastValidWeeks, type WindowAgg } from "./window";
 import type { ReportInput, ReportWriter } from "./writer";
 
-export const MOCK_VERSION = "mock-1";
+export const MOCK_VERSION = "mock-2";
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 // ── 文案常量 ─────────────────────────────────────────────────
@@ -568,56 +568,57 @@ class Composer {
     if (q === "ex_came_back") {
       return {
         question: "What's different for you this time?",
-        why: "When someone comes back, the most useful thing to know is whether anything has actually changed — not just how they feel right now.",
+        why: "Before trying again, it may help to talk about what caused problems last time and what would be different now.",
         howToAsk: "Ask it calmly and early, before you're back in the old rhythm. Then watch whether his actions match the answer.",
       };
     }
     if (ids.has("flirt_no_plans") || ids.has("vague_plans")) {
       return {
-        question: "I'd like to actually see you — are you free this week?",
-        why: "His warmth is there, but concrete plans aren't. A specific invitation turns a vague signal into a clear answer.",
-        howToAsk: "Keep it light and specific: name a day and an activity, then let his response do the talking.",
+        responseGuide: "plans",
+        question: "I'd like to see you. Are you free this week?",
+        why: "Some of the messages leave plans open. If you still want to meet, a specific invitation gives him a chance to help arrange it.",
+        howToAsk: "Suggest a day or something you'd enjoy doing together. Leave room for him to suggest another time.",
       };
     }
     if (ids.has("words_vs_followthrough")) {
       return {
         question: "What's making it hard to follow through on plans lately?",
         why: "The gap between what he says and what happens is the clearest pattern here. Asking about it directly is kinder to you than guessing.",
-        howToAsk: "Lead with curiosity, not accusation — you're asking about a pattern, not a single cancelled night.",
+        howToAsk: "Mention a plan you were looking forward to and ask what happened. Leave room to hear his explanation.",
       };
     }
     if (ids.has("disappear_return")) {
       return {
         question: "When you go quiet for a few days, what's usually going on for you?",
         why: "The on-and-off rhythm is what keeps this uncertain. His answer, and whether the rhythm changes, will tell you more than any single text.",
-        howToAsk: "Ask when things feel good, not right after a silence — you'll get a more honest answer.",
+        howToAsk: "Choose a moment when you feel ready to talk. Explain how the gaps affect you and ask what kind of contact works for both of you.",
       };
     }
     if (ids.has("busy_pattern")) {
       return {
-        question: "It sounds like things are really full for you right now — do you still have room for this?",
+        question: "It sounds like things are really full for you right now. Do you still have room for this?",
         why: "Busy is real, but it's been a recurring theme alongside less initiation. This gives him an easy, honest way to answer.",
         howToAsk: "Say it warmly and mean it. Either answer is useful information.",
       };
     }
     if (ids.has("replies_never_initiates")) {
       return {
-        question: "I've noticed I'm usually the one reaching out — is that how you want it?",
+        question: "I'd like you to reach out sometimes too. How does that feel to you?",
         why: "He responds, but rarely starts things. Naming it lets you find out whether that's just his style or a signal.",
         howToAsk: "Keep it observational and light. Then notice whether he starts a conversation in the next few days.",
       };
     }
     if (ids.has("late_night_only")) {
       return {
-        question: "I'd love to talk more during the day, not just late at night — would you be into that?",
+        question: "I'd love to talk more during the day too. Would that work for you?",
         why: "Mostly late-night contact is ambiguous. A simple request shows whether he's willing to show up in other parts of his day.",
         howToAsk: "Frame it as something you want, not something he's doing wrong.",
       };
     }
     if (tp && tp.direction === "cooling") {
       return {
-        question: "I've noticed things feel a bit different lately — is something going on on your end?",
-        why: "There's a measurable shift in his behavior. Asking about it openly is the fastest way to learn whether it's about you, him, or neither.",
+        question: "I've noticed things feel a bit different lately. Is something going on on your end?",
+        why: "His texting has changed. Asking about it gives him a chance to explain what the messages alone can't show.",
         howToAsk: "Keep it about what you've noticed, not what it means. Give him room to answer honestly.",
       };
     }
@@ -625,11 +626,12 @@ class Composer {
       return {
         question: "What are you looking for with us right now?",
         why: "Texting patterns can show effort, but not intentions. This is the question only he can answer.",
-        howToAsk: "Ask in person or on a call if you can — and be ready to share what you're looking for, too.",
+        howToAsk: "Choose a way to talk that feels comfortable. Share what you're looking for too.",
       };
     }
     if (this.a.interest.level === "strong") {
       return {
+        responseGuide: "plans",
         question: "Want to make plans for this weekend?",
         why: "His effort is consistent and visible. The next step is less about decoding him and more about building on it.",
         howToAsk: "Suggest something specific you'd enjoy together.",

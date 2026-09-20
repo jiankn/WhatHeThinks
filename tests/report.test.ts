@@ -50,6 +50,30 @@ describe("MockReportWriter 通过 Claim Checker", () => {
 });
 
 describe("报告内容", () => {
+  it("建议约见时使用计划回应指南，复合问题保留对话指南", async () => {
+    const inp = input({ weeks: 12, seed: 9 }, "mixed_signals");
+    inp.analysis.mixedSignals = [{ id: "vague_plans", side: "distance", evidenceIds: [] }];
+    const { report, violations } = await writeAndCheck(inp);
+    expect(violations).toEqual([]);
+    expect(report.nextStep.responseGuide).toBe("plans");
+
+    const ex = await writeAndCheck({ ...inp, question: "ex_came_back" });
+    expect(ex.report.nextStep.question).toBe("What's different for you this time?");
+    expect(ex.report.nextStep.responseGuide ?? "conversation").toBe("conversation");
+  });
+
+  it("稳定且投入的聊天可以建议约见，但开放式关系提问不套用邀约指南", async () => {
+    const inp = input({ weeks: 12, seed: 9 }, "likes_me");
+    inp.analysis.mixedSignals = [];
+    inp.analysis.turningPoints = [];
+    inp.analysis.interest.level = "strong";
+    const { report } = await writeAndCheck(inp);
+    expect(report.nextStep.responseGuide).toBe("plans");
+
+    const open = await writeAndCheck({ ...inp, question: "situationship" });
+    expect(open.report.nextStep.responseGuide ?? "conversation").toBe("conversation");
+  });
+
   it("冷却场景：转折点叙述、模块顺序按问题调整", async () => {
     const { report } = await writeAndCheck(input({ weeks: 16, coolAtWeek: 9, seed: 5 }, "losing_interest"));
     expect(report.order[1]).toBe("timeline");

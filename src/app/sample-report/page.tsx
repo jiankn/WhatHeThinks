@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SampleReport } from "./SampleReport";
+import "./sample-report.css";
 
 export const metadata: Metadata = { title: "Sample report", robots: { index: false, follow: true } };
 

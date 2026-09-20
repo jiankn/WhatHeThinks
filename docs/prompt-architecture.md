@@ -124,7 +124,7 @@ Key prompt instructions:
 | B | Main model | ~2k × ≤5 |
 | C | Main model | ~10k |
 
-Keep cost per report ≤ $0.15 (≤1.5% of the $9.99 price).
+Keep cost per report ≤ $0.15 (≤0.8% of the $19.90 price).
 
 ## 6. Claim Checker (deterministic, required)
 

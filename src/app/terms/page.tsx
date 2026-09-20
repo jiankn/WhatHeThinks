@@ -5,7 +5,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Prose } from "@/components/marketing/Prose";
-import { SKUS } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <Prose eyebrow="Terms" title="Terms of Service" updated="2026-09-19">
+    <Prose eyebrow="Terms" title="Terms of Service" updated="2026-09-20">
       <p>
         These terms apply when you use WhatHeThinks. By using the service, you agree to them. If you don't agree,
         please don't use the service.
@@ -47,12 +46,19 @@ export default function TermsPage() {
 
       <h2>Payments and refunds</h2>
       <p>
-        The preview is free. The full report costs {SKUS.full_report.label} as a one-time payment, processed by Stripe.
-        There is no subscription.
+        The preview is free. If you choose to unlock the full report, the current price is shown before checkout. It is
+        a one-time payment processed by Stripe. There is no subscription.
       </p>
       <p>
-        If your report can't be generated after you pay, you'll be refunded in full automatically. If something else is
-        wrong with your report, contact us within 14 days of purchase and we'll make it right.
+        If your report can't be generated after payment, you'll receive an automatic full refund. Once the full report
+        has been generated and made available to you, the purchase is final because it is an immediately delivered
+        digital product. We don't offer refunds for a change of mind, because you disagree with an interpretation, or
+        because the report confirms something you already suspected.
+      </p>
+      <p>
+        Nothing in this policy limits any refund or cancellation rights that apply under the law where you live. If a
+        report was not delivered or you believe you were charged in error, contact us at{" "}
+        <a href="mailto:support@whathethinks.com">support@whathethinks.com</a>.
       </p>
 
       <h2>Accuracy and limitations</h2>

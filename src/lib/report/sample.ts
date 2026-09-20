@@ -52,9 +52,10 @@ const report: FullReport = {
     combination: "The warmth is there. The consistent effort to make plans is less clear.", breadcrumbing: false,
   },
   nextStep: {
+    responseGuide: "plans",
     question: "Would you like to pick a day to see each other this week?",
-    why: "A concrete invitation can help clarify whether the warm messages turn into an actual plan.",
-    howToAsk: "Choose a calm moment, ask directly, and leave room for an honest answer.",
+    why: "If you still want to see him, a specific invitation gives him a chance to help make it happen.",
+    howToAsk: "Use words that sound like you. Suggest a day if you have one in mind, then leave room for him to answer.",
   },
   order: ["summary", "interest", "investment", "timeline", "mixedSignals", "nextStep"],
   meta: { writer: "mock", version: "design-sample-1", generatedAt: date(7, 5) },

@@ -222,8 +222,8 @@ function Generating({ failed }: { failed: boolean }) {
       <div className="card px-5 py-6">
         <h2 className="font-display text-2xl font-semibold">We couldn't finish your report.</h2>
         <p className="mt-2 text-muted">
-          Your payment went through, but something failed while writing the report. We'll refund you automatically —
-          or email us and we'll sort it out.
+          Your payment went through, but something failed while writing the report. You'll receive an automatic full
+          refund. If you need help, email support@whathethinks.com.
         </p>
       </div>
     );

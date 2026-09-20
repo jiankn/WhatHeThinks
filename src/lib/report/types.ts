@@ -72,7 +72,7 @@ export interface FullReport {
   investment: { rows: InvestRow[]; takeaway: string; claims: Claim[] };
   timeline: { points: TPNarrative[]; series: SeriesPoint[]; emptyNote?: string };
   mixedSignals: { interest: Claim[]; distance: Claim[]; combination: string; breadcrumbing: boolean };
-  nextStep: { question: string; why: string; howToAsk: string };
+  nextStep: { question: string; why: string; howToAsk: string; responseGuide?: "plans" | "conversation" };
   /** 模块展示顺序，按用户选的问题调整（prompt-architecture §7）。 */
   order: ModuleKey[];
   meta: { writer: "mock" | "llm"; model?: string; version: string; generatedAt: number };

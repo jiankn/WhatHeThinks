@@ -4,6 +4,8 @@
 
 export const EVENT_NAMES = [
   "landing_view",
+  "sample_report_view",
+  "sample_cta_click",
   "analyze_start",
   "question_selected",
   "upload_parsed",

@@ -12,6 +12,7 @@
 
 # cloudflare / opennext
 .open-next/
+.open-next-stale-*/
 .wrangler/
 .dev.vars
 

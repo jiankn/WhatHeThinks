@@ -7,7 +7,7 @@
 
 ## 1. Goals and non-goals
 
-**Goal:** Ship a web product that a woman can use on her phone: upload a WhatsApp chat, **see a free preview that proves "it actually knows what happened in our chat"**, then pay $9.99 to unlock the full report with timeline and evidence.
+**Goal:** Ship a web product that a woman can use on her phone: upload a WhatsApp chat, **see a free preview that proves "it actually knows what happened in our chat"**, then decide whether to unlock the full report for a one-time $19.90 payment.
 
 **Launch success criterion:** First 20 paying customers. North star metric = Preview → Paid.
 
@@ -41,7 +41,7 @@ Landing / Money Page
            → POST /api/reports  (upload only derived data + ≤120 evidence message excerpts)
    ↓
 /r/{reportId}#t={token}      Free Preview
-   ↓ [Unlock Full Report — $9.99]
+   ↓ [Unlock Full Report · $19.90]
 Stripe Checkout (collects email)
    ↓ webhook: checkout.session.completed → mark paid → generate full report → send email link
 /r/{reportId}#t={token}      Full Report (6 modules + View Evidence)
@@ -89,7 +89,7 @@ Everything follows [signal-scoring-spec.md](signal-scoring-spec.md): sessions, i
 ### 5.4 Free Preview (BP §23)
 
 Shown: total messages, active days, date range; initiation You/Him %; median reply You/Him; a teaser for the **largest turning point** ("His conversation initiation began dropping around May 18"); a count summary (✓ N turning points / N mixed signals / N supporting moments / interest level locked).
-Locked: the paywall from BP §24 (4 locked cards + Unlock $9.99, one-time payment).
+Locked: the paywall from BP §24 (4 locked cards + Unlock $19.90, one-time payment). The price first appears here, after the user has read the free preview.
 
 **Paywall security:** Before payment, the server returns only the preview fields. Full report content (the 6 modules, evidence) is only returned after `paid=1`.
 
@@ -107,10 +107,10 @@ Every claim displays Fact and Interpretation separately and carries at least one
 
 ### 5.6 Payment
 
-- `POST /api/checkout` → create Stripe Checkout Session (mode=payment, $9.99, metadata.reportId, collect email)
+- `POST /api/checkout` → create Stripe Checkout Session (mode=payment, $19.90, metadata.reportId, collect email)
 - `POST /api/stripe/webhook` → verify signature → `orders` record paid → mark report paid → call `ReportWriter` to generate the full report (mock is synchronous; switch to a Queue later) → send the report link via Resend
 - If there are no Stripe keys in the env: use **dev mode** — the checkout button unlocks directly (only when `NODE_ENV=development` or `DEV_UNLOCK=1`)
-- Pricing is centralized in `lib/pricing.ts` so the $9.99/$12.99 A/B test can be added later
+- Pricing is centralized in `lib/pricing.ts`; marketing pages do not reveal it before the personalized preview
 
 ### 5.7 Report access and deletion
 
@@ -178,4 +178,4 @@ Voice: "Smart girlfriend with receipts" — direct, calm, supportive, evidence-l
 1. **Analytics tool:** self-hosted D1 events table (zero cost, rough) vs Plausible/Umami (hosted, costs money). Default suggestion: D1 events table first.
 2. **Terms / Privacy:** I'll write a template draft, **but it needs legal review before launch** (especially since dating chat data is sensitive).
 3. **Non-male partners:** the product targets women dating men, and the UI uses "He/Him". MVP doesn't support switching.
-4. **Refund policy:** suggest "if the report can't be generated or the data is insufficient, automatic full refund". Needs your confirmation.
+4. **Refund policy:** if the report cannot be generated after payment, issue an automatic full refund. Once the full report is generated and made available, the digital purchase is final, except where applicable law requires otherwise.

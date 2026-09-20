@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CtaLink, CtaNote } from "@/components/marketing/CtaLink";
 import { Faq } from "@/components/marketing/Faq";
-import { SKUS } from "@/lib/pricing";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -35,8 +34,8 @@ const SECTIONS: { title: string; items: { q: string; a: string }[] }[] = [
     title: "Pricing",
     items: [
       { q: "What's free?", a: "The preview: message and activity stats, who starts conversations, typical reply times and the biggest change we found." },
-      { q: "What does the full report cost?", a: `${SKUS.full_report.label}, one time. No subscription and no account needed.` },
-      { q: "Can I get a refund?", a: "If your report can't be generated after you pay, you're refunded in full automatically. For anything else, contact us within 14 days." },
+      { q: "When do I see the price?", a: "After you read your free preview. If you decide to unlock the full report, you'll see the price clearly before checkout. It is one payment, with no subscription." },
+      { q: "Can I get a refund?", a: "If your report can't be generated after payment, you'll receive an automatic full refund. Once the full report has been generated and made available to you, the purchase is final because it is an immediately delivered digital product. We don't offer refunds for a change of mind or because you disagree with the report's interpretation. This does not affect any rights you have under applicable law." },
       { q: "How do I get back to my report?", a: "If you are signed in, your reports appear in My account. Otherwise, your private report link is saved in your browser and emailed after purchase — keep it private." },
     ],
   },

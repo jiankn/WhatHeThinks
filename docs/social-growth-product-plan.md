@@ -14,7 +14,7 @@
 | --- | --- | --- |
 | 上传/粘贴 → 确认双方 → 分析；可匿名创建报告 | src/app/analyze/AnalyzeFlow.tsx、src/app/api/reports/route.ts | 保留低门槛入口，不新增前置注册和问卷 |
 | 免费预览已有转折摘要及两项对比指标 | src/components/report/PreviewSection.tsx、src/lib/analysis/preview.ts | 可作为首版分享内容，无需重造评分体系 |
-| 完整报告为 $9.99 一次性购买 | src/lib/pricing.ts、src/components/report/Paywall.tsx | 先验证价值与转化，暂不加订阅或多档套餐 |
+| 完整报告为 $19.90 一次性购买，价格在免费预览后的付费墙首次出现 | src/lib/pricing.ts、src/components/report/Paywall.tsx | 先用个人结果证明价值，再让用户决定是否购买；暂不加订阅或多档套餐 |
 | getWriter 固定使用 MockReportWriter | src/lib/server/generate.ts | 当前是基于真实派生指标的模板报告，尚未接入真实 LLM；不能当作个性化 AI 解读已经完成 |
 | 免费/付费结果组件均没有分享功能 | PreviewSection.tsx、FullReportView.tsx | 当前没有产品内分享闭环 |
 | 报告 token 用于读取、修改和删除报告 | src/app/api/reports/[id]/route.ts、src/lib/report/token-store.ts | 私有报告 URL 不能作为公开分享 URL |
@@ -85,7 +85,7 @@
 
 每单贡献 = 实收收入 − 支付手续费 − 生成成本 − 预期退款及支持成本。
 
-获客成本上限必须留出利润空间；不能直接用 $9.99 作为可接受 CPA，也不能拿未经验证的未来裂变收益抵销亏损。当前隐私页承诺数据不用于广告；不要直接把广告像素装进含私有报告和聊天内容的流程。
+获客成本上限必须留出利润空间；不能直接用 $19.90 作为可接受 CPA，也不能拿未经验证的未来裂变收益抵销亏损。当前隐私页承诺数据不用于广告；不要直接把广告像素装进含私有报告和聊天内容的流程。
 
 ## 实施顺序与验收
 

@@ -89,7 +89,7 @@ export const LANDING_PAGES: LandingPage[] = [
       { q: "Can this tell me if he's lost feelings?", a: "No — and nothing can from texts alone. We measure observable texting behavior. When his effort drops, the report says so and shows the evidence, but it also reminds you that work, stress or things said in person can explain a change." },
       { q: "What if he's just a bad texter?", a: "That's exactly why we look at change over time instead of absolute numbers. A consistently slow texter looks steady. A man whose own pattern shifts looks different — we compare him to himself." },
       { q: "Do you read my messages?", a: "Your chat is analyzed on your device. Only statistics and up to 120 example messages — with names, emails and numbers removed — are sent to create your report, and those examples are deleted after 30 days." },
-      { q: "How much does it cost?", a: "The preview is free. The full report with the timeline, mixed signals and supporting messages is a one-time $9.99. No subscription." },
+      { q: "When do I see the price?", a: "After you read your free preview. If you want the full report, you'll see the price before checkout. It is one payment, with no subscription." },
     ],
     related: [
       { slug: "mixed-signals-text-analyzer", text: "check whether his signals are mixed rather than fading" },
@@ -130,7 +130,7 @@ export const LANDING_PAGES: LandingPage[] = [
       },
       { q: "What do I need?", a: "A WhatsApp chat export (.txt or .zip) with at least 50 messages. To see when things changed, a few weeks and a few hundred messages work best." },
       { q: "Is my chat uploaded?", a: "Your full chat is read on your device. For your report we keep statistics and up to 120 anonymized example messages, and delete the examples after 30 days." },
-      { q: "Is it free?", a: "The preview — who starts conversations, reply times and the biggest change we found — is free. The full report is a one-time $9.99." },
+      { q: "Is it free?", a: "The preview, including who starts conversations, reply times and the biggest change we found, is free. If you want the full report, you'll see the price before checkout." },
     ],
     related: [
       { slug: "is-he-losing-interest", text: "check whether his interest is fading" },
@@ -171,7 +171,7 @@ export const LANDING_PAGES: LandingPage[] = [
       { q: "What if nothing is mixed?", a: "Then the report says so. Consistent signals — in either direction — are a clear answer too." },
       { q: "Is this a red flag detector?", a: "No. We don't label him or diagnose anything. We show where his behavior points in two directions." },
       { q: "Is my chat uploaded?", a: "Your full chat is read on your device. For your report we keep statistics and up to 120 anonymized example messages, and delete the examples after 30 days." },
-      { q: "Is it free?", a: "The preview is free. The full report, with both columns and the messages behind them, is a one-time $9.99." },
+      { q: "Is it free?", a: "The preview is free. If you want the full report with both columns and the messages behind them, you'll see the price before checkout." },
     ],
     related: [
       { slug: "breadcrumbing-test", text: "take the breadcrumbing test" },
@@ -215,7 +215,7 @@ export const LANDING_PAGES: LandingPage[] = [
     faq: [
       { q: "Will it tell me to leave?", a: "No. We never tell you to stay or go. We show the pattern and suggest one question worth asking him directly." },
       { q: "Does it work for long chats?", a: "Yes — the longer the history, the better. We handle up to 200,000 messages, and a few months of chat gives the clearest timeline." },
-      { q: "What does it cost?", a: "Free preview. The full report is $9.99, one time." },
+      { q: "When do I see the price?", a: "After your free preview. If you want to keep reading, you'll see the one-time price before checkout." },
     ],
     related: [
       { slug: "mixed-signals-text-analyzer", text: "check his texts for mixed signals" },
@@ -309,7 +309,7 @@ export const LANDING_PAGES: LandingPage[] = [
     faq: [
       { q: "Does it say whether I should get back together?", a: "No. We never tell you to stay or go. We show what the history shows and suggest one question worth asking him." },
       { q: "What if the chat is years long?", a: "That's ideal — we handle up to 200,000 messages and a long history shows the clearest turning points." },
-      { q: "Is it free?", a: "The preview is free. The full report is a one-time $9.99." },
+      { q: "Is it free?", a: "The preview is free. If you want to unlock the full report, you'll see the one-time price before checkout." },
     ],
     related: [
       { slug: "breadcrumbing-test", text: "check whether the comeback fits a breadcrumbing pattern" },
