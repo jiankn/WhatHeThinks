@@ -20,7 +20,7 @@
 
 ## Release requirements and scope
 
-Apply D1 migration `0004_report_shares.sql` to the intended production database before deploying the code (`npm run db:migrate:remote` after checking the configured database). This migration has been applied locally only. Production deployment has not been performed.
+Cloudflare Git integration owns production deployment for this repository. Pushes to `master` should be built and deployed by the connected Cloudflare Worker project, including its configured D1 migration policy. The repository intentionally has no GitHub Actions deployment workflow and does not require Cloudflare credentials in GitHub Secrets. Confirm migration `0004_report_shares.sql` is enabled in the Cloudflare deployment settings before the first production build; it has been applied locally only.
 
 The report engine remains the existing deterministic template writer, not a newly integrated language model. Live payment, transactional email, OAuth and native mobile share sheets require their configured services/devices; this round did not submit a real payment. Existing parser/payment/account code was preserved rather than claiming those external integrations were verified end to end.
 
