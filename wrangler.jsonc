@@ -14,7 +14,7 @@
       "binding": "DB",
       "database_name": "whathethinks",
       // 部署前用 `npx wrangler d1 create whathethinks` 创建，把返回的 id 填到这里。
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "e3299a4a-cbe2-45d0-8d07-fa53bb3f7492",
       "migrations_dir": "migrations"
     }
   ],
