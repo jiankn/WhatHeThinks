@@ -30,6 +30,25 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .v3-cluster > span:nth-child(3) { background: #fff1f2; width: 76px; height: 76px; z-index: 1; }
 .v3-cluster > span:nth-child(4) { background: #fff6df; }
 .v3-cluster > span:nth-child(5) { background: #eaf5ea; }
+/* Hover: the circle pops up and the neighbours make room. Pointer devices only. */
+@keyframes v3-cluster-pop {
+  0%   { transform: translateY(0) scale(1) rotate(0deg); }
+  35%  { transform: translateY(-13px) scale(1.14) rotate(-8deg); }
+  65%  { transform: translateY(-5px) scale(1.05) rotate(5deg); }
+  100% { transform: translateY(-9px) scale(1.09) rotate(0deg); }
+}
+@media (hover: hover) {
+  .v3-cluster > span { transition: transform .3s cubic-bezier(.34, 1.4, .64, 1), box-shadow .3s ease, filter .3s ease; }
+  .v3-cluster img { display: block; transition: transform .3s cubic-bezier(.34, 1.4, .64, 1); }
+  .v3-cluster > span:hover { z-index: 2; transform: translateY(-9px) scale(1.09); box-shadow: 0 12px 26px rgba(0, 0, 0, .15); filter: saturate(1.35); animation: v3-cluster-pop .5s cubic-bezier(.34, 1.4, .64, 1); }
+  .v3-cluster > span:hover img { transform: scale(1.14); }
+  .v3-cluster > span:hover + span { transform: translateX(7px); }
+  .v3-cluster > span:has(+ span:hover) { transform: translateX(-7px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v3-cluster > span:hover { animation: none; transform: scale(1.04); }
+  .v3-cluster > span:hover + span, .v3-cluster > span:has(+ span:hover) { transform: none; }
+}
 .v3-hero h1 { max-width: 770px; font-size: clamp(36px, 4vw, 52px); line-height: 1.18; font-weight: 550; letter-spacing: -.035em; margin: 0; }
 .v3-hero > p { max-width: 580px; font-size: 17px; color: #626262; line-height: 1.7; }
 .v3-start { min-height: 56px; min-width: 250px; gap: 24px; font-size: 17px; }
