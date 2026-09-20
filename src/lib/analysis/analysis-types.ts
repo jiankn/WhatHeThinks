@@ -130,7 +130,14 @@ export interface Preview {
   headline: {
     date: number;
     metric: "initiation" | "reply" | "volume";
+    /** 旧报告没有此字段。 */
+    direction?: "cooling" | "warming";
     sentence: string;
+    /** Measured values around this shift; optional for reports created before the redesign. */
+    comparison?: {
+      initiation: { before: number; after: number };
+      reply: { before: number; after: number };
+    };
   } | null;
   counts: {
     turningPoints: number;

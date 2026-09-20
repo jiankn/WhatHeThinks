@@ -1,0 +1,1001 @@
+﻿keyword,cluster,page,source,business_fit,search_volume_us,cpc_usd,paid_competition,paid_competition_index,seo_kd,metric_status
+relationship text analyzer,home,/,editorial seed,95,30,,LOW,7,not queried,available
+relationship chat analyzer,home,/,editorial seed,95,10,1.97,LOW,31,not queried,available
+dating text analyzer,home,/,editorial seed,95,,,,,not queried,unavailable (not zero)
+ai relationship analyzer,home,/,editorial seed,95,10,7,LOW,14,not queried,available
+analyze text messages,home,/,editorial seed,95,320,1.87,LOW,2,not queried,available
+text message analyzer,home,/,editorial seed,95,110,7.95,LOW,8,not queried,available
+conversation analyzer,home,/,editorial seed,30,50,8.45,MEDIUM,48,not queried,available
+relationship analysis,home,/,editorial seed,30,170,22.58,LOW,2,not queried,available
+chat analysis ai,home,/,editorial seed,95,10,12.04,MEDIUM,51,not queried,available
+analyze his texts,home,/,editorial seed,95,,,,,not queried,unavailable (not zero)
+what does his text mean,home,/,editorial seed,65,70,,LOW,0,not queried,available
+decode his texts,home,/,editorial seed,65,10,,LOW,0,not queried,available
+dating chat analysis,home,/,editorial seed,95,,,,,not queried,unavailable (not zero)
+does he like me,interest,/does-he-like-me-text-analyzer,editorial seed,65,6600,0.82,LOW,1,not queried,available
+does he like me over text,interest,/does-he-like-me-text-analyzer,editorial seed,65,30,0.03,LOW,5,not queried,available
+signs he likes you over text,interest,/does-he-like-me-text-analyzer,editorial seed,65,50,,LOW,7,not queried,available
+is he flirting or being friendly,interest,/does-he-like-me-text-analyzer,editorial seed,65,70,0.05,LOW,10,not queried,available
+does he like me quiz,interest,/does-he-like-me-text-analyzer,editorial seed,45,6600,1.88,LOW,1,not queried,available
+does he like me test,interest,/does-he-like-me-text-analyzer,editorial seed,45,6600,1.88,LOW,1,not queried,available
+how to tell if a guy likes you over text,interest,/does-he-like-me-text-analyzer,editorial seed,65,480,0.1,LOW,11,not queried,available
+is he interested in me,interest,/does-he-like-me-text-analyzer,editorial seed,65,320,0.06,LOW,2,not queried,available
+does he like me or just want attention,interest,/does-he-like-me-text-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+does he like me or is he bored,interest,/does-he-like-me-text-analyzer,editorial seed,65,10,,LOW,2,not queried,available
+signs a guy is interested through text,interest,/does-he-like-me-text-analyzer,editorial seed,65,10,,LOW,0,not queried,available
+how guys text when they like you,interest,/does-he-like-me-text-analyzer,editorial seed,65,10,,LOW,0,not queried,available
+does my crush like me,interest,/does-he-like-me-text-analyzer,editorial seed,65,1900,3.21,LOW,0,not queried,available
+is he into me,interest,/does-he-like-me-text-analyzer,editorial seed,65,320,0.04,LOW,1,not queried,available
+is he just being nice,interest,/does-he-like-me-text-analyzer,editorial seed,65,50,,LOW,1,not queried,available
+is he losing interest,losing,/is-he-losing-interest,editorial seed,65,140,0.04,LOW,2,not queried,available
+signs he is losing interest,losing,/is-he-losing-interest,editorial seed,65,480,0.03,LOW,10,not queried,available
+is he losing interest or just busy,losing,/is-he-losing-interest,editorial seed,65,20,,LOW,8,not queried,available
+why is he texting less,losing,/is-he-losing-interest,editorial seed,65,10,,LOW,0,not queried,available
+why are his replies getting shorter,losing,/is-he-losing-interest,editorial seed,65,,,,,not queried,unavailable (not zero)
+why did he stop initiating texts,losing,/is-he-losing-interest,editorial seed,65,,,,,not queried,unavailable (not zero)
+signs he is pulling away,losing,/is-he-losing-interest,editorial seed,65,140,0.05,LOW,6,not queried,available
+he used to text me everyday,losing,/is-he-losing-interest,editorial seed,65,10,,LOW,0,not queried,available
+he stopped texting me,losing,/is-he-losing-interest,editorial seed,65,70,,LOW,1,not queried,available
+why is he being distant,losing,/is-he-losing-interest,editorial seed,65,40,0.07,LOW,5,not queried,available
+he takes longer to reply,losing,/is-he-losing-interest,editorial seed,65,,,,,not queried,unavailable (not zero)
+is he bored of me,losing,/is-he-losing-interest,editorial seed,65,20,,LOW,0,not queried,available
+is he slow fading,losing,/is-he-losing-interest,editorial seed,65,,,,,not queried,unavailable (not zero)
+slow fade texting,losing,/is-he-losing-interest,editorial seed,65,10,,LOW,0,not queried,available
+dry texting,losing,/is-he-losing-interest,editorial seed,65,3600,,LOW,0,not queried,available
+one word replies,losing,/is-he-losing-interest,editorial seed,65,70,,LOW,0,not queried,available
+he never asks me questions,losing,/is-he-losing-interest,editorial seed,65,10,,LOW,0,not queried,available
+he stopped making plans,losing,/is-he-losing-interest,editorial seed,65,,,,,not queried,unavailable (not zero)
+he texts less after first date,losing,/is-he-losing-interest,editorial seed,65,10,,,,not queried,available
+he went cold after second date,losing,/is-he-losing-interest,editorial seed,65,,,,,not queried,unavailable (not zero)
+mixed signals,mixed,/mixed-signals-text-analyzer,editorial seed,30,3600,0.03,LOW,0,not queried,available
+mixed signals from a guy,mixed,/mixed-signals-text-analyzer,editorial seed,65,170,0.01,LOW,8,not queried,available
+mixed signals over text,mixed,/mixed-signals-text-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+mixed signals text analyzer,mixed,/mixed-signals-text-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+hot and cold texting,mixed,/mixed-signals-text-analyzer,editorial seed,65,30,,LOW,0,not queried,available
+inconsistent texting,mixed,/mixed-signals-text-analyzer,editorial seed,65,70,,LOW,0,not queried,available
+he texts me but never makes plans,mixed,/mixed-signals-text-analyzer,editorial seed,65,10,,LOW,0,not queried,available
+he says he likes me but,mixed,/mixed-signals-text-analyzer,editorial seed,65,10,,,,not queried,available
+he acts interested then disappears,mixed,/mixed-signals-text-analyzer,editorial seed,65,10,,,,not queried,available
+he texts first then ignores me,mixed,/mixed-signals-text-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+he texts everyday but never asks me out,mixed,/mixed-signals-text-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+he flirts then pulls away,mixed,/mixed-signals-text-analyzer,editorial seed,65,10,,,,not queried,available
+is he interested or just lonely,mixed,/mixed-signals-text-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+he texts at night only,mixed,/mixed-signals-text-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+he leaves me on read,mixed,/mixed-signals-text-analyzer,editorial seed,65,30,,LOW,0,not queried,available
+he leaves me on delivered,mixed,/mixed-signals-text-analyzer,editorial seed,65,10,,LOW,0,not queried,available
+ghosting or just busy,mixed,/mixed-signals-text-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+why does he ignore my texts,mixed,/mixed-signals-text-analyzer,editorial seed,65,30,,LOW,4,not queried,available
+situationship,situationship,/situationship-analyzer,editorial seed,30,74000,0.73,LOW,2,not queried,available
+situationship analyzer,situationship,/situationship-analyzer,editorial seed,95,10,,LOW,0,not queried,available
+situationship quiz,situationship,/situationship-analyzer,editorial seed,45,50,,LOW,0,not queried,available
+situationship test,situationship,/situationship-analyzer,editorial seed,45,20,,LOW,2,not queried,available
+am i in a situationship,situationship,/situationship-analyzer,editorial seed,65,210,0.11,LOW,8,not queried,available
+signs of a situationship,situationship,/situationship-analyzer,editorial seed,65,110,0.05,LOW,14,not queried,available
+situationship texting,situationship,/situationship-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+situationship vs relationship,situationship,/situationship-analyzer,editorial seed,65,1000,0.03,LOW,10,not queried,available
+is my situationship going nowhere,situationship,/situationship-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+signs a situationship is ending,situationship,/situationship-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+does my situationship like me,situationship,/situationship-analyzer,editorial seed,65,20,,LOW,2,not queried,available
+why wont he commit,situationship,/situationship-analyzer,editorial seed,65,40,,LOW,3,not queried,available
+is he serious about me,situationship,/situationship-analyzer,editorial seed,65,90,0.04,LOW,3,not queried,available
+does he want a relationship,situationship,/situationship-analyzer,editorial seed,65,70,0.03,LOW,1,not queried,available
+situationship red flags,situationship,/situationship-analyzer,editorial seed,65,10,,LOW,10,not queried,available
+situationship communication,situationship,/situationship-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+one sided situationship,situationship,/situationship-analyzer,editorial seed,65,50,,LOW,0,not queried,available
+situationship boundaries,situationship,/situationship-analyzer,editorial seed,65,20,,LOW,0,not queried,available
+define the relationship,situationship,/situationship-analyzer,editorial seed,30,4400,0.02,LOW,0,not queried,available
+where is this relationship going,situationship,/situationship-analyzer,editorial seed,65,70,,LOW,0,not queried,available
+breadcrumbing,breadcrumb,/breadcrumbing-test,editorial seed,30,22200,0.26,LOW,9,not queried,available
+breadcrumbing test,breadcrumb,/breadcrumbing-test,editorial seed,45,10,,LOW,0,not queried,available
+breadcrumbing quiz,breadcrumb,/breadcrumbing-test,editorial seed,45,10,,LOW,0,not queried,available
+breadcrumbing texts,breadcrumb,/breadcrumbing-test,editorial seed,65,140,0.02,LOW,3,not queried,available
+breadcrumbing examples,breadcrumb,/breadcrumbing-test,editorial seed,65,720,0.05,LOW,4,not queried,available
+is he breadcrumbing me,breadcrumb,/breadcrumbing-test,editorial seed,65,50,0.09,LOW,9,not queried,available
+signs of breadcrumbing,breadcrumb,/breadcrumbing-test,editorial seed,65,140,0.02,LOW,12,not queried,available
+breadcrumbing vs genuine interest,breadcrumb,/breadcrumbing-test,editorial seed,65,10,,LOW,0,not queried,available
+breadcrumbing vs ghosting,breadcrumb,/breadcrumbing-test,editorial seed,65,,,,,not queried,unavailable (not zero)
+breadcrumbing or busy,breadcrumb,/breadcrumbing-test,editorial seed,65,,,,,not queried,unavailable (not zero)
+how to respond to breadcrumbing,breadcrumb,/breadcrumbing-test,editorial seed,65,170,0.05,LOW,11,not queried,available
+he keeps coming back but wont commit,breadcrumb,/breadcrumbing-test,editorial seed,65,,,,,not queried,unavailable (not zero)
+he sends random texts,breadcrumb,/breadcrumbing-test,editorial seed,65,10,,,,not queried,available
+he texts but doesnt follow through,breadcrumb,/breadcrumbing-test,editorial seed,65,,,,,not queried,unavailable (not zero)
+orbiting dating,breadcrumb,/breadcrumbing-test,editorial seed,65,140,,LOW,1,not queried,available
+benching dating,breadcrumb,/breadcrumbing-test,editorial seed,65,110,0.03,LOW,4,not queried,available
+he keeps me as an option,breadcrumb,/breadcrumbing-test,editorial seed,65,,,,,not queried,unavailable (not zero)
+ex text analyzer,ex,/ex-text-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+why is my ex texting me,ex,/ex-text-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+does my ex want me back,ex,/ex-text-analyzer,editorial seed,65,110,2.43,LOW,11,not queried,available
+signs your ex wants you back,ex,/ex-text-analyzer,editorial seed,65,390,0.2,LOW,13,not queried,available
+ex reaching out,ex,/ex-text-analyzer,editorial seed,65,90,,LOW,0,not queried,available
+ex text messages,ex,/ex-text-analyzer,editorial seed,65,90,,LOW,0,not queried,available
+ex texts after no contact,ex,/ex-text-analyzer,editorial seed,65,10,,LOW,0,not queried,available
+ex breadcrumbing,ex,/ex-text-analyzer,editorial seed,65,50,,LOW,1,not queried,available
+is my ex testing me,ex,/ex-text-analyzer,editorial seed,45,10,,LOW,0,not queried,available
+does my ex miss me,ex,/ex-text-analyzer,editorial seed,65,390,7.57,LOW,4,not queried,available
+ex checking in,ex,/ex-text-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+ex says he misses me,ex,/ex-text-analyzer,editorial seed,65,20,,LOW,0,not queried,available
+ex wants to be friends,ex,/ex-text-analyzer,editorial seed,65,210,1.13,LOW,3,not queried,available
+ex hot and cold,ex,/ex-text-analyzer,editorial seed,65,50,,LOW,0,not queried,available
+should i reply to my ex,ex,/ex-text-analyzer,editorial seed,65,20,,LOW,0,not queried,available
+ex texts then disappears,ex,/ex-text-analyzer,editorial seed,65,10,,,,not queried,available
+ex says hey,ex,/ex-text-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+ex drunk texting,ex,/ex-text-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+ex apologizes over text,ex,/ex-text-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+whatsapp chat analyzer,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,40,1.32,LOW,4,not queried,available
+whatsapp relationship analyzer,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+whatsapp chat analysis,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,10,,LOW,2,not queried,available
+whatsapp chat statistics,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,90,,LOW,0,not queried,available
+whatsapp conversation analyzer,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,10,,,,not queried,available
+whatsapp love analyzer,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+whatsapp text analyzer,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,10,,,,not queried,available
+whatsapp chat insights,whatsapp,/whatsapp-relationship-analyzer,editorial seed,65,,,,,not queried,unavailable (not zero)
+whatsapp chat sentiment analysis,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,10,,LOW,0,not queried,available
+whatsapp chat export analysis,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+whatsapp relationship analysis,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+analyze whatsapp chat online,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+whatsapp chat analyzer privacy,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+export whatsapp chat,whatsapp,/whatsapp-relationship-analyzer,editorial seed,65,720,,LOW,2,not queried,available
+who texts first,initiation,/tools/who-texts-first,editorial seed,65,30,,LOW,0,not queried,available
+who texts first calculator,initiation,/tools/who-texts-first,editorial seed,95,,,,,not queried,unavailable (not zero)
+who texts more,initiation,/tools/who-texts-first,editorial seed,65,,,,,not queried,unavailable (not zero)
+who texts more calculator,initiation,/tools/who-texts-first,editorial seed,95,,,,,not queried,unavailable (not zero)
+who initiates conversation,initiation,/tools/who-texts-first,editorial seed,65,,,,,not queried,unavailable (not zero)
+texting effort calculator,initiation,/tools/who-texts-first,editorial seed,95,,,,,not queried,unavailable (not zero)
+texting balance,initiation,/tools/who-texts-first,editorial seed,65,,,,,not queried,unavailable (not zero)
+one sided texting,initiation,/tools/who-texts-first,editorial seed,65,50,,LOW,0,not queried,available
+i always text first,initiation,/tools/who-texts-first,editorial seed,65,70,,LOW,0,not queried,available
+he never texts first,initiation,/tools/who-texts-first,editorial seed,65,20,,LOW,0,not queried,available
+should i stop texting first,initiation,/tools/who-texts-first,editorial seed,65,20,,LOW,0,not queried,available
+why do i always initiate conversations,initiation,/tools/who-texts-first,editorial seed,65,,,,,not queried,unavailable (not zero)
+he replies but never initiates,initiation,/tools/who-texts-first,editorial seed,65,,,,,not queried,unavailable (not zero)
+double texting,initiation,/tools/who-texts-first,editorial seed,65,2900,0.03,LOW,1,not queried,available
+should i text him first,initiation,/tools/who-texts-first,editorial seed,65,320,0.03,LOW,5,not queried,available
+equal effort in texting,initiation,/tools/who-texts-first,editorial seed,65,,,,,not queried,unavailable (not zero)
+whatsapp message counter,initiation,/tools/who-texts-first,editorial seed,65,20,,LOW,0,not queried,available
+reply time calculator,reply,/tools/reply-time-calculator,editorial seed,95,,,,,not queried,unavailable (not zero)
+response time calculator,reply,/tools/reply-time-calculator,editorial seed,30,40,,LOW,0,not queried,available
+average reply time,reply,/tools/reply-time-calculator,editorial seed,65,10,,LOW,0,not queried,available
+text response time,reply,/tools/reply-time-calculator,editorial seed,65,30,,LOW,0,not queried,available
+whatsapp reply time,reply,/tools/reply-time-calculator,editorial seed,65,,,,,not queried,unavailable (not zero)
+how long should he take to reply,reply,/tools/reply-time-calculator,editorial seed,65,,,,,not queried,unavailable (not zero)
+slow replies,reply,/tools/reply-time-calculator,editorial seed,65,40,,LOW,0,not queried,available
+fast replies,reply,/tools/reply-time-calculator,editorial seed,65,110,,LOW,0,not queried,available
+he takes hours to reply,reply,/tools/reply-time-calculator,editorial seed,65,30,,LOW,0,not queried,available
+he takes days to reply,reply,/tools/reply-time-calculator,editorial seed,65,10,,LOW,0,not queried,available
+texting response time and interest,reply,/tools/reply-time-calculator,editorial seed,65,,,,,not queried,unavailable (not zero)
+average text response time dating,reply,/tools/reply-time-calculator,editorial seed,65,,,,,not queried,unavailable (not zero)
+how long to wait for a text back,reply,/tools/reply-time-calculator,editorial seed,65,20,,LOW,1,not queried,available
+why does he take so long to reply,reply,/tools/reply-time-calculator,editorial seed,65,20,,LOW,0,not queried,available
+he replies fast but short,reply,/tools/reply-time-calculator,editorial seed,65,0,,,,not queried,available
+left on read meaning,reply,/tools/reply-time-calculator,editorial seed,65,1000,0.33,LOW,6,not queried,available
+imessage text analyzer,platform,/analyze,editorial seed,65,,,,,not queried,unavailable (not zero)
+imessage relationship analyzer,platform,/analyze,editorial seed,65,,,,,not queried,unavailable (not zero)
+instagram dm analyzer,platform,/analyze,editorial seed,65,10,,LOW,14,not queried,available
+instagram relationship analyzer,platform,/analyze,editorial seed,65,,,,,not queried,unavailable (not zero)
+messenger chat analyzer,platform,/analyze,editorial seed,65,10,,,,not queried,available
+telegram chat analyzer,platform,/analyze,editorial seed,65,10,,LOW,0,not queried,available
+paste text messages analyzer,platform,/analyze,editorial seed,65,,,,,not queried,unavailable (not zero)
+copy text messages for analysis,platform,/analyze,editorial seed,65,,,,,not queried,unavailable (not zero)
+relationship text analyzer online,home,/,editorial seed,95,,,,,not queried,unavailable (not zero)
+relationship text analyzer free,home,/,editorial seed,95,,,,,not queried,unavailable (not zero)
+ai relationship text analysis,home,/,editorial seed,95,,,,,not queried,unavailable (not zero)
+dating text analyzer free,home,/,editorial seed,95,,,,,not queried,unavailable (not zero)
+text analyzer for relationships,home,/,editorial seed,95,,,,,not queried,unavailable (not zero)
+does he like me text analyzer,interest,/does-he-like-me-text-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+does he like me text analysis,interest,/does-he-like-me-text-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+does he like me text analyzer free,interest,/does-he-like-me-text-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+mixed signals analyzer,mixed,/mixed-signals-text-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+mixed signals text analysis,mixed,/mixed-signals-text-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+mixed signals in dating,mixed,/mixed-signals-text-analyzer,editorial seed,65,40,0.03,LOW,6,not queried,available
+mixed signals in a relationship,mixed,/mixed-signals-text-analyzer,editorial seed,65,90,,LOW,1,not queried,available
+whatsapp chat analyzer online,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,10,,,,not queried,available
+whatsapp relationship analyzer free,whatsapp,/whatsapp-relationship-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+analyze ex texts,ex,/ex-text-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+ex text analysis,ex,/ex-text-analyzer,editorial seed,95,,,,,not queried,unavailable (not zero)
+conversation initiation calculator,initiation,/tools/who-texts-first,editorial seed,95,,,,,not queried,unavailable (not zero)
+who starts conversations more,initiation,/tools/who-texts-first,editorial seed,65,,,,,not queried,unavailable (not zero)
+who texts first analyzer,initiation,/tools/who-texts-first,editorial seed,95,,,,,not queried,unavailable (not zero)
+text reply time calculator,reply,/tools/reply-time-calculator,editorial seed,95,,,,,not queried,unavailable (not zero)
+whatsapp response time calculator,reply,/tools/reply-time-calculator,editorial seed,95,,,,,not queried,unavailable (not zero)
+whatsapp reply time calculator,reply,/tools/reply-time-calculator,editorial seed,95,,,,,not queried,unavailable (not zero)
+ai relationship analysis,home,/,Google autocomplete: ai relationship analyzer,95,20,5.45,LOW,14,not queried,available
+do they like me test,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me test,45,320,,LOW,1,not queried,available
+dry at texting,losing,/is-he-losing-interest,Google autocomplete: dry texting a,65,,,,,not queried,unavailable (not zero)
+ghosting vs busy,mixed,/mixed-signals-text-analyzer,Google autocomplete: ghosting or just busy,65,,,,,not queried,unavailable (not zero)
+situationship advice,situationship,/situationship-analyzer,Google autocomplete: situationship a,65,30,,LOW,9,not queried,available
+breadcrumbing husband,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing h,65,10,,LOW,2,not queried,available
+checking ex instagram,ex,/ex-text-analyzer,Google autocomplete: ex checking in,65,,,,,not queried,unavailable (not zero)
+whatsapp chat data,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics,65,10,,,,not queried,available
+count whatsapp messages,initiation,/tools/who-texts-first,Google autocomplete: whatsapp message counter w,65,20,,LOW,0,not queried,available
+average response time,reply,/tools/reply-time-calculator,Google autocomplete: average reply time,30,140,,LOW,0,not queried,available
+facebook chat analyzer,platform,/analyze,Google autocomplete: messenger chat analyzer,65,10,,,,not queried,available
+analyse text messages,home,/,Google autocomplete: analyze text messages,95,320,1.87,LOW,2,not queried,available
+does he like me ai,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me a,65,40,,LOW,0,not queried,available
+dry texting examples,losing,/is-he-losing-interest,Google autocomplete: dry texting,65,320,,LOW,0,not queried,available
+inconsistent texting dating,mixed,/mixed-signals-text-analyzer,Google autocomplete: inconsistent texting,65,,,,,not queried,unavailable (not zero)
+situationship ai,situationship,/situationship-analyzer,Google autocomplete: situationship a,65,10,,LOW,6,not queried,available
+breadcrumbing meaning,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing,65,18100,0.2,LOW,9,not queried,available
+ex breadcrumbing examples,ex,/ex-text-analyzer,Google autocomplete: ex breadcrumbing,65,10,,LOW,0,not queried,available
+whatsapp chat stats,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics,95,90,,LOW,0,not queried,available
+double texting him,initiation,/tools/who-texts-first,Google autocomplete: double texting h,65,,,,,not queried,unavailable (not zero)
+fast replies meaning,reply,/tools/reply-time-calculator,Google autocomplete: fast replies,65,20,,LOW,0,not queried,available
+imessage text analysis,platform,/analyze,Google autocomplete: imessage text analyzer,65,,,,,not queried,unavailable (not zero)
+analyze texts ai,home,/,Google autocomplete: texting analysis a,95,,,,,not queried,unavailable (not zero)
+does he like me back,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me,65,260,0.49,LOW,1,not queried,available
+dry texting help,losing,/is-he-losing-interest,Google autocomplete: dry texting h,65,,,,,not queried,unavailable (not zero)
+inconsistent texting meaning,mixed,/mixed-signals-text-analyzer,Google autocomplete: inconsistent texting,65,10,,LOW,0,not queried,available
+situationship app,situationship,/situationship-analyzer,Google autocomplete: situationship a,65,40,5.68,LOW,21,not queried,available
+breadcrumbing someone,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing,65,480,0.04,LOW,16,not queried,available
+ex breadcrumbing me,ex,/ex-text-analyzer,Google autocomplete: ex breadcrumbing,65,10,,LOW,0,not queried,available
+whatsapp conversation statistics,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics,65,,,,,not queried,unavailable (not zero)
+double texting hinge,initiation,/tools/who-texts-first,Google autocomplete: double texting h,65,70,,LOW,0,not queried,available
+fast reply whatsapp,reply,/tools/reply-time-calculator,Google autocomplete: fast replies w,65,10,,,,not queried,available
+imessage text history,platform,/analyze,Google autocomplete: imessage text analyzer,65,10,4.83,LOW,3,not queried,available
+analyze your texts,home,/,Google autocomplete: analyze his texts,95,,,,,not queried,unavailable (not zero)
+does he love me test,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me test,45,590,1.75,LOW,4,not queried,available
+dry texting hinge,losing,/is-he-losing-interest,Google autocomplete: dry texting h,65,,,,,not queried,unavailable (not zero)
+inconsistent texting patterns,mixed,/mixed-signals-text-analyzer,Google autocomplete: inconsistent texting,65,,,,,not queried,unavailable (not zero)
+situationship application,situationship,/situationship-analyzer,Google autocomplete: situationship a,65,40,5.68,LOW,21,not queried,available
+benching dating app,breadcrumb,/breadcrumbing-test,Google autocomplete: benching dating,65,,,,,not queried,unavailable (not zero)
+ex breadcrumbing meaning,ex,/ex-text-analyzer,Google autocomplete: ex breadcrumbing,65,,,,,not queried,unavailable (not zero)
+whatsapp message analyzer,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp conversation analyzer,95,10,,LOW,29,not queried,available
+double texting meaning,initiation,/tools/who-texts-first,Google autocomplete: double texting,65,1300,0.05,LOW,1,not queried,available
+fast response whatsapp,reply,/tools/reply-time-calculator,Google autocomplete: fast replies w,65,,,,,not queried,unavailable (not zero)
+instagram dm analysis,platform,/analyze,Google autocomplete: instagram dm analyzer,65,10,,LOW,0,not queried,available
+chat analyse ai,home,/,Google autocomplete: chat analysis ai,95,10,,,,not queried,available
+does my crush hate me,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me h,65,20,,LOW,0,not queried,available
+dry texting meaning,losing,/is-he-losing-interest,Google autocomplete: dry texting,65,1300,,LOW,0,not queried,available
+inconsistent with texting,mixed,/mixed-signals-text-analyzer,Google autocomplete: inconsistent texting w,65,,,,,not queried,unavailable (not zero)
+situationship awareness,situationship,/situationship-analyzer,Google autocomplete: situationship a,65,10,,LOW,1,not queried,available
+benching dating meaning,breadcrumb,/breadcrumbing-test,Google autocomplete: benching dating,65,10,,LOW,4,not queried,available
+ex breadcrumbing you,ex,/ex-text-analyzer,Google autocomplete: ex breadcrumbing,65,,,,,not queried,unavailable (not zero)
+whatsapp messages statistics,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics,65,,,,,not queried,unavailable (not zero)
+double texting works,initiation,/tools/who-texts-first,Google autocomplete: double texting w,65,,,,,not queried,unavailable (not zero)
+hate slow replies,reply,/tools/reply-time-calculator,Google autocomplete: slow replies h,65,10,,LOW,0,not queried,available
+messenger chat analysis,platform,/analyze,Google autocomplete: messenger chat analyzer,65,10,,,,not queried,available
+chat analyze ai,home,/,Google autocomplete: chat analysis ai,95,10,,,,not queried,available
+he's not interested in me,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me,65,20,0.04,LOW,7,not queried,available
+dry texting why,losing,/is-he-losing-interest,Google autocomplete: dry texting w,65,,,,,not queried,unavailable (not zero)
+mixed signals meaning,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals,65,1300,0.04,LOW,1,not queried,available
+situationship heartbreak,situationship,/situationship-analyzer,Google autocomplete: situationship h,65,20,,LOW,0,not queried,available
+benching dating slang,breadcrumb,/breadcrumbing-test,Google autocomplete: benching dating,65,,,,,not queried,unavailable (not zero)
+ex said hey,ex,/ex-text-analyzer,Google autocomplete: ex says hey,65,,,,,not queried,unavailable (not zero)
+whatsapp text analysis,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp text analyzer,95,10,,,,not queried,available
+one way texting,initiation,/tools/who-texts-first,Google autocomplete: one sided texting,65,30,18.64,LOW,33,not queried,available
+slow replies hinge,reply,/tools/reply-time-calculator,Google autocomplete: slow replies h,65,,,,,not queried,unavailable (not zero)
+telegram chat analysis,platform,/analyze,Google autocomplete: telegram chat analyzer,65,10,,LOW,0,not queried,available
+chat analyzer ai,home,/,Google autocomplete: conversation analyzer a,95,10,13.51,MEDIUM,43,not queried,available
+is he into me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he into me,45,90,,LOW,0,not queried,available
+dry texting words,losing,/is-he-losing-interest,Google autocomplete: dry texting w,65,70,,LOW,0,not queried,available
+mixed signals why,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals w,65,,,,,not queried,unavailable (not zero)
+situationship hell,situationship,/situationship-analyzer,Google autocomplete: situationship h,65,10,,LOW,0,not queried,available
+benching dating term,breadcrumb,/breadcrumbing-test,Google autocomplete: benching dating,65,10,,LOW,4,not queried,available
+checking in with ex,ex,/ex-text-analyzer,Google autocomplete: ex checking in w,65,,,,,not queried,unavailable (not zero)
+export whatsapp chat automatically,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat a,65,,,,,not queried,unavailable (not zero)
+whatsapp message count,initiation,/tools/who-texts-first,Google autocomplete: whatsapp message counter,65,20,,LOW,0,not queried,available
+slow replies meaning,reply,/tools/reply-time-calculator,Google autocomplete: slow replies,65,10,,LOW,0,not queried,available
+telegram chat parser,platform,/analyze,Google autocomplete: telegram chat analyzer,65,10,,,,not queried,available
+chat analyzer app,home,/,Google autocomplete: conversation analyzer a,95,10,,LOW,6,not queried,available
+signs he's just being nice,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he just being nice,65,20,,LOW,4,not queried,available
+he's texting less,losing,/is-he-losing-interest,Google autocomplete: why is he texting less,65,10,,LOW,0,not queried,available
+acts interested then disappears,mixed,/mixed-signals-text-analyzer,Google autocomplete: he acts interested then disappears,65,,,,,not queried,unavailable (not zero)
+situationship help,situationship,/situationship-analyzer,Google autocomplete: situationship h,65,10,,LOW,1,not queried,available
+benching dating trend,breadcrumb,/breadcrumbing-test,Google autocomplete: benching dating,65,10,0.05,LOW,12,not queried,available
+crazy ex text messages,ex,/ex-text-analyzer,Google autocomplete: ex text messages,65,20,,LOW,0,not queried,available
+export whatsapp chat history,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat,65,20,,LOW,3,not queried,available
+who starts conversation,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation,65,,,,,not queried,unavailable (not zero)
+texting response time,reply,/tools/reply-time-calculator,Google autocomplete: text response time a,65,30,,LOW,0,not queried,available
+text messages analyzer,platform,/analyze,Google autocomplete: imessage text analyzer,65,,,,,not queried,unavailable (not zero)
+chat analyzer whatsapp,home,/,Google autocomplete: conversation analyzer w,95,10,,,,not queried,available
+does he actually like me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me quiz a,45,90,,LOW,4,not queried,available
+slow fade meaning,losing,/is-he-losing-interest,Google autocomplete: slow fade texting,65,170,,LOW,3,not queried,available
+guy inconsistent with texting,mixed,/mixed-signals-text-analyzer,Google autocomplete: inconsistent texting w,65,,,,,not queried,unavailable (not zero)
+situationship meaning,situationship,/situationship-analyzer,Google autocomplete: situationship,65,40500,0.04,LOW,5,not queried,available
+benching definition dating,breadcrumb,/breadcrumbing-test,Google autocomplete: benching dating,65,,,,,not queried,unavailable (not zero)
+deleting ex text messages,ex,/ex-text-analyzer,Google autocomplete: ex text messages,65,,,,,not queried,unavailable (not zero)
+export whatsapp chat how,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat h,65,,,,,not queried,unavailable (not zero)
+double texting a guy,initiation,/tools/who-texts-first,Google autocomplete: double texting,65,50,,LOW,1,not queried,available
+acceptable text response time,reply,/tools/reply-time-calculator,Google autocomplete: text response time a,65,,,,,not queried,unavailable (not zero)
+instagram chat analyzer relationship,platform,/analyze,Google autocomplete: instagram relationship analyzer,65,10,,LOW,14,not queried,available
+conversation analyzer ai,home,/,Google autocomplete: conversation analyzer,95,10,10.64,HIGH,71,not queried,available
+does he actually love me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me quiz a,45,110,1.3,LOW,9,not queried,available
+dry texting on hinge,losing,/is-he-losing-interest,Google autocomplete: dry texting,65,,,,,not queried,unavailable (not zero)
+confusing signals from a guy,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals from a guy,65,10,,LOW,0,not queried,available
+situationship quizzes,situationship,/situationship-analyzer,Google autocomplete: situationship quiz,45,,,,,not queried,unavailable (not zero)
+breadcrumb texts meaning,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing texts,65,,,,,not queried,unavailable (not zero)
+drunk texting an ex,ex,/ex-text-analyzer,Google autocomplete: ex drunk texting a,65,10,,LOW,0,not queried,available
+export whatsapp chat iphone,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat,65,10,,LOW,6,not queried,available
+double texting hinge match,initiation,/tools/who-texts-first,Google autocomplete: double texting h,65,,,,,not queried,unavailable (not zero)
+appropriate text response time,reply,/tools/reply-time-calculator,Google autocomplete: text response time a,65,,,,,not queried,unavailable (not zero)
+telegram chat analyzer ai,platform,/analyze,Google autocomplete: telegram chat analyzer,65,,,,,not queried,unavailable (not zero)
+conversation analyzer app,home,/,Google autocomplete: conversation analyzer,95,,,,,not queried,unavailable (not zero)
+does he like me accurate quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me a,45,30,,LOW,0,not queried,available
+he text me everyday,losing,/is-he-losing-interest,Google autocomplete: he used to text me everyday,65,140,,LOW,0,not queried,available
+he is inconsistent with texting,mixed,/mixed-signals-text-analyzer,Google autocomplete: inconsistent texting w,65,10,,LOW,0,not queried,available
+situationship rules,situationship,/situationship-analyzer,Google autocomplete: situationship communication,65,170,0.01,LOW,7,not queried,available
+breadcrumbing a person,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing a,65,10,,LOW,2,not queried,available
+drunk texting ex boyfriend,ex,/ex-text-analyzer,Google autocomplete: ex drunk texting,65,,,,,not queried,unavailable (not zero)
+export whatsapp chat web,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat w,65,10,,LOW,0,not queried,available
+double texting on hinge,initiation,/tools/who-texts-first,Google autocomplete: double texting,65,170,,LOW,0,not queried,available
+average reply time hinge,reply,/tools/reply-time-calculator,Google autocomplete: average reply time h,65,,,,,not queried,unavailable (not zero)
+conversation analyzer chatgpt,home,/,Google autocomplete: conversation analyzer,95,,,,,not queried,unavailable (not zero)
+does he like me back quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me,45,480,2.66,LOW,1,not queried,available
+he's dry texting me,losing,/is-he-losing-interest,Google autocomplete: dry texting h,65,10,,LOW,0,not queried,available
+he left me on delivered,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on delivered,65,110,,LOW,0,not queried,available
+he won't commit,situationship,/situationship-analyzer,Google autocomplete: why wont he commit,65,30,,LOW,1,not queried,available
+breadcrumbing after breakup,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing a,65,50,,LOW,8,not queried,available
+drunk texting ex situationship,ex,/ex-text-analyzer,Google autocomplete: ex drunk texting,65,,,,,not queried,unavailable (not zero)
+export whatsapp chat windows,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat,65,10,,LOW,7,not queried,available
+double texting on tinder,initiation,/tools/who-texts-first,Google autocomplete: double texting,65,40,,LOW,0,not queried,available
+average reply time text,reply,/tools/reply-time-calculator,Google autocomplete: average reply time,65,,,,,not queried,unavailable (not zero)
+dating text analysis,home,/,Google autocomplete: dating text analyzer,95,,,,,not queried,unavailable (not zero)
+does he like me back test,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me test a,45,480,2.66,LOW,1,not queried,available
+one word replies hinge,losing,/is-he-losing-interest,Google autocomplete: one word replies h,65,,,,,not queried,unavailable (not zero)
+he left me on read,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read,65,480,,LOW,0,not queried,available
+is situationship good,situationship,/situationship-analyzer,Google autocomplete: situationship analyzer,65,10,,LOW,17,not queried,available
+breadcrumbing an ex,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing a,65,,,,,not queried,unavailable (not zero)
+ex boyfriend text messages,ex,/ex-text-analyzer,Google autocomplete: ex text messages,65,10,,LOW,0,not queried,available
+whatsapp chat analyse app,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat analysis a,95,,,,,not queried,unavailable (not zero)
+double texting when dating,initiation,/tools/who-texts-first,Google autocomplete: double texting w,65,,,,,not queried,unavailable (not zero)
+average reply time tinder,reply,/tools/reply-time-calculator,Google autocomplete: average reply time,65,,,,,not queried,unavailable (not zero)
+decoding guys texts,home,/,Google autocomplete: decode his texts,65,10,,LOW,0,not queried,available
+does he like me quiz accurate,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me w,45,30,,LOW,0,not queried,available
+one word reply meaning,losing,/is-he-losing-interest,Google autocomplete: one word replies,65,10,,LOW,0,not queried,available
+he only texts at night,mixed,/mixed-signals-text-analyzer,Google autocomplete: he texts at night only,65,10,,LOW,0,not queried,available
+one way situationship,situationship,/situationship-analyzer,Google autocomplete: one sided situationship,65,,,,,not queried,unavailable (not zero)
+breadcrumbing and benching,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing a,65,10,,LOW,0,not queried,available
+ex breadcrumbing and flirting,ex,/ex-text-analyzer,Google autocomplete: ex breadcrumbing,65,,,,,not queried,unavailable (not zero)
+whatsapp chat analysis app,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat analysis,95,,,,,not queried,unavailable (not zero)
+double texting when ghosted,initiation,/tools/who-texts-first,Google autocomplete: double texting w,65,,,,,not queried,unavailable (not zero)
+average response time calculator,reply,/tools/reply-time-calculator,Google autocomplete: response time calculator a,95,10,,LOW,0,not queried,available
+imessage conversation analyzer,home,/,Google autocomplete: conversation analyzer,95,,,,,not queried,unavailable (not zero)
+does he like me quiz adult,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me w,45,50,,LOW,0,not queried,available
+signs he's losing interest,losing,/is-he-losing-interest,Google autocomplete: signs he is losing interest,65,480,0.03,LOW,10,not queried,available
+he's leaving me on delivered,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on delivered,65,,,,,not queried,unavailable (not zero)
+online situationship quiz,situationship,/situationship-analyzer,Google autocomplete: situationship quiz,45,,,,,not queried,unavailable (not zero)
+breadcrumbing and ghosting,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing a,65,20,,LOW,4,not queried,available
+ex checking instagram stories,ex,/ex-text-analyzer,Google autocomplete: ex checking in,65,,,,,not queried,unavailable (not zero)
+whatsapp chat analysis online,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat analysis,95,10,1.98,LOW,25,not queried,available
+message count on whatsapp,initiation,/tools/who-texts-first,Google autocomplete: whatsapp message counter a,65,10,,LOW,0,not queried,available
+average response time formula,reply,/tools/reply-time-calculator,Google autocomplete: average reply time,65,10,,LOW,0,not queried,available
+relationship analysis ai,home,/,Google autocomplete: relationship analysis,95,20,2.02,MEDIUM,35,not queried,available
+does he like me quiz adults,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me test a,45,50,,LOW,0,not queried,available
+signs he's slow fading,losing,/is-he-losing-interest,Google autocomplete: is he slow fading,65,,,,,not queried,unavailable (not zero)
+he's leaving me on read,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read,65,10,,LOW,0,not queried,available
+setting boundaries situationship,situationship,/situationship-analyzer,Google autocomplete: situationship boundaries,65,,,,,not queried,unavailable (not zero)
+breadcrumbing dating term,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing vs genuine interest,65,50,,LOW,0,not queried,available
+ex checking on me,ex,/ex-text-analyzer,Google autocomplete: ex checking in,65,,,,,not queried,unavailable (not zero)
+whatsapp chat analysis prompt,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat analysis,95,,,,,not queried,unavailable (not zero)
+one sided friendship texting,initiation,/tools/who-texts-first,Google autocomplete: one sided texting,65,,,,,not queried,unavailable (not zero)
+average response time whatsapp,reply,/tools/reply-time-calculator,Google autocomplete: average reply time w,65,,,,,not queried,unavailable (not zero)
+relationship analysis quiz,home,/,Google autocomplete: relationship analysis,45,10,,LOW,0,not queried,available
+does he like me quiz work,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me quiz w,45,10,,LOW,0,not queried,available
+texting with dry texters,losing,/is-he-losing-interest,Google autocomplete: dry texting w,65,,,,,not queried,unavailable (not zero)
+hot and cold method texting,mixed,/mixed-signals-text-analyzer,Google autocomplete: hot and cold texting,65,,,,,not queried,unavailable (not zero)
+situationship after breakup,situationship,/situationship-analyzer,Google autocomplete: situationship a,65,20,,LOW,0,not queried,available
+breadcrumbing examples psychology,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing examples,65,,,,,not queried,unavailable (not zero)
+ex drunk texting me,ex,/ex-text-analyzer,Google autocomplete: ex drunk texting,65,,,,,not queried,unavailable (not zero)
+whatsapp chat analyzer ai,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat analyzer,95,10,,LOW,25,not queried,available
+one sided texting meaning,initiation,/tools/who-texts-first,Google autocomplete: one sided texting,65,,,,,not queried,unavailable (not zero)
+average text response time,reply,/tools/reply-time-calculator,Google autocomplete: text response time a,65,30,,LOW,0,not queried,available
+relationship analysis test,home,/,Google autocomplete: relationship analysis,45,10,,,,not queried,available
+does he love me quiz accurate,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me quiz a,45,10,,,,not queried,available
+what dry texting mean,losing,/is-he-losing-interest,Google autocomplete: dry texting w,65,10,,LOW,0,not queried,available
+hot and cold text messages,mixed,/mixed-signals-text-analyzer,Google autocomplete: hot and cold texting,65,10,,LOW,0,not queried,available
+situationship boundaries examples,situationship,/situationship-analyzer,Google autocomplete: situationship boundaries,65,,,,,not queried,unavailable (not zero)
+breadcrumbing examples text,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing examples,65,10,,LOW,0,not queried,available
+ex husband reaching out,ex,/ex-text-analyzer,Google autocomplete: ex reaching out h,65,,,,,not queried,unavailable (not zero)
+whatsapp chat analyzer app,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat analyzer,95,,,,,not queried,unavailable (not zero)
+one sided texting relationship,initiation,/tools/who-texts-first,Google autocomplete: one sided texting,65,,,,,not queried,unavailable (not zero)
+average whatsapp reply time,reply,/tools/reply-time-calculator,Google autocomplete: whatsapp reply time,65,,,,,not queried,unavailable (not zero)
+relationship conversation analyzer,home,/,Google autocomplete: conversation analyzer,95,,,,,not queried,unavailable (not zero)
+does my crush hate me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me h,45,10,,LOW,0,not queried,available
+whats a slow fade,losing,/is-he-losing-interest,Google autocomplete: is he slow fading,65,10,,LOW,0,not queried,available
+hot and cold texting behavior,mixed,/mixed-signals-text-analyzer,Google autocomplete: hot and cold texting,65,,,,,not queried,unavailable (not zero)
+situationship compatibility test,situationship,/situationship-analyzer,Google autocomplete: situationship test,45,,,,,not queried,unavailable (not zero)
+breadcrumbing in dating,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing,65,880,0.22,LOW,21,not queried,available
+ignoring ex text messages,ex,/ex-text-analyzer,Google autocomplete: ex text messages,65,10,,LOW,0,not queried,available
+whatsapp chat analyzer free,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat analyzer,95,10,4.66,LOW,20,not queried,available
+whatsapp message count iphone,initiation,/tools/who-texts-first,Google autocomplete: whatsapp message counter,65,10,,LOW,0,not queried,available
+fast replies are attractive,reply,/tools/reply-time-calculator,Google autocomplete: fast replies a,65,590,,LOW,0,not queried,available
+relationship text analysis,home,/,Google autocomplete: relationship text analyzer,95,,,,,not queried,unavailable (not zero)
+does my crush like me ai,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me,65,,,,,not queried,unavailable (not zero)
+boyfriend never asks me questions,losing,/is-he-losing-interest,Google autocomplete: he never asks me questions,65,20,,LOW,0,not queried,available
+hot and cold texting guy,mixed,/mixed-signals-text-analyzer,Google autocomplete: hot and cold texting,65,,,,,not queried,unavailable (not zero)
+situationship not texting,situationship,/situationship-analyzer,Google autocomplete: situationship texting,65,,,,,not queried,unavailable (not zero)
+breadcrumbing in friendship,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing,65,50,,LOW,1,not queried,available
+toxic ex text messages,ex,/ex-text-analyzer,Google autocomplete: ex text messages,65,,,,,not queried,unavailable (not zero)
+whatsapp chat analyzer relationship,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat analyzer,95,10,,LOW,5,not queried,available
+whatsapp message counter app,initiation,/tools/who-texts-first,Google autocomplete: whatsapp message counter,65,10,,LOW,0,not queried,available
+leave on read meaning,reply,/tools/reply-time-calculator,Google autocomplete: left on read meaning,65,260,,LOW,2,not queried,available
+text conversation analyzer,home,/,Google autocomplete: conversation analyzer,95,20,,LOW,19,not queried,available
+does my crush like me back,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me,65,1900,3.21,LOW,0,not queried,available
+dry text what to do,losing,/is-he-losing-interest,Google autocomplete: dry texting w,65,,,,,not queried,unavailable (not zero)
+hot and cold texting meaning,mixed,/mixed-signals-text-analyzer,Google autocomplete: hot and cold texting,65,,,,,not queried,unavailable (not zero)
+situationship texting less,situationship,/situationship-analyzer,Google autocomplete: situationship texting,65,,,,,not queried,unavailable (not zero)
+breadcrumbing in marriage,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing,65,140,0.47,LOW,5,not queried,available
+checking in on an ex,ex,/ex-text-analyzer,Google autocomplete: ex checking in a,65,10,,LOW,0,not queried,available
+whatsapp chat data analysis,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics a,95,10,,LOW,0,not queried,available
+whatsapp message counter iphone,initiation,/tools/who-texts-first,Google autocomplete: whatsapp message counter,65,,,,,not queried,unavailable (not zero)
+left on seen meaning,reply,/tools/reply-time-calculator,Google autocomplete: left on read meaning,65,30,,LOW,0,not queried,available
+text message analysis,home,/,Google autocomplete: text message analyzer,95,320,1.87,LOW,2,not queried,available
+does my crush like me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me w,45,2900,0.46,LOW,0,not queried,available
+dry texting after first date,losing,/is-he-losing-interest,Google autocomplete: dry texting a,65,10,,LOW,2,not queried,available
+inconsistent texting after first date,mixed,/mixed-signals-text-analyzer,Google autocomplete: inconsistent texting a,65,,,,,not queried,unavailable (not zero)
+situationship texting rules,situationship,/situationship-analyzer,Google autocomplete: situationship texting,65,,,,,not queried,unavailable (not zero)
+breadcrumbing in relationships,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing,65,390,0.49,LOW,16,not queried,available
+checking in on my ex,ex,/ex-text-analyzer,Google autocomplete: ex checking in w,65,,,,,not queried,unavailable (not zero)
+whatsapp chat history analysis,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat analyzer h,95,,,,,not queried,unavailable (not zero)
+whatsapp message counter online,initiation,/tools/who-texts-first,Google autocomplete: whatsapp message counter,65,10,,,,not queried,available
+normal reply time hinge,reply,/tools/reply-time-calculator,Google autocomplete: average reply time h,65,,,,,not queried,unavailable (not zero)
+ai conversation analyzer free,home,/,Google autocomplete: conversation analyzer a,95,,,,,not queried,unavailable (not zero)
+does my crush like me test,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me test,45,210,,LOW,0,not queried,available
+dry texting from a guy,losing,/is-he-losing-interest,Google autocomplete: dry texting a,65,,,,,not queried,unavailable (not zero)
+inconsistent texting from a guy,mixed,/mixed-signals-text-analyzer,Google autocomplete: inconsistent texting,65,20,,LOW,0,not queried,available
+situationship texting schedule,situationship,/situationship-analyzer,Google autocomplete: situationship texting,65,,,,,not queried,unavailable (not zero)
+breadcrumbing text examples,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing examples a,65,30,,LOW,1,not queried,available
+ex acting hot and cold,ex,/ex-text-analyzer,Google autocomplete: ex hot and cold,65,10,,LOW,0,not queried,available
+whatsapp chat history data,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics h,65,,,,,not queried,unavailable (not zero)
+whatsapp message word count,initiation,/tools/who-texts-first,Google autocomplete: whatsapp message counter w,65,,,,,not queried,unavailable (not zero)
+normal text response time,reply,/tools/reply-time-calculator,Google autocomplete: average text response time dating,65,,,,,not queried,unavailable (not zero)
+ai relationship argument analysis,home,/,Google autocomplete: relationship analysis a,95,,,,,not queried,unavailable (not zero)
+how does my crush like me,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me h,65,,,,,not queried,unavailable (not zero)
+dry texting in a relationship,losing,/is-he-losing-interest,Google autocomplete: dry texting a,65,,,,,not queried,unavailable (not zero)
+inconsistent texting in early dating,mixed,/mixed-signals-text-analyzer,Google autocomplete: inconsistent texting,65,,,,,not queried,unavailable (not zero)
+situationship vs dating,situationship,/situationship-analyzer,Google autocomplete: situationship vs relationship a,65,140,0.05,LOW,3,not queried,available
+breadcrumbing texts examples,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing texts,65,,,,,not queried,unavailable (not zero)
+ex breadcrumbing during no contact,ex,/ex-text-analyzer,Google autocomplete: ex breadcrumbing,65,10,,LOW,0,not queried,available
+whatsapp chat parser app,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat analyzer a,65,10,,,,not queried,available
+who initiates the conversation,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation,65,10,,LOW,0,not queried,available
+response time analysis calculator,reply,/tools/reply-time-calculator,Google autocomplete: reply time calculator a,95,,,,,not queried,unavailable (not zero)
+ai relationship chat analyzer,home,/,Google autocomplete: ai relationship analyzer,95,,,,,not queried,unavailable (not zero)
+how interested is he in me,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me h,65,10,,LOW,11,not queried,available
+dry texting what to do,losing,/is-he-losing-interest,Google autocomplete: dry texting w,65,,,,,not queried,unavailable (not zero)
+mixed messages from a guy,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals from a guy,65,10,0.06,LOW,14,not queried,available
+situationship with boundaries,situationship,/situationship-analyzer,Google autocomplete: situationship boundaries w,65,,,,,not queried,unavailable (not zero)
+breadcrumbing urban dictionary,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing,65,140,,LOW,0,not queried,available
+ex checking in after breakup,ex,/ex-text-analyzer,Google autocomplete: ex checking in,65,10,,LOW,1,not queried,available
+whatsapp chat parser website,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat analyzer w,65,,,,,not queried,unavailable (not zero)
+who should text first,initiation,/tools/who-texts-first,Google autocomplete: who texts first,65,50,,LOW,1,not queried,available
+response time calculation formula,reply,/tools/reply-time-calculator,Google autocomplete: response time calculator,65,10,,LOW,0,not queried,available
+ai relationship text analyzer,home,/,Google autocomplete: ai relationship analyzer,95,,,,,not queried,unavailable (not zero)
+is he actually interested in me,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me a,65,10,0.07,LOW,12,not queried,available
+he has stopped texting me,losing,/is-he-losing-interest,Google autocomplete: he stopped texting me h,65,10,,LOW,0,not queried,available
+mixed signals after break up,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals a,65,10,,LOW,0,not queried,available
+texting a situationship,situationship,/situationship-analyzer,Google autocomplete: situationship texting a,65,,,,,not queried,unavailable (not zero)
+breadcrumbing vs testing,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing test,45,,,,,not queried,unavailable (not zero)
+ex checking my whatsapp status,ex,/ex-text-analyzer,Google autocomplete: ex checking in w,65,10,,,,not queried,available
+whatsapp chat statistics app,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics a,95,,,,,not queried,unavailable (not zero)
+who starts a conversation,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation a,65,40,,LOW,0,not queried,available
+response time calculator online,reply,/tools/reply-time-calculator,Google autocomplete: reply time calculator,95,,,,,not queried,unavailable (not zero)
+analyze my text messages,home,/,Google autocomplete: analyze text messages,95,10,,LOW,4,not queried,available
+is he flirting or being nice,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he flirting or being friendly,65,50,0.05,LOW,9,not queried,available
+he stopped texting me goodnight,losing,/is-he-losing-interest,Google autocomplete: he stopped texting me,65,10,,LOW,0,not queried,available
+mixed signals after first date,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals a,65,10,0.11,LOW,29,not queried,available
+toxic situationship quiz,situationship,/situationship-analyzer,Google autocomplete: situationship quiz,45,,,,,not queried,unavailable (not zero)
+dating benching ghosting,breadcrumb,/breadcrumbing-test,Google autocomplete: benching dating,65,,,,,not queried,unavailable (not zero)
+ex checks in then disappears,ex,/ex-text-analyzer,Google autocomplete: ex checking in,65,,,,,not queried,unavailable (not zero)
+whatsapp chat stats app,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics,95,,,,,not queried,unavailable (not zero)
+who starts conversation hinge,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation h,65,,,,,not queried,unavailable (not zero)
+slow replies after date,reply,/tools/reply-time-calculator,Google autocomplete: slow replies a,65,,,,,not queried,unavailable (not zero)
+analyze text message conversation,home,/,Google autocomplete: analyze text messages,95,20,9.99,LOW,12,not queried,available
+is he interested in me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me,45,50,,LOW,1,not queried,available
+he takes forever to reply,losing,/is-he-losing-interest,Google autocomplete: he takes longer to reply,65,10,,LOW,0,not queried,available
+mixed signals hot and cold,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals h,65,,,,,not queried,unavailable (not zero)
+define the relationship when,situationship,/situationship-analyzer,Google autocomplete: define the relationship w,65,,,,,not queried,unavailable (not zero)
+orbiting dating meaning,breadcrumb,/breadcrumbing-test,Google autocomplete: orbiting dating,65,10,,LOW,0,not queried,available
+ex hot and cold behavior,ex,/ex-text-analyzer,Google autocomplete: ex hot and cold,65,10,,LOW,0,not queried,available
+whatsapp chat stats online,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics,95,,,,,not queried,unavailable (not zero)
+who texts first hinge,initiation,/tools/who-texts-first,Google autocomplete: who texts first h,65,,,,,not queried,unavailable (not zero)
+slow replies annoy me,reply,/tools/reply-time-calculator,Google autocomplete: slow replies a,65,10,,LOW,0,not queried,available
+analyze text messages ai,home,/,Google autocomplete: analyze text messages,95,40,5.2,MEDIUM,38,not queried,available
+is he interested in me romantically,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me,65,30,,LOW,1,not queried,available
+he's being distant with me,losing,/is-he-losing-interest,Google autocomplete: why is he being distant,65,10,,LOW,0,not queried,available
+mixed signals how to deal,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals h,65,,,,,not queried,unavailable (not zero)
+does texting ruin relationships,situationship,/situationship-analyzer,Google autocomplete: situationship texting h,65,10,,LOW,0,not queried,available
+orbiting dating psychology,breadcrumb,/breadcrumbing-test,Google autocomplete: orbiting dating,65,,,,,not queried,unavailable (not zero)
+ex hot and cold behaviour,ex,/ex-text-analyzer,Google autocomplete: ex hot and cold,65,10,,,,not queried,available
+app that analyzes text messages,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp text analyzer,95,30,9.52,LOW,11,not queried,available
+who texts who first,initiation,/tools/who-texts-first,Google autocomplete: who texts first w,65,30,,LOW,0,not queried,available
+slow replies from guy,reply,/tools/reply-time-calculator,Google autocomplete: slow replies,65,10,,LOW,0,not queried,available
+analyze text messages free,home,/,Google autocomplete: analyze text messages,95,,,,,not queried,unavailable (not zero)
+is he interested in me test,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me,45,50,,LOW,1,not queried,available
+he's not texting me anymore,losing,/is-he-losing-interest,Google autocomplete: he stopped texting me a,65,10,,LOW,2,not queried,available
+mixed signals what to do,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals w,65,10,,LOW,0,not queried,available
+friendship or situationship quiz,situationship,/situationship-analyzer,Google autocomplete: situationship quiz,45,,,,,not queried,unavailable (not zero)
+orbiting dating slang,breadcrumb,/breadcrumbing-test,Google autocomplete: orbiting dating,65,10,,LOW,0,not queried,available
+ex husband hot and cold,ex,/ex-text-analyzer,Google autocomplete: ex hot and cold h,65,,,,,not queried,unavailable (not zero)
+export whatsapp chat and media,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat a,65,,,,,not queried,unavailable (not zero)
+double texting a hinge match,initiation,/tools/who-texts-first,Google autocomplete: double texting a,65,,,,,not queried,unavailable (not zero)
+slow replies on hinge,reply,/tools/reply-time-calculator,Google autocomplete: slow replies,65,,,,,not queried,unavailable (not zero)
+analyze text messages relationship,home,/,Google autocomplete: analyze text messages,95,,,,,not queried,unavailable (not zero)
+is he just being nice quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he just being nice,45,10,,,,not queried,available
+he's taking longer to reply,losing,/is-he-losing-interest,Google autocomplete: he takes longer to reply,65,10,,,,not queried,available
+what does inconsistent texting mean,mixed,/mixed-signals-text-analyzer,Google autocomplete: inconsistent texting a,65,,,,,not queried,unavailable (not zero)
+is he serious meaning,situationship,/situationship-analyzer,Google autocomplete: is he serious about me,65,,,,,not queried,unavailable (not zero)
+orbiting dating term,breadcrumb,/breadcrumbing-test,Google autocomplete: orbiting dating,65,50,,LOW,0,not queried,available
+ex keeps drunk texting me,ex,/ex-text-analyzer,Google autocomplete: ex drunk texting,65,,,,,not queried,unavailable (not zero)
+export whatsapp chat as text,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat a,65,,,,,not queried,unavailable (not zero)
+double texting after a week,initiation,/tools/who-texts-first,Google autocomplete: double texting a,65,,,,,not queried,unavailable (not zero)
+slow reply whatsapp status,reply,/tools/reply-time-calculator,Google autocomplete: slow replies w,65,,,,,not queried,unavailable (not zero)
+best relationship analysis ai,home,/,Google autocomplete: relationship analysis a,95,,,,,not queried,unavailable (not zero)
+is it flirting or being friendly,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he flirting or being friendly,65,10,,,,not queried,available
+is he losing interest quiz,losing,/is-he-losing-interest,Google autocomplete: is he losing interest,45,50,1,LOW,8,not queried,available
+what is sending mixed signals,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals over text,65,,,,,not queried,unavailable (not zero)
+is it a situationship,situationship,/situationship-analyzer,Google autocomplete: situationship analyzer,65,50,0.03,LOW,5,not queried,available
+orbiting definition dating,breadcrumb,/breadcrumbing-test,Google autocomplete: orbiting dating,65,10,,LOW,0,not queried,available
+ex message after no contact,ex,/ex-text-analyzer,Google autocomplete: ex texts after no contact a,65,,,,,not queried,unavailable (not zero)
+export whatsapp chat as txt,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat a,65,10,,LOW,7,not queried,available
+double texting what is it,initiation,/tools/who-texts-first,Google autocomplete: double texting w,65,,,,,not queried,unavailable (not zero)
+text response time dating,reply,/tools/reply-time-calculator,Google autocomplete: text response time,65,,,,,not queried,unavailable (not zero)
+chat analysis ai app,home,/,Google autocomplete: chat analysis ai,95,,,,,not queried,unavailable (not zero)
+signs he likes me over text,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me over text,65,10,,LOW,14,not queried,available
+is he slow fading me,losing,/is-he-losing-interest,Google autocomplete: is he slow fading,65,10,,LOW,3,not queried,available
+examples of mixed signals from guys,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals from a guy h,65,10,,LOW,0,not queried,available
+one sided love situationship,situationship,/situationship-analyzer,Google autocomplete: one sided situationship,65,,,,,not queried,unavailable (not zero)
+paperclipping vs breadcrumbing,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing vs genuine interest,65,20,,LOW,0,not queried,available
+ex reaches out on holidays,ex,/ex-text-analyzer,Google autocomplete: ex reaching out h,65,10,,,,not queried,available
+export whatsapp chat on pc,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat,65,10,,LOW,10,not queried,available
+double texting when making plans,initiation,/tools/who-texts-first,Google autocomplete: double texting w,65,,,,,not queried,unavailable (not zero)
+text response time etiquette,reply,/tools/reply-time-calculator,Google autocomplete: text response time,65,140,,LOW,0,not queried,available
+chat analysis ai free,home,/,Google autocomplete: chat analysis ai,95,10,,HIGH,76,not queried,available
+signs he likes you through text,interest,/does-he-like-me-text-analyzer,Google autocomplete: signs he likes you over text,65,20,,LOW,7,not queried,available
+is he tired of me,losing,/is-he-losing-interest,Google autocomplete: is he bored of me,65,20,,LOW,3,not queried,available
+he always leaves me on read,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read a,65,10,,LOW,0,not queried,available
+one sided situationship meaning,situationship,/situationship-analyzer,Google autocomplete: one sided situationship,65,10,,LOW,0,not queried,available
+signs he's breadcrumbing,breadcrumb,/breadcrumbing-test,Google autocomplete: signs of breadcrumbing h,65,,,,,not queried,unavailable (not zero)
+ex reaches out when drunk,ex,/ex-text-analyzer,Google autocomplete: ex reaching out w,65,,,,,not queried,unavailable (not zero)
+export whatsapp chat with media,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat w,65,10,,LOW,0,not queried,available
+he doesn't text first anymore,initiation,/tools/who-texts-first,Google autocomplete: he never texts first a,65,,,,,not queried,unavailable (not zero)
+text response time meaning,reply,/tools/reply-time-calculator,Google autocomplete: text response time,65,10,,LOW,0,not queried,available
+chat analysis ai instagram,home,/,Google autocomplete: chat analysis ai,95,10,,,,not queried,available
+signs he loves you over text,interest,/does-he-like-me-text-analyzer,Google autocomplete: signs he likes you over text,65,10,,LOW,14,not queried,available
+losing interest vs losing feelings,losing,/is-he-losing-interest,Google autocomplete: is he losing interest h,65,10,,LOW,0,not queried,available
+he flirts and then pulls away,mixed,/mixed-signals-text-analyzer,Google autocomplete: he flirts then pulls away a,65,10,,,,not queried,available
+painful one sided situationship,situationship,/situationship-analyzer,Google autocomplete: one sided situationship,65,,,,,not queried,unavailable (not zero)
+another word for breadcrumbing,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing or busy,65,20,,LOW,0,not queried,available
+ex reaching out after breakup,ex,/ex-text-analyzer,Google autocomplete: ex reaching out a,65,10,0.03,LOW,12,not queried,available
+export whatsapp chat without opening,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat w,65,,,,,not queried,unavailable (not zero)
+he never texts first anymore,initiation,/tools/who-texts-first,Google autocomplete: he never texts first,65,,,,,not queried,unavailable (not zero)
+are slow replies unattractive hinge,reply,/tools/reply-time-calculator,Google autocomplete: slow replies h,65,,,,,not queried,unavailable (not zero)
+chat analysis ai relationship,home,/,Google autocomplete: chat analysis ai,95,,,,,not queried,unavailable (not zero)
+signs someone likes you over text,interest,/does-he-like-me-text-analyzer,Google autocomplete: signs he likes you over text,65,30,0.03,LOW,9,not queried,available
+one word replies from friend,losing,/is-he-losing-interest,Google autocomplete: one word replies,65,10,,LOW,0,not queried,available
+he left me on the read,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read a,65,,,,,not queried,unavailable (not zero)
+relationship vs situationship test,situationship,/situationship-analyzer,Google autocomplete: situationship test,45,,,,,not queried,unavailable (not zero)
+benching toxic dating trend,breadcrumb,/breadcrumbing-test,Google autocomplete: benching dating,65,,,,,not queried,unavailable (not zero)
+ex reaching out after years,ex,/ex-text-analyzer,Google autocomplete: ex reaching out,65,30,,LOW,0,not queried,available
+export whatsapp chat as text file,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat a,65,,,,,not queried,unavailable (not zero)
+i always text first friends,initiation,/tools/who-texts-first,Google autocomplete: i always text first,65,,,,,not queried,unavailable (not zero)
+average reply time on hinge,reply,/tools/reply-time-calculator,Google autocomplete: average reply time,65,,,,,not queried,unavailable (not zero)
+chat analysis with ai,home,/,Google autocomplete: chat analysis ai w,95,,,,,not queried,unavailable (not zero)
+why does he like me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me quiz w,45,10,,LOW,0,not queried,available
+one word replies from guys,losing,/is-he-losing-interest,Google autocomplete: one word replies,65,50,,LOW,0,not queried,available
+he only texts late at night,mixed,/mixed-signals-text-analyzer,Google autocomplete: he texts at night only,65,,,,,not queried,unavailable (not zero)
+situationship and relationship difference,situationship,/situationship-analyzer,Google autocomplete: situationship a,65,10,0.08,LOW,9,not queried,available
+breadcrumbing and ghosting meaning,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing vs ghosting,65,10,,,,not queried,available
+ex said he misses me,ex,/ex-text-analyzer,Google autocomplete: ex says he misses me,65,20,,LOW,0,not queried,available
+export whatsapp chat from desktop app,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat,65,10,,LOW,5,not queried,available
+i always text him first,initiation,/tools/who-texts-first,Google autocomplete: i always text first h,65,20,,LOW,0,not queried,available
+does text response time matter,reply,/tools/reply-time-calculator,Google autocomplete: text response time w,65,10,,LOW,0,not queried,available
+chat analyzer ai free,home,/,Google autocomplete: conversation analyzer a,95,,,,,not queried,unavailable (not zero)
+why does he love me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me quiz w,45,10,,,,not queried,available
+one word responses are rude,losing,/is-he-losing-interest,Google autocomplete: one word replies a,65,,,,,not queried,unavailable (not zero)
+he texts me only at night,mixed,/mixed-signals-text-analyzer,Google autocomplete: he texts at night only,65,,,,,not queried,unavailable (not zero)
+situationship lack of communication,situationship,/situationship-analyzer,Google autocomplete: situationship communication,65,,,,,not queried,unavailable (not zero)
+breadcrumbing and love bombing,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing a,65,10,,LOW,0,not queried,available
+ex says they miss me,ex,/ex-text-analyzer,Google autocomplete: ex says he misses me,65,,,,,not queried,unavailable (not zero)
+export whatsapp chat how to open,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat h,65,,,,,not queried,unavailable (not zero)
+i stopped texting him first,initiation,/tools/who-texts-first,Google autocomplete: should i stop texting first h,65,10,,LOW,0,not queried,available
+fast replies from a guy,reply,/tools/reply-time-calculator,Google autocomplete: fast replies,65,,,,,not queried,unavailable (not zero)
+chat analyzer ai instagram,home,/,Google autocomplete: conversation analyzer a,95,10,,,,not queried,available
+why does my crush like me,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me w,65,30,,LOW,0,not queried,available
+should he text me everyday,losing,/is-he-losing-interest,Google autocomplete: he used to text me everyday,65,10,,,,not queried,available
+he's hot and cold with texting,mixed,/mixed-signals-text-analyzer,Google autocomplete: hot and cold texting w,65,10,,LOW,0,not queried,available
+situationship or fwb quiz,situationship,/situationship-analyzer,Google autocomplete: situationship quiz,45,,,,,not queried,unavailable (not zero)
+breadcrumbing examples in friendship,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing examples,65,,,,,not queried,unavailable (not zero)
+hot and cold with ex,ex,/ex-text-analyzer,Google autocomplete: ex hot and cold w,65,,,,,not queried,unavailable (not zero)
+export whatsapp chat with one person,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat w,65,,,,,not queried,unavailable (not zero)
+should i keep texting first,initiation,/tools/who-texts-first,Google autocomplete: should i stop texting first,65,10,,LOW,2,not queried,available
+he takes ages to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes days to reply,65,10,,LOW,0,not queried,available
+chatgpt analyze text messages,home,/,Google autocomplete: analyze text messages,95,10,2.28,LOW,10,not queried,available
+why is he interested in me,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me w,65,20,,LOW,1,not queried,available
+signs boyfriend is pulling away,losing,/is-he-losing-interest,Google autocomplete: signs he is pulling away,65,10,0.05,LOW,26,not queried,available
+is he ghosting or just busy,mixed,/mixed-signals-text-analyzer,Google autocomplete: ghosting or just busy,65,10,,LOW,0,not queried,available
+situationship or relationship quiz,situationship,/situationship-analyzer,Google autocomplete: situationship quiz,45,10,,LOW,10,not queried,available
+breadcrumbing examples in relationships,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing examples,65,20,,LOW,3,not queried,available
+ignoring your ex text messages,ex,/ex-text-analyzer,Google autocomplete: ex text messages,65,10,,LOW,0,not queried,available
+export whatsapp chat with voice notes,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat w,65,,,,,not queried,unavailable (not zero)
+stop texting first and see,initiation,/tools/who-texts-first,Google autocomplete: should i stop texting first a,65,10,,,,not queried,available
+how long to text back,reply,/tools/reply-time-calculator,Google autocomplete: how long to wait for a text back w,65,10,,LOW,0,not queried,available
+relationship ai chat analyzer,home,/,Google autocomplete: relationship chat analyzer,95,,,,,not queried,unavailable (not zero)
+am i flirting or just being friendly,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he flirting or being friendly a,65,10,,LOW,3,not queried,available
+signs someone is pulling away,losing,/is-he-losing-interest,Google autocomplete: signs he is pulling away,65,20,,LOW,0,not queried,available
+is inconsistent texting a red flag,mixed,/mixed-signals-text-analyzer,Google autocomplete: inconsistent texting a,65,10,,LOW,0,not queried,available
+situationship texting every day,situationship,/situationship-analyzer,Google autocomplete: situationship texting,65,,,,,not queried,unavailable (not zero)
+breadcrumbing how to deal,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing h,65,,,,,not queried,unavailable (not zero)
+what is ghosting and breadcrumbing,ex,/ex-text-analyzer,Google autocomplete: ex breadcrumbing w,65,10,,LOW,0,not queried,available
+how many messages in whatsapp chat,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics h,65,10,,,,not queried,available
+whatsapp message counter in group,initiation,/tools/who-texts-first,Google autocomplete: whatsapp message counter,65,,,,,not queried,unavailable (not zero)
+how to calculate response time,reply,/tools/reply-time-calculator,Google autocomplete: response time calculator a,65,50,,LOW,0,not queried,available
+relationship chat analysis ai,home,/,Google autocomplete: relationship chat analyzer,95,,,,,not queried,unavailable (not zero)
+does he like me over text quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me over text,45,70,,LOW,1,not queried,available
+texting less after first date,losing,/is-he-losing-interest,Google autocomplete: he texts less after first date,65,10,,LOW,0,not queried,available
+married man flirts then pulls away,mixed,/mixed-signals-text-analyzer,Google autocomplete: he flirts then pulls away,65,,,,,not queried,unavailable (not zero)
+situationship vs a relationship,situationship,/situationship-analyzer,Google autocomplete: situationship vs relationship a,65,,,,,not queried,unavailable (not zero)
+breadcrumbing how to respond,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing h,65,10,,MEDIUM,35,not queried,available
+why ex keeps reaching out,ex,/ex-text-analyzer,Google autocomplete: ex reaching out,65,10,0.03,LOW,11,not queried,available
+how to check whatsapp chat size,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics w,65,10,,LOW,0,not queried,available
+who initiates conversation on bumble,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation,65,,,,,not queried,unavailable (not zero)
+left him on read meaning,reply,/tools/reply-time-calculator,Google autocomplete: left on read meaning h,65,10,,LOW,10,not queried,available
+relationship text analyzer ai,home,/,Google autocomplete: relationship text analyzer,95,,,,,not queried,unavailable (not zero)
+does he like me quiz long distance,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me w,45,30,,LOW,0,not queried,available
+why does he seem distant,losing,/is-he-losing-interest,Google autocomplete: why is he being distant a,65,10,,LOW,6,not queried,available
+mixed signals from a guy examples,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals from a guy,65,,,,,not queried,unavailable (not zero)
+situationship vs open relationship,situationship,/situationship-analyzer,Google autocomplete: situationship test,65,10,,LOW,0,not queried,available
+breadcrumbing how to stop,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing h,65,,,,,not queried,unavailable (not zero)
+checking in with ex after breakup,ex,/ex-text-analyzer,Google autocomplete: ex checking in w,65,,,,,not queried,unavailable (not zero)
+how to do whatsapp chat analysis,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat analysis h,95,,,,,not queried,unavailable (not zero)
+who initiates conversation on hinge,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation,65,,,,,not queried,unavailable (not zero)
+left on read meaning text,reply,/tools/reply-time-calculator,Google autocomplete: left on read meaning,65,10,,LOW,0,not queried,available
+relationship text message analyzer,home,/,Google autocomplete: relationship text analyzer,95,,,,,not queried,unavailable (not zero)
+does he like me quiz online friend,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me w,45,10,,LOW,0,not queried,available
+why he stop texting me,losing,/is-he-losing-interest,Google autocomplete: he stopped texting me w,65,10,,LOW,0,not queried,available
+mixed signals from a guy friend,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals from a guy,65,20,,LOW,0,not queried,available
+situationship vs relationship anarchy,situationship,/situationship-analyzer,Google autocomplete: situationship vs relationship,65,,,,,not queried,unavailable (not zero)
+breadcrumbing or just busy,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing or busy,65,,,,,not queried,unavailable (not zero)
+does my ex husband miss me,ex,/ex-text-analyzer,Google autocomplete: does my ex miss me h,65,10,,LOW,2,not queried,available
+how to get whatsapp chat statistics,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics h,95,10,,,,not queried,available
+who starts conversation on bumble,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation,65,10,,LOW,0,not queried,available
+normal text response time dating,reply,/tools/reply-time-calculator,Google autocomplete: average text response time dating,65,,,,,not queried,unavailable (not zero)
+text message analysis ai,home,/,Google autocomplete: text message analyzer,95,10,14.87,HIGH,86,not queried,available
+does he like me quiz over text,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me,45,70,,LOW,1,not queried,available
+why he stopped initiating texts,losing,/is-he-losing-interest,Google autocomplete: why did he stop initiating texts,65,10,,,,not queried,available
+mixed signals from a guy meaning,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals from a guy,65,,,,,not queried,unavailable (not zero)
+situationship vs relationship difference,situationship,/situationship-analyzer,Google autocomplete: situationship vs relationship,65,,,,,not queried,unavailable (not zero)
+breadcrumbing with an ex,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing w,65,,,,,not queried,unavailable (not zero)
+does my ex miss me quiz,ex,/ex-text-analyzer,Google autocomplete: does my ex miss me,45,70,0.92,LOW,3,not queried,available
+export whatsapp chat where does it go,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat w,65,,,,,not queried,unavailable (not zero)
+who starts conversation on hinge,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation,65,,,,,not queried,unavailable (not zero)
+slow replies after first date,reply,/tools/reply-time-calculator,Google autocomplete: slow replies,65,10,,LOW,0,not queried,available
+text message analysis app,home,/,Google autocomplete: text message analyzer,95,30,9.52,LOW,11,not queried,available
+does my crush like me back quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me,45,2900,0.46,LOW,0,not queried,available
+why he stopped texting me,losing,/is-he-losing-interest,Google autocomplete: he stopped texting me w,65,20,,LOW,4,not queried,available
+mixed signals what does it mean,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals w,65,,,,,not queried,unavailable (not zero)
+situationship vs relationship meaning,situationship,/situationship-analyzer,Google autocomplete: situationship vs relationship,65,20,,LOW,2,not queried,available
+dating terms ghosting breadcrumbing,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing vs ghosting,65,,,,,not queried,unavailable (not zero)
+does my ex miss me too,ex,/ex-text-analyzer,Google autocomplete: does my ex miss me,65,10,,LOW,3,not queried,available
+how to export whatsapp chat to email,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat export analysis,65,10,,LOW,0,not queried,available
+who starts conversation on tinder,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation,65,,,,,not queried,unavailable (not zero)
+slow replies after second date,reply,/tools/reply-time-calculator,Google autocomplete: slow replies a,65,,,,,not queried,unavailable (not zero)
+text message analysis free,home,/,Google autocomplete: text message interpretation,95,,,,,not queried,unavailable (not zero)
+does my crush like me back test,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me,45,2900,0.46,LOW,0,not queried,available
+why is he acting distant,losing,/is-he-losing-interest,Google autocomplete: why is he being distant,65,10,,LOW,0,not queried,available
+texts me but never makes plans,mixed,/mixed-signals-text-analyzer,Google autocomplete: he texts me but never makes plans,65,,,,,not queried,unavailable (not zero)
+situationship vs relationship psychology,situationship,/situationship-analyzer,Google autocomplete: situationship vs relationship,65,,,,,not queried,unavailable (not zero)
+ghosting vs inverse ghosting,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing vs ghosting,65,10,,LOW,0,not queried,available
+ex checking my whatsapp last seen,ex,/ex-text-analyzer,Google autocomplete: ex checking in w,65,10,,,,not queried,available
+how to export whatsapp chat to excel,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat export analysis,65,10,,,,not queried,available
+who texts first on bumble,initiation,/tools/who-texts-first,Google autocomplete: who texts first,65,,,,,not queried,unavailable (not zero)
+slow replies on dating apps,reply,/tools/reply-time-calculator,Google autocomplete: slow replies,65,,,,,not queried,unavailable (not zero)
+text message analyzer ai,home,/,Google autocomplete: text message analyzer,95,10,9.28,MEDIUM,36,not queried,available
+how can my crush like me back,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me h,65,10,,LOW,0,not queried,available
+why is he being cold,losing,/is-he-losing-interest,Google autocomplete: why is he being distant,65,,,,,not queried,unavailable (not zero)
+what is hot and cold texting,mixed,/mixed-signals-text-analyzer,Google autocomplete: hot and cold texting w,65,,,,,not queried,unavailable (not zero)
+situationship vs relationship quiz,situationship,/situationship-analyzer,Google autocomplete: situationship quiz,45,10,,LOW,0,not queried,available
+is he breadcrumbing quiz,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing quiz,45,,,,,not queried,unavailable (not zero)
+ex checking on me after breakup,ex,/ex-text-analyzer,Google autocomplete: ex checking in,65,,,,,not queried,unavailable (not zero)
+whatsapp export chat what does it do,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat w,65,10,,LOW,0,not queried,available
+who texts first on hinge,initiation,/tools/who-texts-first,Google autocomplete: who texts first,65,10,,LOW,0,not queried,available
+slow response or slow respond,reply,/tools/reply-time-calculator,Google autocomplete: slow replies w,65,10,,LOW,0,not queried,available
+text message analyzer app,home,/,Google autocomplete: text message analyzer,95,,,,,not queried,unavailable (not zero)
+how much does he like me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me quiz h,45,40,,LOW,0,not queried,available
+why is he losing interest,losing,/is-he-losing-interest,Google autocomplete: is he losing interest w,65,10,,LOW,0,not queried,available
+when a guy gives mixed signals,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals from a guy h,65,10,,LOW,0,not queried,available
+texting situationship happy birthday,situationship,/situationship-analyzer,Google autocomplete: situationship texting,65,,,,,not queried,unavailable (not zero)
+orbiting dating urban dictionary,breadcrumb,/breadcrumbing-test,Google autocomplete: orbiting dating,65,10,,LOW,0,not queried,available
+ex hot and cold after breakup,ex,/ex-text-analyzer,Google autocomplete: ex hot and cold,65,,,,,not queried,unavailable (not zero)
+how can i export all my whatsapp conversations,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat export analysis,65,10,4.85,LOW,25,not queried,available
+who texts first on tinder,initiation,/tools/who-texts-first,Google autocomplete: who texts first,65,10,,LOW,0,not queried,available
+what does slow replies mean,reply,/tools/reply-time-calculator,Google autocomplete: slow replies h,65,10,,LOW,0,not queried,available
+text message analyzer iphone,home,/,Google autocomplete: text message analyzer,95,10,,,,not queried,available
+how much does he like me test,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me test h,45,10,,LOW,0,not queried,available
+boyfriend never asks me any questions,losing,/is-he-losing-interest,Google autocomplete: he never asks me questions,65,,,,,not queried,unavailable (not zero)
+when he hot and cold texting,mixed,/mixed-signals-text-analyzer,Google autocomplete: hot and cold texting h,65,10,,,,not queried,available
+what are relationship boundaries,situationship,/situationship-analyzer,Google autocomplete: situationship boundaries w,65,170,0.38,LOW,20,not queried,available
+signs he's breadcrumbing you,breadcrumb,/breadcrumbing-test,Google autocomplete: signs of breadcrumbing h,65,20,0.05,LOW,11,not queried,available
+ex husband blows hot and cold,ex,/ex-text-analyzer,Google autocomplete: ex hot and cold h,65,,,,,not queried,unavailable (not zero)
+how to count whatsapp messages in a chat,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: whatsapp chat statistics a,65,10,,,,not queried,available
+why he never texts first,initiation,/tools/who-texts-first,Google autocomplete: he never texts first w,65,10,,,,not queried,available
+fast replies meaning from a guy,reply,/tools/reply-time-calculator,Google autocomplete: fast replies,65,10,,LOW,0,not queried,available
+text message analyzer online,home,/,Google autocomplete: text message analyzer,95,,,,,not queried,unavailable (not zero)
+is he actually interested in me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me a,45,,,,,not queried,unavailable (not zero)
+boyfriend never asks questions about me,losing,/is-he-losing-interest,Google autocomplete: he never asks me questions a,65,,,,,not queried,unavailable (not zero)
+when he leaves me on read,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read w,65,10,,LOW,0,not queried,available
+why won't he commit,situationship,/situationship-analyzer,Google autocomplete: why wont he commit,65,40,,LOW,3,not queried,available
+signs of breadcrumbing friendship,breadcrumb,/breadcrumbing-test,Google autocomplete: signs of breadcrumbing,65,20,,LOW,0,not queried,available
+ex husband says he misses me,ex,/ex-text-analyzer,Google autocomplete: ex says he misses me h,65,,,,,not queried,unavailable (not zero)
+whatsapp export chat will the other person know,whatsapp,/whatsapp-relationship-analyzer,Google autocomplete: export whatsapp chat w,65,10,,LOW,0,not queried,available
+why i always text first,initiation,/tools/who-texts-first,Google autocomplete: i always text first w,65,10,,LOW,0,not queried,available
+he always takes hours to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes hours to reply a,65,,,,,not queried,unavailable (not zero)
+text message meaning ai,home,/,Google autocomplete: text message interpretation a,65,,,,,not queried,unavailable (not zero)
+is he flirting or being friendly quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he flirting or being friendly,45,10,,LOW,1,not queried,available
+guy texts less after first date,losing,/is-he-losing-interest,Google autocomplete: he texts less after first date,65,10,,LOW,0,not queried,available
+when he only texts at night,mixed,/mixed-signals-text-analyzer,Google autocomplete: he texts at night only w,65,10,,LOW,0,not queried,available
+do one sided relationships work,situationship,/situationship-analyzer,Google autocomplete: one sided situationship a,65,10,0.03,LOW,12,not queried,available
+breadcrumbing or testing the waters,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing test,45,10,,LOW,0,not queried,available
+ex husband wants to be friends,ex,/ex-text-analyzer,Google autocomplete: ex wants to be friends h,65,10,,LOW,0,not queried,available
+double texting a guy on hinge,initiation,/tools/who-texts-first,Google autocomplete: double texting a,65,,,,,not queried,unavailable (not zero)
+he left me on read meaning,reply,/tools/reply-time-calculator,Google autocomplete: left on read meaning h,65,10,,LOW,0,not queried,available
+whatsapp chat analysis ai,home,/,Google autocomplete: chat analysis ai w,95,10,,,,not queried,available
+is he flirting or being nice quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he flirting or being friendly,45,10,,LOW,1,not queried,available
+guy used to text me everyday,losing,/is-he-losing-interest,Google autocomplete: he used to text me everyday,65,,,,,not queried,unavailable (not zero)
+why a married man pulls away,mixed,/mixed-signals-text-analyzer,Google autocomplete: he flirts then pulls away,65,10,,LOW,7,not queried,available
+does my situationship hate me,situationship,/situationship-analyzer,Google autocomplete: does my situationship like me h,65,,,,,not queried,unavailable (not zero)
+breadcrumbing what does it mean,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing w,65,,,,,not queried,unavailable (not zero)
+ex reached out on his birthday,ex,/ex-text-analyzer,Google autocomplete: ex reaching out h,65,,,,,not queried,unavailable (not zero)
+double texting when left on read,initiation,/tools/who-texts-first,Google autocomplete: double texting w,65,,,,,not queried,unavailable (not zero)
+he takes 12 hours to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes hours to reply,65,10,,LOW,0,not queried,available
+whatsapp chat relationship analyzer,home,/,Google autocomplete: relationship chat analyzer,95,,,,,not queried,unavailable (not zero)
+is he into me or just friendly,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he into me,65,20,0.06,LOW,14,not queried,available
+he never asks me any questions,losing,/is-he-losing-interest,Google autocomplete: he never asks me questions a,65,,,,,not queried,unavailable (not zero)
+why do guys give mixed signals,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals from a guy a,65,70,0.03,LOW,7,not queried,available
+does my situationship love me,situationship,/situationship-analyzer,Google autocomplete: does my situationship like me,65,10,,LOW,0,not queried,available
+how to deal with breadcrumbing,breadcrumb,/breadcrumbing-test,Google autocomplete: how to respond to breadcrumbing w,65,50,0.02,LOW,24,not queried,available
+ex reached out while in rebound,ex,/ex-text-analyzer,Google autocomplete: ex reaching out w,65,,,,,not queried,unavailable (not zero)
+he always replies but never initiates,initiation,/tools/who-texts-first,Google autocomplete: he replies but never initiates,65,10,,,,not queried,available
+he takes 24 hours to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes hours to reply,65,20,,LOW,0,not queried,available
+ai analyze text messages free,home,/,Google autocomplete: analyze text messages,95,,,,,not queried,unavailable (not zero)
+is he just being nice or flirting,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he just being nice,65,10,,LOW,10,not queried,available
+he never asks questions about me,losing,/is-he-losing-interest,Google autocomplete: he never asks me questions a,65,10,,LOW,0,not queried,available
+why do guys pull away suddenly,mixed,/mixed-signals-text-analyzer,Google autocomplete: he flirts then pulls away,65,50,0.13,LOW,13,not queried,available
+examples of one sided relationships,situationship,/situationship-analyzer,Google autocomplete: one sided situationship a,65,10,,LOW,7,not queried,available
+is he breadcrumbing me quiz,breadcrumb,/breadcrumbing-test,Google autocomplete: is he breadcrumbing me,45,10,,LOW,0,not queried,available
+ex reaches out when in relationship,ex,/ex-text-analyzer,Google autocomplete: ex reaching out w,65,10,,LOW,0,not queried,available
+he doesn't text after first date,initiation,/tools/who-texts-first,Google autocomplete: he never texts first a,65,,,,,not queried,unavailable (not zero)
+he takes 3 days to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes days to reply,65,,,,,not queried,unavailable (not zero)
+ai text message analyzer free,home,/,Google autocomplete: text message analyzer a,95,,,,,not queried,unavailable (not zero)
+is he not interested in me anymore,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me a,65,20,0.06,LOW,5,not queried,available
+he purposely takes long to reply,losing,/is-he-losing-interest,Google autocomplete: he takes longer to reply,65,10,,LOW,0,not queried,available
+why does he ignore my messages,mixed,/mixed-signals-text-analyzer,Google autocomplete: why does he ignore my texts a,65,,,,,not queried,unavailable (not zero)
+he's not serious about me,situationship,/situationship-analyzer,Google autocomplete: is he serious about me w,65,10,,LOW,0,not queried,available
+keeping me as an option,breadcrumb,/breadcrumbing-test,Google autocomplete: he keeps me as an option,65,,,,,not queried,unavailable (not zero)
+ex reaching out after 10 years,ex,/ex-text-analyzer,Google autocomplete: ex reaching out,65,30,,LOW,0,not queried,available
+he never texts me first anymore,initiation,/tools/who-texts-first,Google autocomplete: he never texts first a,65,,,,,not queried,unavailable (not zero)
+he takes a day to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes days to reply a,65,10,,LOW,0,not queried,available
+app to analyze text messages,home,/,Google autocomplete: analyze text messages a,95,,,,,not queried,unavailable (not zero)
+signs a guy likes you over text,interest,/does-he-like-me-text-analyzer,Google autocomplete: signs he likes you over text,65,170,0.07,LOW,12,not queried,available
+he stopped making plans with me,losing,/is-he-losing-interest,Google autocomplete: he stopped making plans,65,10,,LOW,0,not queried,available
+why he acts interested then disappears,mixed,/mixed-signals-text-analyzer,Google autocomplete: he acts interested then disappears w,65,10,,,,not queried,available
+is he serious with me,situationship,/situationship-analyzer,Google autocomplete: is he serious about me w,65,90,0.04,LOW,3,not queried,available
+signs of breadcrumbing in dating,breadcrumb,/breadcrumbing-test,Google autocomplete: signs of breadcrumbing,65,10,0.03,LOW,14,not queried,available
+ex reaching out after 2 years,ex,/ex-text-analyzer,Google autocomplete: ex reaching out a,65,,,,,not queried,unavailable (not zero)
+he replies fast but never initiates,initiation,/tools/who-texts-first,Google autocomplete: he replies but never initiates,65,,,,,not queried,unavailable (not zero)
+he takes an hour to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes hours to reply a,65,10,,LOW,0,not queried,available
+can ai analyze text messages,home,/,Google autocomplete: analyze text messages a,95,10,,LOW,3,not queried,available
+signs a guy likes you when texting,interest,/does-he-like-me-text-analyzer,Google autocomplete: signs he likes you over text w,65,10,,,,not queried,available
+he stopped messaging me as much,losing,/is-he-losing-interest,Google autocomplete: he stopped texting me a,65,10,,,,not queried,available
+why he left me on delivered,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on delivered w,65,10,,LOW,0,not queried,available
+red flags in a situationship,situationship,/situationship-analyzer,Google autocomplete: situationship red flags a,65,10,0.04,LOW,16,not queried,available
+signs of breadcrumbing in marriage,breadcrumb,/breadcrumbing-test,Google autocomplete: signs of breadcrumbing,65,20,0.26,LOW,11,not queried,available
+ex reaching out after 3 years,ex,/ex-text-analyzer,Google autocomplete: ex reaching out a,65,,,,,not queried,unavailable (not zero)
+he replies instantly but never initiates,initiation,/tools/who-texts-first,Google autocomplete: he replies but never initiates,65,,,,,not queried,unavailable (not zero)
+he took a day to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes days to reply a,65,,,,,not queried,unavailable (not zero)
+dating app text message analyzer,home,/,Google autocomplete: dating text analyzer,95,,,,,not queried,unavailable (not zero)
+signs a guy likes you while texting,interest,/does-he-like-me-text-analyzer,Google autocomplete: signs he likes you over text w,65,,,,,not queried,unavailable (not zero)
+he stopped texting me good morning,losing,/is-he-losing-interest,Google autocomplete: he stopped texting me,65,20,,LOW,0,not queried,available
+why he left me on read,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read w,65,10,,LOW,0,not queried,available
+should i end a situationship,situationship,/situationship-analyzer,Google autocomplete: signs a situationship is ending,65,10,,LOW,0,not queried,available
+what are signs of breadcrumbing,breadcrumb,/breadcrumbing-test,Google autocomplete: signs of breadcrumbing a,65,10,,LOW,7,not queried,available
+ex reaching out after 5 years,ex,/ex-text-analyzer,Google autocomplete: ex reaching out a,65,,,,,not queried,unavailable (not zero)
+how do i stop texting first,initiation,/tools/who-texts-first,Google autocomplete: should i stop texting first h,65,,,,,not queried,unavailable (not zero)
+i was left on read meaning,reply,/tools/reply-time-calculator,Google autocomplete: left on read meaning w,65,,,,,not queried,unavailable (not zero)
+have chatgpt analyze text messages,home,/,Google autocomplete: analyze text messages h,95,,,,,not queried,unavailable (not zero)
+why does my crush like me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me quiz w,45,,,,,not queried,unavailable (not zero)
+he takes too long to reply,losing,/is-he-losing-interest,Google autocomplete: he takes longer to reply,65,10,,,,not queried,available
+are they ghosting me or just busy,mixed,/mixed-signals-text-analyzer,Google autocomplete: ghosting or just busy,65,,,,,not queried,unavailable (not zero)
+signs a situationship is over,situationship,/situationship-analyzer,Google autocomplete: signs of a situationship,65,,,,,not queried,unavailable (not zero)
+what does breadcrumbing look like,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing test,65,40,0.29,MEDIUM,36,not queried,available
+ex reaching out after 6 months,ex,/ex-text-analyzer,Google autocomplete: ex reaching out,65,,,,,not queried,unavailable (not zero)
+how do i text him first,initiation,/tools/who-texts-first,Google autocomplete: should i text him first h,65,10,,LOW,0,not queried,available
+left on read meaning on whatsapp,reply,/tools/reply-time-calculator,Google autocomplete: left on read meaning w,65,,,,,not queried,unavailable (not zero)
+how to analyze text messages,home,/,Google autocomplete: analyze text messages h,95,10,,LOW,0,not queried,available
+why is he so interested in me,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me w,65,10,,LOW,0,not queried,available
+he text me everyday then stopped,losing,/is-he-losing-interest,Google autocomplete: he used to text me everyday,65,,,,,not queried,unavailable (not zero)
+ex is hot and cold with texting,mixed,/mixed-signals-text-analyzer,Google autocomplete: hot and cold texting w,65,20,,LOW,0,not queried,available
+signs a situationship likes you,situationship,/situationship-analyzer,Google autocomplete: signs of a situationship,65,,,,,not queried,unavailable (not zero)
+what is benching in dating,breadcrumb,/breadcrumbing-test,Google autocomplete: benching dating a,65,110,0.03,LOW,5,not queried,available
+ex reaching out after no contact,ex,/ex-text-analyzer,Google autocomplete: ex reaching out,65,70,,LOW,0,not queried,available
+how should i text him first,initiation,/tools/who-texts-first,Google autocomplete: should i text him first h,65,,,,,not queried,unavailable (not zero)
+what is mean time to respond,reply,/tools/reply-time-calculator,Google autocomplete: reply time calculator,65,10,,LOW,0,not queried,available
+what do his texts mean,home,/,Google autocomplete: what does his text mean,65,70,,LOW,0,not queried,available
+why is he still interested in me,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me w,65,,,,,not queried,unavailable (not zero)
+he texts me everyday all day,losing,/is-he-losing-interest,Google autocomplete: he used to text me everyday a,65,,,,,not queried,unavailable (not zero)
+guy is hot and cold with texting,mixed,/mixed-signals-text-analyzer,Google autocomplete: hot and cold texting w,65,,,,,not queried,unavailable (not zero)
+signs a situationship wants more,situationship,/situationship-analyzer,Google autocomplete: signs of a situationship w,65,,,,,not queried,unavailable (not zero)
+what is breadcrumbing in dating,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing or busy,65,1600,0.07,LOW,20,not queried,available
+ex says hi then ignores me,ex,/ex-text-analyzer,Google autocomplete: ex says hey,65,,,,,not queried,unavailable (not zero)
+i always text and call first,initiation,/tools/who-texts-first,Google autocomplete: i always text first a,65,,,,,not queried,unavailable (not zero)
+what's a normal text response time,reply,/tools/reply-time-calculator,Google autocomplete: text response time a,65,,,,,not queried,unavailable (not zero)
+whatsapp chat analyzer relationship online,home,/,Google autocomplete: relationship chat analyzer w,95,,,,,not queried,unavailable (not zero)
+will he be interested in me again,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me a,65,,,,,not queried,unavailable (not zero)
+he's not messaging me as much,losing,/is-he-losing-interest,Google autocomplete: he stopped texting me a,65,10,,LOW,0,not queried,available
+he leaves me on delivered for days,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on delivered,65,10,,LOW,0,not queried,available
+signs of a healthy situationship,situationship,/situationship-analyzer,Google autocomplete: signs of a situationship,65,,,,,not queried,unavailable (not zero)
+when he sends random texts,breadcrumb,/breadcrumbing-test,Google autocomplete: he sends random texts,65,,,,,not queried,unavailable (not zero)
+ex text back after no contact,ex,/ex-text-analyzer,Google autocomplete: ex texts after no contact,65,10,,LOW,0,not queried,available
+if i always text him first,initiation,/tools/who-texts-first,Google autocomplete: i always text first h,65,10,,LOW,0,not queried,available
+when he takes ages to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes days to reply w,65,10,,,,not queried,available
+ai analyze text messages online free,home,/,Google autocomplete: analyze text messages a,95,,,,,not queried,unavailable (not zero)
+can't tell if he likes me or not,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me test a,65,10,,LOW,6,not queried,available
+he's not texting me as much,losing,/is-he-losing-interest,Google autocomplete: he stopped texting me a,65,10,0.06,LOW,10,not queried,available
+he leaves me on delivered for hours,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on delivered,65,10,,LOW,0,not queried,available
+signs of a situationship relationship,situationship,/situationship-analyzer,Google autocomplete: signs of a situationship,65,10,,MEDIUM,37,not queried,available
+why does he breadcrumb me,breadcrumb,/breadcrumbing-test,Google autocomplete: is he breadcrumbing me,65,10,,LOW,1,not queried,available
+ex text me after no contact,ex,/ex-text-analyzer,Google autocomplete: ex texts after no contact,65,10,,LOW,0,not queried,available
+should i always text him first,initiation,/tools/who-texts-first,Google autocomplete: i always text first h,65,10,,LOW,0,not queried,available
+when he takes days to respond,reply,/tools/reply-time-calculator,Google autocomplete: he takes days to reply w,65,,,,,not queried,unavailable (not zero)
+ai app to analyze text messages,home,/,Google autocomplete: analyze text messages a,95,,,,,not queried,unavailable (not zero)
+does he like me more than a friend,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me,65,260,0.06,LOW,8,not queried,available
+he's stopped texting me as much,losing,/is-he-losing-interest,Google autocomplete: he stopped texting me a,65,10,,MEDIUM,43,not queried,available
+he leaves me on read for days,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read,65,,,,,not queried,unavailable (not zero)
+signs of a toxic situationship,situationship,/situationship-analyzer,Google autocomplete: signs of a situationship,65,10,,LOW,2,not queried,available
+why is he breadcrumbing me,breadcrumb,/breadcrumbing-test,Google autocomplete: is he breadcrumbing me w,65,20,,LOW,5,not queried,available
+ex told me he misses me,ex,/ex-text-analyzer,Google autocomplete: ex says he misses me,65,10,,,,not queried,available
+should i keep texting him first,initiation,/tools/who-texts-first,Google autocomplete: should i stop texting first,65,10,,LOW,6,not queried,available
+when he takes hours to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes hours to reply w,65,10,,LOW,0,not queried,available
+ai tool to analyze text messages,home,/,Google autocomplete: analyze text messages a,95,,,,,not queried,unavailable (not zero)
+does he like me quiz after first date,interest,/does-he-like-me-text-analyzer,Google autocomplete: does he like me quiz a,45,,,,,not queried,unavailable (not zero)
+how to tell he's losing interest,losing,/is-he-losing-interest,Google autocomplete: is he losing interest h,65,20,,LOW,10,not queried,available
+he leaves me on read for hours,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read,65,10,,LOW,0,not queried,available
+situationship how to get out,situationship,/situationship-analyzer,Google autocomplete: situationship h,65,10,,LOW,0,not queried,available
+breadcrumbing why do people do it,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing w,65,,,,,not queried,unavailable (not zero)
+ex wants to be friends again,ex,/ex-text-analyzer,Google autocomplete: ex wants to be friends a,65,10,,,,not queried,available
+should i stop texting him first,initiation,/tools/who-texts-first,Google autocomplete: should i stop texting first,65,10,,LOW,4,not queried,available
+when someone takes days to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes days to reply a,65,10,,LOW,0,not queried,available
+best ai to analyze text messages,home,/,Google autocomplete: analyze text messages a,95,,,,,not queried,unavailable (not zero)
+does my crush like me quiz for girls,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me,45,,,,,not queried,unavailable (not zero)
+is dry texting a red flag,losing,/is-he-losing-interest,Google autocomplete: dry texting a,65,20,,LOW,0,not queried,available
+he left me on delivered all day,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on delivered a,65,,,,,not queried,unavailable (not zero)
+situationship isn't communicating as much,situationship,/situationship-analyzer,Google autocomplete: situationship communication a,65,,,,,not queried,unavailable (not zero)
+he kept me as an option,breadcrumb,/breadcrumbing-test,Google autocomplete: he keeps me as an option,65,,,,,not queried,unavailable (not zero)
+ex wants to be friends why,ex,/ex-text-analyzer,Google autocomplete: ex wants to be friends w,65,,,,,not queried,unavailable (not zero)
+should i text him first again,initiation,/tools/who-texts-first,Google autocomplete: should i text him first a,65,10,,LOW,5,not queried,available
+he replies quickly but short over text,reply,/tools/reply-time-calculator,Google autocomplete: he replies fast but short,65,40,,LOW,0,not queried,available
+using ai to analyze text messages,home,/,Google autocomplete: analyze text messages a,95,,,,,not queried,unavailable (not zero)
+does my crush like me quiz for guys,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me w,45,40,,LOW,0,not queried,available
+is he bored of me quiz,losing,/is-he-losing-interest,Google autocomplete: is he bored of me,45,10,,,,not queried,available
+he left me on read after argument,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read a,65,,,,,not queried,unavailable (not zero)
+what happens in a situationship,situationship,/situationship-analyzer,Google autocomplete: situationship analyzer,65,10,0.18,LOW,7,not queried,available
+how to deal with breadcrumbing ex,breadcrumb,/breadcrumbing-test,Google autocomplete: how to respond to breadcrumbing w,65,10,,,,not queried,available
+friends ex wants to hang out,ex,/ex-text-analyzer,Google autocomplete: ex wants to be friends h,65,10,,LOW,0,not queried,available
+what do i text him first,initiation,/tools/who-texts-first,Google autocomplete: should i text him first w,65,,,,,not queried,unavailable (not zero)
+he takes a whole day to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes days to reply a,65,,,,,not queried,unavailable (not zero)
+what ai can analyze text messages,home,/,Google autocomplete: analyze text messages w,95,,,,,not queried,unavailable (not zero)
+how much does my crush like me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me h,45,20,,LOW,0,not queried,available
+is he getting bored of me,losing,/is-he-losing-interest,Google autocomplete: is he bored of me,65,20,,LOW,3,not queried,available
+he left me on read all day,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read a,65,,,,,not queried,unavailable (not zero)
+what is a situationship relationship,situationship,/situationship-analyzer,Google autocomplete: situationship vs relationship h,65,210,0.04,LOW,23,not queried,available
+how to deal with breadcrumbing friend,breadcrumb,/breadcrumbing-test,Google autocomplete: how to respond to breadcrumbing w,65,,,,,not queried,unavailable (not zero)
+is my ex over me test,ex,/ex-text-analyzer,Google autocomplete: is my ex testing me,45,,,,,not queried,unavailable (not zero)
+what if he never texts first,initiation,/tools/who-texts-first,Google autocomplete: he never texts first w,65,10,,LOW,0,not queried,available
+how long to wait to text back,reply,/tools/reply-time-calculator,Google autocomplete: how long to wait for a text back w,65,40,,LOW,0,not queried,available
+how much does my crush like me test,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me h,45,10,,LOW,0,not queried,available
+is he losing interest in me,losing,/is-he-losing-interest,Google autocomplete: is he losing interest,65,40,0.06,LOW,3,not queried,available
+he only texts me late at night,mixed,/mixed-signals-text-analyzer,Google autocomplete: he texts at night only,65,10,,LOW,0,not queried,available
+what is one sided situationship,situationship,/situationship-analyzer,Google autocomplete: one sided situationship w,65,,,,,not queried,unavailable (not zero)
+how to respond to a breadcrumb,breadcrumb,/breadcrumbing-test,Google autocomplete: how to respond to breadcrumbing a,65,,,,,not queried,unavailable (not zero)
+signs my ex is testing me,ex,/ex-text-analyzer,Google autocomplete: is my ex testing me,45,,,,,not queried,unavailable (not zero)
+what if i always text first,initiation,/tools/who-texts-first,Google autocomplete: i always text first w,65,,,,,not queried,unavailable (not zero)
+slow replies can kill a whole mood,reply,/tools/reply-time-calculator,Google autocomplete: slow replies w,65,10,,LOW,0,not queried,available
+how to know he likes you over text,interest,/does-he-like-me-text-analyzer,Google autocomplete: signs he likes you over text h,65,10,,,,not queried,available
+is he tired of me quiz,losing,/is-he-losing-interest,Google autocomplete: is he bored of me,45,10,,LOW,0,not queried,available
+if he only texts you at night,mixed,/mixed-signals-text-analyzer,Google autocomplete: he texts at night only,65,,,,,not queried,unavailable (not zero)
+what is situationship vs relationship,situationship,/situationship-analyzer,Google autocomplete: situationship vs relationship w,65,10,,LOW,0,not queried,available
+how to respond to breadcrumbing ex,breadcrumb,/breadcrumbing-test,Google autocomplete: how to respond to breadcrumbing,65,,,,,not queried,unavailable (not zero)
+text ex boyfriend after no contact,ex,/ex-text-analyzer,Google autocomplete: ex texts after no contact,65,10,,,,not queried,available
+when should i stop texting first,initiation,/tools/who-texts-first,Google autocomplete: should i stop texting first w,65,,,,,not queried,unavailable (not zero)
+what does leave them on read mean,reply,/tools/reply-time-calculator,Google autocomplete: left on read meaning a,65,10,,LOW,2,not queried,available
+is he flirting or is he being nice,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he flirting or being friendly h,65,,,,,not queried,unavailable (not zero)
+signs a boyfriend is losing interest,losing,/is-he-losing-interest,Google autocomplete: signs he is losing interest a,65,,,,,not queried,unavailable (not zero)
+is he ghosting me or just busy,mixed,/mixed-signals-text-analyzer,Google autocomplete: ghosting or just busy,65,20,0.02,LOW,5,not queried,available
+what to text your situationship,situationship,/situationship-analyzer,Google autocomplete: situationship texting h,65,10,,LOW,7,not queried,available
+how to respond to breadcrumbing text,breadcrumb,/breadcrumbing-test,Google autocomplete: breadcrumbing texts,65,30,,LOW,4,not queried,available
+when will my ex miss me,ex,/ex-text-analyzer,Google autocomplete: does my ex miss me w,65,10,,LOW,5,not queried,available
+when should i text him first,initiation,/tools/who-texts-first,Google autocomplete: should i text him first w,65,10,,LOW,6,not queried,available
+when he takes 24 hours to reply,reply,/tools/reply-time-calculator,Google autocomplete: he takes hours to reply w,65,,,,,not queried,unavailable (not zero)
+is he flirting with me or being nice,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he flirting or being friendly w,65,,,,,not queried,unavailable (not zero)
+signs a guy is pulling away,losing,/is-he-losing-interest,Google autocomplete: signs he is pulling away,65,30,0.08,LOW,7,not queried,available
+what are mixed signals from a guy,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals from a guy a,65,20,0.03,LOW,4,not queried,available
+whats a one sided situationship,situationship,/situationship-analyzer,Google autocomplete: one sided situationship a,65,,,,,not queried,unavailable (not zero)
+signs of breadcrumbing from a man,breadcrumb,/breadcrumbing-test,Google autocomplete: signs of breadcrumbing,65,,,,,not queried,unavailable (not zero)
+when your ex stops reaching out,ex,/ex-text-analyzer,Google autocomplete: ex reaching out,65,10,,LOW,0,not queried,available
+who should text first after argument,initiation,/tools/who-texts-first,Google autocomplete: who texts first a,65,,,,,not queried,unavailable (not zero)
+you always left me on read meaning,reply,/tools/reply-time-calculator,Google autocomplete: left on read meaning a,65,,,,,not queried,unavailable (not zero)
+is he interested in me after first date,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me a,65,10,,,,not queried,available
+signs he's losing interest in you,losing,/is-he-losing-interest,Google autocomplete: signs he is losing interest,65,90,0.04,LOW,8,not queried,available
+what is mixed signals from a guy,mixed,/mixed-signals-text-analyzer,Google autocomplete: mixed signals from a guy w,65,110,,LOW,3,not queried,available
+when to end a situationship,situationship,/situationship-analyzer,Google autocomplete: signs a situationship is ending,65,50,,LOW,5,not queried,available
+signs of breadcrumbing in a marriage,breadcrumb,/breadcrumbing-test,Google autocomplete: signs of breadcrumbing a,65,,,,,not queried,unavailable (not zero)
+why does my ex miss me,ex,/ex-text-analyzer,Google autocomplete: does my ex miss me w,65,30,,LOW,0,not queried,available
+who should text first after breakup,initiation,/tools/who-texts-first,Google autocomplete: who texts first a,65,10,,LOW,0,not queried,available
+he takes days to reply to my texts,reply,/tools/reply-time-calculator,Google autocomplete: he takes days to reply,65,10,,LOW,0,not queried,available
+is he interested in me or just friends,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me,65,10,0.09,LOW,14,not queried,available
+signs he's losing interest long distance,losing,/is-he-losing-interest,Google autocomplete: signs he is losing interest,65,10,,LOW,0,not queried,available
+when a man flirts then pulls away,mixed,/mixed-signals-text-analyzer,Google autocomplete: he flirts then pulls away,65,10,,,,not queried,available
+where do relationships go wrong,situationship,/situationship-analyzer,Google autocomplete: where is this relationship going w,65,,,,,not queried,unavailable (not zero)
+signs of breadcrumbing in a relationship,breadcrumb,/breadcrumbing-test,Google autocomplete: signs of breadcrumbing,65,20,0.04,LOW,20,not queried,available
+why is my ex breadcrumbing me,ex,/ex-text-analyzer,Google autocomplete: ex breadcrumbing w,65,20,,LOW,3,not queried,available
+who should text first after date,initiation,/tools/who-texts-first,Google autocomplete: who texts first a,65,10,,LOW,0,not queried,available
+he takes hours to reply but is online,reply,/tools/reply-time-calculator,Google autocomplete: he takes hours to reply,65,10,,LOW,0,not queried,available
+is he into me or am i delusional,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he into me,65,,,,,not queried,unavailable (not zero)
+signs he's losing interest talking stage,losing,/is-he-losing-interest,Google autocomplete: signs he is losing interest,65,50,0.04,LOW,3,not queried,available
+why did he leave me on read,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read w,65,70,,LOW,0,not queried,available
+where is my relationship going,situationship,/situationship-analyzer,Google autocomplete: where is this relationship going,65,20,0.04,LOW,5,not queried,available
+what is benching in a relationship,breadcrumb,/breadcrumbing-test,Google autocomplete: benching dating a,65,30,,LOW,4,not queried,available
+why is my ex testing me,ex,/ex-text-analyzer,Google autocomplete: is my ex testing me w,45,10,,LOW,0,not queried,available
+who starts a conversation like this,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation a,65,30,,LOW,0,not queried,available
+how long should it take to text back,reply,/tools/reply-time-calculator,Google autocomplete: how long to wait for a text back h,65,,,,,not queried,unavailable (not zero)
+is he into me or just being nice,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he into me,65,30,,LOW,2,not queried,available
+signs he's losing interest through text,losing,/is-he-losing-interest,Google autocomplete: signs he is losing interest,65,50,,LOW,2,not queried,available
+why does he always ignore my texts,mixed,/mixed-signals-text-analyzer,Google autocomplete: why does he ignore my texts a,65,,,,,not queried,unavailable (not zero)
+where is your relationship going,situationship,/situationship-analyzer,Google autocomplete: where is this relationship going,65,10,,,,not queried,available
+why does he send random texts,breadcrumb,/breadcrumbing-test,Google autocomplete: he sends random texts,65,,,,,not queried,unavailable (not zero)
+why my ex hot and cold,ex,/ex-text-analyzer,Google autocomplete: ex hot and cold w,65,,,,,not queried,unavailable (not zero)
+who starts a conversation on bumble,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation a,65,,,,,not queried,unavailable (not zero)
+how long to wait for a message back,reply,/tools/reply-time-calculator,Google autocomplete: how long to wait for a text back,65,,,,,not queried,unavailable (not zero)
+signs a guy is into you through text,interest,/does-he-like-me-text-analyzer,Google autocomplete: signs a guy is interested through text,65,10,,,,not queried,available
+signs he's starting to lose interest,losing,/is-he-losing-interest,Google autocomplete: signs he is losing interest a,65,10,,LOW,14,not queried,available
+why does he flirt then pull away,mixed,/mixed-signals-text-analyzer,Google autocomplete: he flirts then pulls away,65,10,,,,not queried,available
+am i in a situationship quiz,situationship,/situationship-analyzer,Google autocomplete: am i in a situationship,45,110,1.76,LOW,2,not queried,available
+how to deal with a breadcrumbing relationship,breadcrumb,/breadcrumbing-test,Google autocomplete: how to respond to breadcrumbing a,65,,,,,not queried,unavailable (not zero)
+will my ex husband miss me,ex,/ex-text-analyzer,Google autocomplete: does my ex miss me h,65,10,,LOW,2,not queried,available
+who starts a conversation on hinge,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation a,65,,,,,not queried,unavailable (not zero)
+how long to wait for a reply text,reply,/tools/reply-time-calculator,Google autocomplete: how long to wait for a text back h,65,,,,,not queried,unavailable (not zero)
+signs a guy is losing interest over text,interest,/does-he-like-me-text-analyzer,Google autocomplete: signs a guy is interested through text,65,,,,,not queried,unavailable (not zero)
+signs he's starting to pull away,losing,/is-he-losing-interest,Google autocomplete: signs he is pulling away a,65,10,,LOW,0,not queried,available
+why does he ignore my texts sometimes,mixed,/mixed-signals-text-analyzer,Google autocomplete: why does he ignore my texts,65,10,,LOW,0,not queried,available
+am i in a situationship test,situationship,/situationship-analyzer,Google autocomplete: am i in a situationship,45,,,,,not queried,unavailable (not zero)
+how to respond to a breadcrumbing text,breadcrumb,/breadcrumbing-test,Google autocomplete: how to respond to breadcrumbing a,65,,,,,not queried,unavailable (not zero)
+does my ex husband want me back,ex,/ex-text-analyzer,Google autocomplete: does my ex want me back h,65,10,,HIGH,86,not queried,available
+who starts conversation first on hinge,initiation,/tools/who-texts-first,Google autocomplete: who initiates conversation,65,,,,,not queried,unavailable (not zero)
+how long to wait to text him back,reply,/tools/reply-time-calculator,Google autocomplete: how long to wait for a text back h,65,10,,LOW,5,not queried,available
+signs a guy is not interested through text,interest,/does-he-like-me-text-analyzer,Google autocomplete: signs a guy is interested through text,65,10,,LOW,0,not queried,available
+signs your boyfriend is losing interest,losing,/is-he-losing-interest,Google autocomplete: signs he is losing interest,65,110,0.05,LOW,12,not queried,available
+why does he leave me on read,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read w,65,40,,LOW,0,not queried,available
+arya box for situationship vs relationship,situationship,/situationship-analyzer,Google autocomplete: situationship vs relationship a,65,,,,,not queried,unavailable (not zero)
+how to respond to someone breadcrumbing you,breadcrumb,/breadcrumbing-test,Google autocomplete: how to respond to breadcrumbing,65,10,,LOW,3,not queried,available
+does my ex miss me at all,ex,/ex-text-analyzer,Google autocomplete: does my ex miss me a,65,10,,LOW,0,not queried,available
+who texts first after a date,initiation,/tools/who-texts-first,Google autocomplete: who texts first,65,50,0.02,LOW,8,not queried,available
+what does it mean when left on read,reply,/tools/reply-time-calculator,Google autocomplete: left on read meaning a,65,,,,,not queried,unavailable (not zero)
+weird signs a guy likes you over text,interest,/does-he-like-me-text-analyzer,Google autocomplete: signs he likes you over text w,65,,,,,not queried,unavailable (not zero)
+slow fade on text after effects,losing,/is-he-losing-interest,Google autocomplete: slow fade texting a,65,10,,,,not queried,available
+why he only texts me at night,mixed,/mixed-signals-text-analyzer,Google autocomplete: he texts at night only w,65,10,,LOW,0,not queried,available
+define the relationship alpha x alpha,situationship,/situationship-analyzer,Google autocomplete: define the relationship a,65,,,,,not queried,unavailable (not zero)
+signs he's keeping me as an option,breadcrumb,/breadcrumbing-test,Google autocomplete: he keeps me as an option,65,,,,,not queried,unavailable (not zero)
+does my ex want me back quiz,ex,/ex-text-analyzer,Google autocomplete: does my ex want me back,45,50,1.97,LOW,3,not queried,available
+who texts who after first date,initiation,/tools/who-texts-first,Google autocomplete: who texts first w,65,10,,LOW,2,not queried,available
+what is a reasonable response time for text,reply,/tools/reply-time-calculator,Google autocomplete: text response time a,65,10,,LOW,0,not queried,available
+what are signs someone likes you over text,interest,/does-he-like-me-text-analyzer,Google autocomplete: signs he likes you over text a,65,,,,,not queried,unavailable (not zero)
+when he takes long to reply,losing,/is-he-losing-interest,Google autocomplete: he takes longer to reply w,65,10,,,,not queried,available
+why would he ignore my apology text,mixed,/mixed-signals-text-analyzer,Google autocomplete: why does he ignore my texts a,65,,,,,not queried,unavailable (not zero)
+define the relationship where to read,situationship,/situationship-analyzer,Google autocomplete: define the relationship w,65,20,,LOW,0,not queried,available
+signs of breadcrumbing in a committed relationship,breadcrumb,/breadcrumbing-test,Google autocomplete: signs of breadcrumbing a,65,,,,,not queried,unavailable (not zero)
+does my ex want me back test,ex,/ex-text-analyzer,Google autocomplete: does my ex want me back,45,10,,,,not queried,available
+why do i always text first,initiation,/tools/who-texts-first,Google autocomplete: i always text first a,65,40,,LOW,0,not queried,available
+why do avoidants take so long to reply,reply,/tools/reply-time-calculator,Google autocomplete: why does he take so long to reply a,65,20,,LOW,0,not queried,available
+what does my crush like about me quiz,interest,/does-he-like-me-text-analyzer,Google autocomplete: does my crush like me a,45,10,,LOW,0,not queried,available
+why do guys start texting less,losing,/is-he-losing-interest,Google autocomplete: why is he texting less a,65,10,,LOW,0,not queried,available
+he leaves me on delivered but is active,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on delivered,65,,,,,not queried,unavailable (not zero)
+does he want a relationship quiz,situationship,/situationship-analyzer,Google autocomplete: does he want a relationship,45,10,,LOW,0,not queried,available
+signs of breadcrumbing in a long-term relationship,breadcrumb,/breadcrumbing-test,Google autocomplete: signs of breadcrumbing,65,10,,LOW,0,not queried,available
+ex hot and cold after no contact,ex,/ex-text-analyzer,Google autocomplete: ex hot and cold,65,,,,,not queried,unavailable (not zero)
+why does he never text first,initiation,/tools/who-texts-first,Google autocomplete: he never texts first h,65,10,,LOW,0,not queried,available
+why does he take so long to respond,reply,/tools/reply-time-calculator,Google autocomplete: why does he take so long to reply,65,10,,LOW,0,not queried,available
+why is he no longer interested in me,interest,/does-he-like-me-text-analyzer,Google autocomplete: is he interested in me w,65,10,,,,not queried,available
+why do guys stop initiating texts,losing,/is-he-losing-interest,Google autocomplete: why did he stop initiating texts,65,,,,,not queried,unavailable (not zero)
+he leaves me on read all the time,mixed,/mixed-signals-text-analyzer,Google autocomplete: he leaves me on read,65,10,,LOW,0,not queried,available
+does he want a serious relationship,situationship,/situationship-analyzer,Google autocomplete: does he want a relationship,65,,,,,not queried,unavailable (not zero)
+ex keeps coming back but won t commit,breadcrumb,/breadcrumbing-test,Google autocomplete: he keeps coming back but wont commit,65,10,,LOW,0,not queried,available
+ex ignored my text after no contact,ex,/ex-text-analyzer,Google autocomplete: ex texts after no contact,65,10,,LOW,0,not queried,available
+why he never texts me first,initiation,/tools/who-texts-first,Google autocomplete: he never texts first w,65,10,,LOW,0,not queried,available

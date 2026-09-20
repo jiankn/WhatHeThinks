@@ -1,7 +1,9 @@
 "use client";
 
 /**
- * /analyze 四步流程：选问题 → 上传/粘贴 → 确认 You/Him → 分析。
+ * /analyze 三步流程：上传/粘贴 → 确认 You/Him → 分析。
+ * 不再要求上传前选题：默认 overview，落地页可带 ?q= 预设侧重点，
+ * 预览页再根据数据推荐侧重点（FocusPicker）。
  * 解析与分析在 Web Worker 里完成；只有派生数据 + 脱敏证据会上传。详见 docs/PRD.md §3。
  */
 
@@ -10,27 +12,29 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeftIcon } from "@/components/icons";
 import { track } from "@/lib/events";
 import { buildUpload } from "@/lib/report/payload";
-import type { QuestionId } from "@/lib/questions";
+import { DEFAULT_QUESTION, type QuestionId } from "@/lib/questions";
+import type { ChatPlatformId } from "@/lib/platforms";
+import { takePendingChat } from "@/lib/pending-chat";
 import { saveToken } from "@/lib/report/token-store";
 import { AnalyzingStep, type Stage } from "./steps/AnalyzingStep";
 import { IdentifyStep } from "./steps/IdentifyStep";
 import { InputStep } from "./steps/InputStep";
-import { QuestionStep } from "./steps/QuestionStep";
 import { ERROR_COPY, type ParseSummary, type WorkerIn, type WorkerOut } from "./worker-protocol";
+import { SetupChoice } from "./steps/SetupChoice";
 
-type Step = "question" | "input" | "identify" | "analyzing";
-const STEP_INDEX: Record<Step, number> = { question: 0, input: 1, identify: 2, analyzing: 3 };
+type Step = "focus" | "platform" | "input" | "identify" | "analyzing";
+const STEP_INDEX: Record<Step, number> = { focus: 0, platform: 1, input: 2, identify: 3, analyzing: 4 };
 const MAX_FILE_BYTES = 50 * 1024 * 1024;
-/** 分析动画的最短时长：分析本身很快，但太快会让结果显得廉价。 */
-const MIN_ANALYZE_MS = 2400;
+/** 给阶段状态留出可感知的反馈，同时不人为拖慢结果。 */
+const MIN_ANALYZE_MS = 1200;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export function AnalyzeFlow({ initialQuestion }: { initialQuestion: QuestionId | null }) {
+export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuestion: QuestionId | null; initialPlatform: ChatPlatformId }) {
   const router = useRouter();
-  const [step, setStep] = useState<Step>(initialQuestion ? "input" : "question");
-  const [question, setQuestion] = useState<QuestionId | null>(initialQuestion);
-  const [customQuestion, setCustomQuestion] = useState("");
+  const [step, setStep] = useState<Step>("focus");
+  const [question, setQuestion] = useState<QuestionId>(initialQuestion ?? DEFAULT_QUESTION);
+  const [platform, setPlatform] = useState<ChatPlatformId>(initialPlatform);
   const [summary, setSummary] = useState<ParseSummary | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,8 +68,12 @@ export function AnalyzeFlow({ initialQuestion }: { initialQuestion: QuestionId |
 
   const call = useCallback((msg: WorkerIn, transfer?: Transferable[]) => {
     return new Promise<WorkerOut>((resolve) => {
+      if (!worker.current) {
+        resolve({ type: "error", code: "unknown" });
+        return;
+      }
       pending.current = resolve;
-      worker.current?.postMessage(msg, transfer ?? []);
+      worker.current.postMessage(msg, transfer ?? []);
     });
   }, []);
 
@@ -91,28 +99,54 @@ export function AnalyzeFlow({ initialQuestion }: { initialQuestion: QuestionId |
       return;
     }
     setBusy(true);
-    const buf = await file.arrayBuffer();
-    handleParsed(await call({ type: "parseFile", name: file.name, buf }, [buf]));
-    setBusy(false);
+    try {
+      const buf = await file.arrayBuffer();
+      handleParsed(await call({ type: "parseFile", name: file.name, buf }, [buf]));
+    } catch {
+      setError("We couldn't read that file. Try exporting the chat again, without media.");
+    } finally {
+      setBusy(false);
+    }
   };
+
+  // 落地页上已经选好文件：直接接着解析，用户落在"哪个是你"这一步。
+  // 延迟到当前挂载稳定后再取出，避免开发模式 StrictMode 的首次试运行提前消费内容。
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const handoff = takePendingChat();
+      if (handoff?.kind === "file") void onFile(handoff.file);
+      if (handoff?.kind === "text") void onPaste(handoff.text);
+    }, 0);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onPaste = async (text: string) => {
     setError(null);
     setBusy(true);
-    handleParsed(await call({ type: "parseText", text }));
-    setBusy(false);
+    try {
+      handleParsed(await call({ type: "parseText", text }));
+    } catch {
+      setError("We couldn't read that text. Check the format and try again.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const onDateOrder = async (dateOrder: "MDY" | "DMY") => {
     setBusy(true);
-    const res = await call({ type: "reparse", dateOrder });
-    if (res.type === "parsed") setSummary(res.summary);
-    setBusy(false);
+    try {
+      const res = await call({ type: "reparse", dateOrder });
+      if (res.type === "parsed") setSummary(res.summary);
+      else if (res.type === "error") setError(ERROR_COPY[res.code]);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const upload = async (analysis: Extract<WorkerOut, { type: "analyzed" }>["analysis"]) => {
     const { you, him } = pair.current!;
-    const payload = buildUpload(analysis, { question: question!, customQuestion, youName: you, himName: him });
+    const payload = buildUpload(analysis, { question, youName: you, himName: him });
     const res = await fetch("/api/reports", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -141,13 +175,19 @@ export function AnalyzeFlow({ initialQuestion }: { initialQuestion: QuestionId |
       setStep("identify");
       return;
     }
-    if (res.type !== "analyzed") return;
+    if (res.type !== "analyzed") {
+      timers.forEach(clearTimeout);
+      setError("We couldn't finish the analysis. Try again.");
+      setStep("identify");
+      return;
+    }
 
     try {
-      const [created] = await Promise.all([upload(res.analysis), sleep(MIN_ANALYZE_MS - (Date.now() - started))]);
+      const [created] = await Promise.all([upload(res.analysis), sleep(Math.max(0, MIN_ANALYZE_MS - (Date.now() - started)))]);
       timers.forEach(clearTimeout);
       setStage("done");
       saveToken(created.id, created.token);
+      track("report_created", { q: question }, created.id);
       router.push(`/r/${created.id}#t=${created.token}`);
     } catch {
       timers.forEach(clearTimeout);
@@ -157,31 +197,32 @@ export function AnalyzeFlow({ initialQuestion }: { initialQuestion: QuestionId |
 
   const back = () => {
     setError(null);
-    if (step === "input") setStep("question");
     if (step === "identify") setStep("input");
+    if (step === "input") setStep("platform");
+    if (step === "platform") setStep("focus");
   };
 
   return (
-    <main className="mx-auto w-full max-w-xl px-4 pt-6 pb-10 sm:pt-10">
+    <main className="v3-setup" aria-busy={busy || step === "analyzing"}>
       {step !== "analyzing" && (
-        <div className="mb-6 flex items-center justify-between">
-          {step !== "question" ? (
-            <button onClick={back} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink">
+        <div className="v3-setup-progress">
+          {step !== "focus" ? (
+            <button onClick={back} disabled={busy} className="flow-back inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink">
               <ArrowLeftIcon /> Back
             </button>
           ) : (
             <span />
           )}
-          <ol className="flex items-center gap-1.5" aria-label={`Step ${STEP_INDEX[step] + 1} of 3`}>
-            {[0, 1, 2].map((i) => (
+          <ol className="v3-step-dots" aria-label={`Step ${STEP_INDEX[step] + 1} of 4`}>
+            {["Your question", "Chat source", "Add your chat", "Identify people"].map((label, i) => (
               <li
                 key={i}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === STEP_INDEX[step] ? "w-6 bg-rose" : i < STEP_INDEX[step] ? "w-3 bg-rose/40" : "w-3 bg-line"
-                }`}
-              />
+                aria-current={i === STEP_INDEX[step] ? "step" : undefined}
+                className={i <= STEP_INDEX[step] ? "is-complete" : ""}
+              ><span className="sr-only">{label}</span></li>
             ))}
           </ol>
+          <span>{STEP_INDEX[step] + 1} of 4</span>
         </div>
       )}
 
@@ -191,30 +232,11 @@ export function AnalyzeFlow({ initialQuestion }: { initialQuestion: QuestionId |
         </p>
       )}
 
-      {step === "question" && (
-        <QuestionStep
-          value={question}
-          custom={customQuestion}
-          onCustomChange={setCustomQuestion}
-          onSelect={(q) => {
-            setQuestion(q);
-            track("question_selected", { q });
-            if (q !== "custom") setStep("input");
-          }}
-          onContinue={() => setStep("input")}
-        />
-      )}
-
-      {step === "input" && question && (
-        <InputStep
-          question={question}
-          customQuestion={customQuestion}
-          busy={busy}
-          onFile={onFile}
-          onPaste={onPaste}
-          onChangeQuestion={() => setStep("question")}
-        />
-      )}
+      {step === "focus" && <SetupChoice kind="focus" question={question} platform={platform} onQuestion={setQuestion} onPlatform={setPlatform} onContinue={() => { track("question_selected", { q: question }); setStep("platform"); }} />}
+      {step === "platform" && <SetupChoice kind="platform" question={question} platform={platform} onQuestion={setQuestion} onPlatform={setPlatform} onContinue={() => setStep("input")} />}
+      <div hidden={step !== "input"}>
+        <InputStep key={platform} busy={busy} onFile={onFile} onPaste={onPaste} initialPlatform={platform} />
+      </div>
 
       {step === "identify" && summary && (
         <IdentifyStep summary={summary} busy={busy} onDateOrder={onDateOrder} onConfirm={onAnalyze} />

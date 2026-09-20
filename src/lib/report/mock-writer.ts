@@ -62,6 +62,7 @@ const DRIVER: Record<string, { row: string; phrase: string; kind: "pct" | "min" 
 };
 
 const ORDER: Record<QuestionId, ModuleKey[]> = {
+  overview: ["summary", "interest", "timeline", "investment", "mixedSignals", "nextStep"],
   likes_me: ["summary", "interest", "investment", "timeline", "mixedSignals", "nextStep"],
   losing_interest: ["summary", "timeline", "interest", "investment", "mixedSignals", "nextStep"],
   energy_changed: ["summary", "timeline", "interest", "investment", "mixedSignals", "nextStep"],
@@ -499,7 +500,7 @@ class Composer {
     const distanceCount = this.a.mixedSignals.filter((m) => m.side === "distance").length;
 
     let headline: string;
-    if ((q === "losing_interest" || q === "energy_changed" || q === "ex_came_back") && !this.lite) {
+    if ((q === "losing_interest" || q === "energy_changed" || q === "ex_came_back" || (q === "overview" && tp)) && !this.lite) {
       headline = tp
         ? tp.direction === "cooling"
           ? `His observable effort dropped around ${this.fb.date(tp.date)}.`

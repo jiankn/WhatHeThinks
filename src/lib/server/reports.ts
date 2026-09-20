@@ -26,11 +26,13 @@ export interface ReportRow {
   created_at: number;
   paid_at: number | null;
   evidence_expires_at: number;
+  user_id: string | null;
 }
 
 export async function createReport(
   db: D1Database,
   upload: ReportUpload,
+  userId: string | null = null,
 ): Promise<{ id: string; token: string }> {
   const id = nanoid(12);
   const token = newToken();
@@ -40,8 +42,8 @@ export async function createReport(
   const stmts = [
     db
       .prepare(
-        `INSERT INTO reports (id, token_hash, question, custom_question, status, preview_json, analysis_json, created_at, evidence_expires_at)
-         VALUES (?, ?, ?, ?, 'preview', ?, ?, ?, ?)`,
+        `INSERT INTO reports (id, token_hash, question, custom_question, status, preview_json, analysis_json, created_at, evidence_expires_at, user_id)
+         VALUES (?, ?, ?, ?, 'preview', ?, ?, ?, ?, ?)`,
       )
       .bind(
         id,
@@ -52,6 +54,7 @@ export async function createReport(
         JSON.stringify(analysisRest),
         now,
         now + EVIDENCE_TTL_MS,
+        userId,
       ),
     ...upload.evidence.map((e) =>
       db
@@ -137,6 +140,20 @@ export async function toView(db: D1Database, row: ReportRow): Promise<ReportView
   return view;
 }
 
+/** 付费前修改报告侧重点。已付费返回 false（报告已按原侧重点生成）。 */
+export async function setFocus(
+  db: D1Database,
+  id: string,
+  question: QuestionId,
+  customQuestion: string | null,
+): Promise<boolean> {
+  const r = await db
+    .prepare(`UPDATE reports SET question = ?, custom_question = ? WHERE id = ? AND paid_at IS NULL`)
+    .bind(question, customQuestion, id)
+    .run();
+  return (r.meta.changes ?? 0) > 0;
+}
+
 export async function setStatus(db: D1Database, id: string, status: ReportStatus): Promise<void> {
   await db.prepare(`UPDATE reports SET status = ? WHERE id = ?`).bind(status, id).run();
 }
@@ -163,6 +180,7 @@ export async function markPaid(db: D1Database, id: string, email: string | null)
 /** 硬删除报告与证据。订单只保留金额/时间/Stripe id 用于记账。 */
 export async function deleteReport(db: D1Database, id: string): Promise<void> {
   await db.batch([
+    db.prepare(`DELETE FROM report_shares WHERE report_id = ?`).bind(id),
     db.prepare(`DELETE FROM evidence WHERE report_id = ?`).bind(id),
     db.prepare(`DELETE FROM followups WHERE report_id = ?`).bind(id),
     db.prepare(`DELETE FROM events WHERE report_id = ?`).bind(id),

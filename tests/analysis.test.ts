@@ -45,6 +45,17 @@ describe("转折点检测", () => {
       /dropping|slower|shrinking/,
     );
   });
+
+  it("预览的前后对比取自头条转折点，不混用全程指标", () => {
+    const a = analyzeRoleMsgs(genChat({ weeks: 12, coolAtWeek: 6, seed: 7 }));
+    const headline = a.preview.headline!;
+    const point = a.turningPoints.find(p => p.date === headline.date)!;
+    expect(headline.comparison).toEqual({
+      initiation: { before: point.before.initShare, after: point.after.initShare },
+      reply: { before: point.before.replyP50, after: point.after.replyP50 },
+    });
+    expect(headline.comparison!.initiation.after).toBeLessThan(headline.comparison!.initiation.before);
+  });
 });
 
 describe("假阳性率", () => {

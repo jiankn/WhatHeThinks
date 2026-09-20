@@ -1,18 +1,10 @@
+"use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo } from "./Logo";
-
 export function SiteHeader() {
-  return (
-    <header className="border-b border-line/70 bg-paper/90 backdrop-blur supports-[backdrop-filter]:bg-paper/75 sticky top-0 z-30">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <Logo />
-        <Link
-          href="/analyze"
-          className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-paper transition hover:bg-plum-soft"
-        >
-          Analyze a chat
-        </Link>
-      </div>
-    </header>
-  );
+  const path = usePathname();
+  if (["/login", "/signup", "/forgot-password", "/reset-password"].includes(path)) return null;
+  const setup = path === "/analyze" || path === "/setup";
+  return <header className="v3-header"><Logo /><nav aria-label="Main navigation">{setup ? <Link href="/" aria-label="Close setup" className="v3-close">×</Link> : <><Link href="/sample-report" className="v3-nav-sample">Sample report</Link><Link href="/account">Account</Link><Link href="/analyze" className="v3-nav-start">Try it now <span aria-hidden="true">↗</span></Link></>}</nav></header>;
 }

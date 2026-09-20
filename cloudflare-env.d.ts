@@ -9,6 +9,11 @@ interface __BaseEnv_CloudflareEnv {
 	STRIPE_WEBHOOK_SECRET: string;
 	RESEND_API_KEY: string;
 	EMAIL_FROM: string;
+	GOOGLE_CLIENT_ID: string;
+	GOOGLE_CLIENT_SECRET: string;
+	TURNSTILE_SITE_KEY: string;
+	TURNSTILE_SECRET_KEY: string;
+	TURNSTILE_VERIFY_URL: string;
 	DEV_UNLOCK: string;
 }
 declare namespace Cloudflare {
@@ -19,7 +24,7 @@ type StringifyValues<EnvType extends Record<string, unknown>> = {
 	[Binding in keyof EnvType]: EnvType[Binding] extends string ? EnvType[Binding] : string;
 };
 declare namespace NodeJS {
-	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "SITE_URL" | "STRIPE_SECRET_KEY" | "STRIPE_WEBHOOK_SECRET" | "RESEND_API_KEY" | "EMAIL_FROM" | "DEV_UNLOCK">> {}
+	interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "SITE_URL" | "STRIPE_SECRET_KEY" | "STRIPE_WEBHOOK_SECRET" | "RESEND_API_KEY" | "EMAIL_FROM" | "GOOGLE_CLIENT_ID" | "GOOGLE_CLIENT_SECRET" | "TURNSTILE_SITE_KEY" | "TURNSTILE_SECRET_KEY" | "TURNSTILE_VERIFY_URL" | "DEV_UNLOCK">> {}
 }
 
 // Begin runtime types

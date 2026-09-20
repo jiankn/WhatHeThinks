@@ -1,0 +1,3825 @@
+{
+  "target": "lucen.app",
+  "kind": "domain",
+  "gl": "us",
+  "hl": "en",
+  "total": 262,
+  "metrics": {
+    "keywords": 262,
+    "etv": 192,
+    "paidCost": 392,
+    "pos1": 2,
+    "pos2_3": 9,
+    "pos4_10": 34,
+    "pos11_20": 51,
+    "isNew": 222,
+    "isUp": 20,
+    "isDown": 19,
+    "isLost": 0
+  },
+  "items": [
+    {
+      "keyword": "situationship",
+      "volume": 74000,
+      "cpc": 0.05000000074505806,
+      "competition": 0.009999999776482582,
+      "competitionLevel": "LOW",
+      "lowBid": 0.019999999552965164,
+      "highBid": 0.03999999910593033,
+      "kd": 17,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 60500
+        },
+        {
+          "ym": "2025-09",
+          "v": 60500
+        },
+        {
+          "ym": "2025-10",
+          "v": 60500
+        },
+        {
+          "ym": "2025-11",
+          "v": 60500
+        },
+        {
+          "ym": "2025-12",
+          "v": 74000
+        },
+        {
+          "ym": "2026-01",
+          "v": 74000
+        },
+        {
+          "ym": "2026-02",
+          "v": 60500
+        },
+        {
+          "ym": "2026-03",
+          "v": 60500
+        },
+        {
+          "ym": "2026-04",
+          "v": 60500
+        },
+        {
+          "ym": "2026-05",
+          "v": 74000
+        },
+        {
+          "ym": "2026-06",
+          "v": 201000
+        },
+        {
+          "ym": "2026-07",
+          "v": 90500
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 101
+      },
+      "position": 45,
+      "absolute": 52,
+      "url": "https://lucen.app/blog/situationship",
+      "title": "What Is a Situationship? Types, Signs & How to Handle One",
+      "etv": 33,
+      "paidCost": 1.7,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "text message analyzer",
+      "volume": 110,
+      "cpc": 5.769999980926514,
+      "competition": 0.05000000074505806,
+      "competitionLevel": "LOW",
+      "lowBid": 2.069999933242798,
+      "highBid": 6.539999961853027,
+      "kd": 8,
+      "intent": "commercial",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 110
+        },
+        {
+          "ym": "2025-09",
+          "v": 90
+        },
+        {
+          "ym": "2025-10",
+          "v": 140
+        },
+        {
+          "ym": "2025-11",
+          "v": 110
+        },
+        {
+          "ym": "2025-12",
+          "v": 90
+        },
+        {
+          "ym": "2026-01",
+          "v": 90
+        },
+        {
+          "ym": "2026-02",
+          "v": 70
+        },
+        {
+          "ym": "2026-03",
+          "v": 90
+        },
+        {
+          "ym": "2026-04",
+          "v": 90
+        },
+        {
+          "ym": "2026-05",
+          "v": 90
+        },
+        {
+          "ym": "2026-06",
+          "v": 140
+        },
+        {
+          "ym": "2026-07",
+          "v": 140
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 48
+      },
+      "position": 2,
+      "absolute": 2,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 24,
+      "paidCost": 137,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "lucen report",
+      "volume": 210,
+      "cpc": null,
+      "competition": 0.009999999776482582,
+      "competitionLevel": "LOW",
+      "lowBid": 6,
+      "highBid": 6,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 0
+        },
+        {
+          "ym": "2025-09",
+          "v": 0
+        },
+        {
+          "ym": "2025-10",
+          "v": 0
+        },
+        {
+          "ym": "2025-11",
+          "v": 0
+        },
+        {
+          "ym": "2025-12",
+          "v": 0
+        },
+        {
+          "ym": "2026-01",
+          "v": 70
+        },
+        {
+          "ym": "2026-02",
+          "v": 320
+        },
+        {
+          "ym": "2026-03",
+          "v": 260
+        },
+        {
+          "ym": "2026-04",
+          "v": 210
+        },
+        {
+          "ym": "2026-05",
+          "v": 390
+        },
+        {
+          "ym": "2026-06",
+          "v": 590
+        },
+        {
+          "ym": "2026-07",
+          "v": 390
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 73
+      },
+      "position": 1,
+      "absolute": 2,
+      "url": "https://lucen.app/relationship-text-analysis",
+      "title": "Relationship Text Analysis | AI Chat Analyzer - Lucen.App",
+      "etv": 20,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "situationship meaning",
+      "volume": 40500,
+      "cpc": 0.03999999910593033,
+      "competition": 0.029999999329447746,
+      "competitionLevel": "LOW",
+      "lowBid": 0.009999999776482582,
+      "highBid": 0.029999999329447746,
+      "kd": 12,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 27100
+        },
+        {
+          "ym": "2025-09",
+          "v": 27100
+        },
+        {
+          "ym": "2025-10",
+          "v": 27100
+        },
+        {
+          "ym": "2025-11",
+          "v": 27100
+        },
+        {
+          "ym": "2025-12",
+          "v": 33100
+        },
+        {
+          "ym": "2026-01",
+          "v": 33100
+        },
+        {
+          "ym": "2026-02",
+          "v": 27100
+        },
+        {
+          "ym": "2026-03",
+          "v": 27100
+        },
+        {
+          "ym": "2026-04",
+          "v": 33100
+        },
+        {
+          "ym": "2026-05",
+          "v": 27100
+        },
+        {
+          "ym": "2026-06",
+          "v": 135000
+        },
+        {
+          "ym": "2026-07",
+          "v": 60500
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 155
+      },
+      "position": 29,
+      "absolute": 36,
+      "url": "https://lucen.app/blog/situationship",
+      "title": "What Is a Situationship? Types, Signs & How to Handle One",
+      "etv": 16,
+      "paidCost": 0.6,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "lucen",
+      "volume": 720,
+      "cpc": 5.779999732971191,
+      "competition": 0.05999999865889549,
+      "competitionLevel": "LOW",
+      "lowBid": 2.7699999809265137,
+      "highBid": 6,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 480
+        },
+        {
+          "ym": "2025-09",
+          "v": 480
+        },
+        {
+          "ym": "2025-10",
+          "v": 720
+        },
+        {
+          "ym": "2025-11",
+          "v": 590
+        },
+        {
+          "ym": "2025-12",
+          "v": 590
+        },
+        {
+          "ym": "2026-01",
+          "v": 590
+        },
+        {
+          "ym": "2026-02",
+          "v": 590
+        },
+        {
+          "ym": "2026-03",
+          "v": 590
+        },
+        {
+          "ym": "2026-04",
+          "v": 720
+        },
+        {
+          "ym": "2026-05",
+          "v": 1000
+        },
+        {
+          "ym": "2026-06",
+          "v": 880
+        },
+        {
+          "ym": "2026-07",
+          "v": 880
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 45
+      },
+      "position": 3,
+      "absolute": 5,
+      "url": "https://lucen.app/help",
+      "title": "Lucen Help Center: Support and FAQs",
+      "etv": 13,
+      "paidCost": 78,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "text message analysis",
+      "volume": 320,
+      "cpc": null,
+      "competition": 0.029999999329447746,
+      "competitionLevel": "LOW",
+      "lowBid": 2.319999933242798,
+      "highBid": 10,
+      "kd": 6,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 210
+        },
+        {
+          "ym": "2025-09",
+          "v": 260
+        },
+        {
+          "ym": "2025-10",
+          "v": 320
+        },
+        {
+          "ym": "2025-11",
+          "v": 480
+        },
+        {
+          "ym": "2025-12",
+          "v": 320
+        },
+        {
+          "ym": "2026-01",
+          "v": 320
+        },
+        {
+          "ym": "2026-02",
+          "v": 260
+        },
+        {
+          "ym": "2026-03",
+          "v": 260
+        },
+        {
+          "ym": "2026-04",
+          "v": 390
+        },
+        {
+          "ym": "2026-05",
+          "v": 260
+        },
+        {
+          "ym": "2026-06",
+          "v": 210
+        },
+        {
+          "ym": "2026-07",
+          "v": 260
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": -20
+      },
+      "position": 3,
+      "absolute": 3,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 11,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "relationship text analyzer",
+      "volume": 20,
+      "cpc": 2.369999885559082,
+      "competition": 0.1599999964237213,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 30
+        },
+        {
+          "ym": "2025-09",
+          "v": 20
+        },
+        {
+          "ym": "2025-10",
+          "v": 20
+        },
+        {
+          "ym": "2025-11",
+          "v": 40
+        },
+        {
+          "ym": "2025-12",
+          "v": 20
+        },
+        {
+          "ym": "2026-01",
+          "v": 30
+        },
+        {
+          "ym": "2026-02",
+          "v": 10
+        },
+        {
+          "ym": "2026-03",
+          "v": 10
+        },
+        {
+          "ym": "2026-04",
+          "v": 40
+        },
+        {
+          "ym": "2026-05",
+          "v": 30
+        },
+        {
+          "ym": "2026-06",
+          "v": 30
+        },
+        {
+          "ym": "2026-07",
+          "v": 10
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": 17
+      },
+      "position": 1,
+      "absolute": 1,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 10,
+      "paidCost": 24,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "instagram chat analyzer",
+      "volume": 40,
+      "cpc": 8.390000343322754,
+      "competition": 0.20000000298023224,
+      "competitionLevel": "LOW",
+      "lowBid": 1.7699999809265137,
+      "highBid": 5.900000095367432,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 90
+        },
+        {
+          "ym": "2025-09",
+          "v": 70
+        },
+        {
+          "ym": "2025-10",
+          "v": 50
+        },
+        {
+          "ym": "2025-11",
+          "v": 50
+        },
+        {
+          "ym": "2025-12",
+          "v": 40
+        },
+        {
+          "ym": "2026-01",
+          "v": 40
+        },
+        {
+          "ym": "2026-02",
+          "v": 30
+        },
+        {
+          "ym": "2026-03",
+          "v": 20
+        },
+        {
+          "ym": "2026-04",
+          "v": 20
+        },
+        {
+          "ym": "2026-05",
+          "v": 50
+        },
+        {
+          "ym": "2026-06",
+          "v": 30
+        },
+        {
+          "ym": "2026-07",
+          "v": 20
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 43
+      },
+      "position": 2,
+      "absolute": 2,
+      "url": "https://lucen.app/instagram-dm-analysis",
+      "title": "Instagram Chat Analyzer | Decode Blue Bubble Conversations",
+      "etv": 6.5,
+      "paidCost": 55,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "lucen app",
+      "volume": 90,
+      "cpc": null,
+      "competition": 0,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 0,
+      "intent": "navigational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 0
+        },
+        {
+          "ym": "2025-09",
+          "v": 0
+        },
+        {
+          "ym": "2025-10",
+          "v": 70
+        },
+        {
+          "ym": "2025-11",
+          "v": 90
+        },
+        {
+          "ym": "2025-12",
+          "v": 90
+        },
+        {
+          "ym": "2026-01",
+          "v": 90
+        },
+        {
+          "ym": "2026-02",
+          "v": 140
+        },
+        {
+          "ym": "2026-03",
+          "v": 110
+        },
+        {
+          "ym": "2026-04",
+          "v": 90
+        },
+        {
+          "ym": "2026-05",
+          "v": 110
+        },
+        {
+          "ym": "2026-06",
+          "v": 140
+        },
+        {
+          "ym": "2026-07",
+          "v": 140
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": 15
+      },
+      "position": 2,
+      "absolute": 2,
+      "url": "https://lucen.app/",
+      "title": "Lucen.App",
+      "etv": 5.1,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "whatsapp analyser",
+      "volume": 140,
+      "cpc": null,
+      "competition": 0,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 10,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 90
+        },
+        {
+          "ym": "2025-09",
+          "v": 140
+        },
+        {
+          "ym": "2025-10",
+          "v": 140
+        },
+        {
+          "ym": "2025-11",
+          "v": 140
+        },
+        {
+          "ym": "2025-12",
+          "v": 140
+        },
+        {
+          "ym": "2026-01",
+          "v": 140
+        },
+        {
+          "ym": "2026-02",
+          "v": 170
+        },
+        {
+          "ym": "2026-03",
+          "v": 170
+        },
+        {
+          "ym": "2026-04",
+          "v": 210
+        },
+        {
+          "ym": "2026-05",
+          "v": 170
+        },
+        {
+          "ym": "2026-06",
+          "v": 140
+        },
+        {
+          "ym": "2026-07",
+          "v": 110
+        }
+      ],
+      "trend": {
+        "dir": "down",
+        "pct": -24
+      },
+      "position": 4,
+      "absolute": 4,
+      "url": "https://lucen.app/whatsapp-chat-analyzer",
+      "title": "WhatsApp Chat Analyzer - Lucen.App",
+      "etv": 4.8,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "does she like me ai",
+      "volume": 50,
+      "cpc": null,
+      "competition": 0,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 0
+        },
+        {
+          "ym": "2025-09",
+          "v": 20
+        },
+        {
+          "ym": "2025-10",
+          "v": 40
+        },
+        {
+          "ym": "2025-11",
+          "v": 70
+        },
+        {
+          "ym": "2025-12",
+          "v": 50
+        },
+        {
+          "ym": "2026-01",
+          "v": 90
+        },
+        {
+          "ym": "2026-02",
+          "v": 50
+        },
+        {
+          "ym": "2026-03",
+          "v": 110
+        },
+        {
+          "ym": "2026-04",
+          "v": 70
+        },
+        {
+          "ym": "2026-05",
+          "v": 90
+        },
+        {
+          "ym": "2026-06",
+          "v": 70
+        },
+        {
+          "ym": "2026-07",
+          "v": 50
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": -9
+      },
+      "position": 3,
+      "absolute": 3,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 2.8,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "situationship vs relationship",
+      "volume": 1000,
+      "cpc": 0.03999999910593033,
+      "competition": 0.10999999940395355,
+      "competitionLevel": "LOW",
+      "lowBid": 0.009999999776482582,
+      "highBid": 0.03999999910593033,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 720
+        },
+        {
+          "ym": "2025-09",
+          "v": 590
+        },
+        {
+          "ym": "2025-10",
+          "v": 720
+        },
+        {
+          "ym": "2025-11",
+          "v": 720
+        },
+        {
+          "ym": "2025-12",
+          "v": 1000
+        },
+        {
+          "ym": "2026-01",
+          "v": 1300
+        },
+        {
+          "ym": "2026-02",
+          "v": 1300
+        },
+        {
+          "ym": "2026-03",
+          "v": 1300
+        },
+        {
+          "ym": "2026-04",
+          "v": 1300
+        },
+        {
+          "ym": "2026-05",
+          "v": 1000
+        },
+        {
+          "ym": "2026-06",
+          "v": 880
+        },
+        {
+          "ym": "2026-07",
+          "v": 880
+        }
+      ],
+      "trend": {
+        "dir": "down",
+        "pct": -29
+      },
+      "position": 16,
+      "absolute": 21,
+      "url": "https://lucen.app/blog/situationship-vs-relationship",
+      "title": "Situationship vs Relationship: Key Differences & Signs",
+      "etv": 2.4,
+      "paidCost": 0.1,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "whatsapp analyzer",
+      "volume": 140,
+      "cpc": null,
+      "competition": 0,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 3,
+      "intent": "transactional",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 90
+        },
+        {
+          "ym": "2025-09",
+          "v": 140
+        },
+        {
+          "ym": "2025-10",
+          "v": 140
+        },
+        {
+          "ym": "2025-11",
+          "v": 140
+        },
+        {
+          "ym": "2025-12",
+          "v": 140
+        },
+        {
+          "ym": "2026-01",
+          "v": 140
+        },
+        {
+          "ym": "2026-02",
+          "v": 170
+        },
+        {
+          "ym": "2026-03",
+          "v": 170
+        },
+        {
+          "ym": "2026-04",
+          "v": 210
+        },
+        {
+          "ym": "2026-05",
+          "v": 170
+        },
+        {
+          "ym": "2026-06",
+          "v": 140
+        },
+        {
+          "ym": "2026-07",
+          "v": 110
+        }
+      ],
+      "trend": {
+        "dir": "down",
+        "pct": -24
+      },
+      "position": 5,
+      "absolute": 6,
+      "url": "https://lucen.app/whatsapp-chat-analyzer",
+      "title": "WhatsApp Chat Analyzer - Lucen.App",
+      "etv": 2.4,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "message analyser",
+      "volume": 260,
+      "cpc": null,
+      "competition": 0,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 32,
+      "intent": "commercial",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 320
+        },
+        {
+          "ym": "2025-09",
+          "v": 320
+        },
+        {
+          "ym": "2025-10",
+          "v": 320
+        },
+        {
+          "ym": "2025-11",
+          "v": 210
+        },
+        {
+          "ym": "2025-12",
+          "v": 210
+        },
+        {
+          "ym": "2026-01",
+          "v": 260
+        },
+        {
+          "ym": "2026-02",
+          "v": 260
+        },
+        {
+          "ym": "2026-03",
+          "v": 260
+        },
+        {
+          "ym": "2026-04",
+          "v": 320
+        },
+        {
+          "ym": "2026-05",
+          "v": 210
+        },
+        {
+          "ym": "2026-06",
+          "v": 210
+        },
+        {
+          "ym": "2026-07",
+          "v": 210
+        }
+      ],
+      "trend": {
+        "dir": "down",
+        "pct": -25
+      },
+      "position": 18,
+      "absolute": 19,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 2,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "message analyzer",
+      "volume": 260,
+      "cpc": null,
+      "competition": 0,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 18,
+      "intent": "commercial",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 320
+        },
+        {
+          "ym": "2025-09",
+          "v": 320
+        },
+        {
+          "ym": "2025-10",
+          "v": 320
+        },
+        {
+          "ym": "2025-11",
+          "v": 210
+        },
+        {
+          "ym": "2025-12",
+          "v": 210
+        },
+        {
+          "ym": "2026-01",
+          "v": 260
+        },
+        {
+          "ym": "2026-02",
+          "v": 260
+        },
+        {
+          "ym": "2026-03",
+          "v": 260
+        },
+        {
+          "ym": "2026-04",
+          "v": 320
+        },
+        {
+          "ym": "2026-05",
+          "v": 210
+        },
+        {
+          "ym": "2026-06",
+          "v": 210
+        },
+        {
+          "ym": "2026-07",
+          "v": 210
+        }
+      ],
+      "trend": {
+        "dir": "down",
+        "pct": -25
+      },
+      "position": 19,
+      "absolute": 20,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 2,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "export imessage conversation",
+      "volume": 480,
+      "cpc": 3.759999990463257,
+      "competition": 0.1899999976158142,
+      "competitionLevel": "LOW",
+      "lowBid": 0.8100000023841858,
+      "highBid": 2.950000047683716,
+      "kd": 5,
+      "intent": "navigational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 590
+        },
+        {
+          "ym": "2025-09",
+          "v": 480
+        },
+        {
+          "ym": "2025-10",
+          "v": 480
+        },
+        {
+          "ym": "2025-11",
+          "v": 390
+        },
+        {
+          "ym": "2025-12",
+          "v": 480
+        },
+        {
+          "ym": "2026-01",
+          "v": 480
+        },
+        {
+          "ym": "2026-02",
+          "v": 590
+        },
+        {
+          "ym": "2026-03",
+          "v": 590
+        },
+        {
+          "ym": "2026-04",
+          "v": 590
+        },
+        {
+          "ym": "2026-05",
+          "v": 590
+        },
+        {
+          "ym": "2026-06",
+          "v": 590
+        },
+        {
+          "ym": "2026-07",
+          "v": 480
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": -6
+      },
+      "position": 19,
+      "absolute": 24,
+      "url": "https://lucen.app/blog/how-to-export-imessage-texts",
+      "title": "How to Export iMessage Conversation: A Step-by-Step Guide",
+      "etv": 1.9,
+      "paidCost": 7.1,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "text analyzer relationship",
+      "volume": 40,
+      "cpc": 4.320000171661377,
+      "competition": 0.07999999821186066,
+      "competitionLevel": "LOW",
+      "lowBid": 1.2799999713897705,
+      "highBid": 13.069999694824219,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 50
+        },
+        {
+          "ym": "2025-09",
+          "v": 20
+        },
+        {
+          "ym": "2025-10",
+          "v": 50
+        },
+        {
+          "ym": "2025-11",
+          "v": 30
+        },
+        {
+          "ym": "2025-12",
+          "v": 40
+        },
+        {
+          "ym": "2026-01",
+          "v": 40
+        },
+        {
+          "ym": "2026-02",
+          "v": 30
+        },
+        {
+          "ym": "2026-03",
+          "v": 50
+        },
+        {
+          "ym": "2026-04",
+          "v": 20
+        },
+        {
+          "ym": "2026-05",
+          "v": 50
+        },
+        {
+          "ym": "2026-06",
+          "v": 40
+        },
+        {
+          "ym": "2026-07",
+          "v": 40
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 30
+      },
+      "position": 2,
+      "absolute": 3,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 1.7,
+      "paidCost": 7.4,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "situationship vs friends with benefits",
+      "volume": 1600,
+      "cpc": 0.05000000074505806,
+      "competition": 0,
+      "competitionLevel": "LOW",
+      "lowBid": 0.019999999552965164,
+      "highBid": 0.05000000074505806,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 1600
+        },
+        {
+          "ym": "2025-09",
+          "v": 1900
+        },
+        {
+          "ym": "2025-10",
+          "v": 1600
+        },
+        {
+          "ym": "2025-11",
+          "v": 1600
+        },
+        {
+          "ym": "2025-12",
+          "v": 1600
+        },
+        {
+          "ym": "2026-01",
+          "v": 1600
+        },
+        {
+          "ym": "2026-02",
+          "v": 1600
+        },
+        {
+          "ym": "2026-03",
+          "v": 1600
+        },
+        {
+          "ym": "2026-04",
+          "v": 1600
+        },
+        {
+          "ym": "2026-05",
+          "v": 1600
+        },
+        {
+          "ym": "2026-06",
+          "v": 1600
+        },
+        {
+          "ym": "2026-07",
+          "v": 1300
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": -6
+      },
+      "position": 13,
+      "absolute": 17,
+      "url": "https://lucen.app/blog/situationship-vs-friends-with-benefits",
+      "title": "Situationship vs Friends With Benefits - Lucen.App",
+      "etv": 1.6,
+      "paidCost": 0.1,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "ai text analysis",
+      "volume": 140,
+      "cpc": 3.7300000190734863,
+      "competition": 0.3700000047683716,
+      "competitionLevel": "MEDIUM",
+      "lowBid": 1.2000000476837158,
+      "highBid": 6.849999904632568,
+      "kd": 14,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 110
+        },
+        {
+          "ym": "2025-09",
+          "v": 210
+        },
+        {
+          "ym": "2025-10",
+          "v": 110
+        },
+        {
+          "ym": "2025-11",
+          "v": 110
+        },
+        {
+          "ym": "2025-12",
+          "v": 90
+        },
+        {
+          "ym": "2026-01",
+          "v": 110
+        },
+        {
+          "ym": "2026-02",
+          "v": 110
+        },
+        {
+          "ym": "2026-03",
+          "v": 320
+        },
+        {
+          "ym": "2026-04",
+          "v": 140
+        },
+        {
+          "ym": "2026-05",
+          "v": 140
+        },
+        {
+          "ym": "2026-06",
+          "v": 90
+        },
+        {
+          "ym": "2026-07",
+          "v": 90
+        }
+      ],
+      "trend": {
+        "dir": "down",
+        "pct": -44
+      },
+      "position": 20,
+      "absolute": 23,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 1.4,
+      "paidCost": 5.1,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "chat analyzer",
+      "volume": 170,
+      "cpc": null,
+      "competition": 0.019999999552965164,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 11,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 480
+        },
+        {
+          "ym": "2025-09",
+          "v": 140
+        },
+        {
+          "ym": "2025-10",
+          "v": 260
+        },
+        {
+          "ym": "2025-11",
+          "v": 210
+        },
+        {
+          "ym": "2025-12",
+          "v": 140
+        },
+        {
+          "ym": "2026-01",
+          "v": 110
+        },
+        {
+          "ym": "2026-02",
+          "v": 90
+        },
+        {
+          "ym": "2026-03",
+          "v": 110
+        },
+        {
+          "ym": "2026-04",
+          "v": 90
+        },
+        {
+          "ym": "2026-05",
+          "v": 140
+        },
+        {
+          "ym": "2026-06",
+          "v": 70
+        },
+        {
+          "ym": "2026-07",
+          "v": 70
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": -3
+      },
+      "position": 8,
+      "absolute": 8,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 1.3,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "app that analyzes text messages",
+      "volume": 30,
+      "cpc": null,
+      "competition": 0.05999999865889549,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 4,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 40
+        },
+        {
+          "ym": "2025-09",
+          "v": 40
+        },
+        {
+          "ym": "2025-10",
+          "v": 30
+        },
+        {
+          "ym": "2025-11",
+          "v": 40
+        },
+        {
+          "ym": "2025-12",
+          "v": 40
+        },
+        {
+          "ym": "2026-01",
+          "v": 30
+        },
+        {
+          "ym": "2026-02",
+          "v": 30
+        },
+        {
+          "ym": "2026-03",
+          "v": 30
+        },
+        {
+          "ym": "2026-04",
+          "v": 30
+        },
+        {
+          "ym": "2026-05",
+          "v": 20
+        },
+        {
+          "ym": "2026-06",
+          "v": 20
+        },
+        {
+          "ym": "2026-07",
+          "v": 20
+        }
+      ],
+      "trend": {
+        "dir": "down",
+        "pct": -33
+      },
+      "position": 2,
+      "absolute": 3,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 1.3,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "situationships",
+      "volume": 74000,
+      "cpc": 0.05000000074505806,
+      "competition": 0.009999999776482582,
+      "competitionLevel": "LOW",
+      "lowBid": 0.019999999552965164,
+      "highBid": 0.03999999910593033,
+      "kd": 15,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 60500
+        },
+        {
+          "ym": "2025-09",
+          "v": 60500
+        },
+        {
+          "ym": "2025-10",
+          "v": 60500
+        },
+        {
+          "ym": "2025-11",
+          "v": 60500
+        },
+        {
+          "ym": "2025-12",
+          "v": 74000
+        },
+        {
+          "ym": "2026-01",
+          "v": 74000
+        },
+        {
+          "ym": "2026-02",
+          "v": 60500
+        },
+        {
+          "ym": "2026-03",
+          "v": 60500
+        },
+        {
+          "ym": "2026-04",
+          "v": 60500
+        },
+        {
+          "ym": "2026-05",
+          "v": 74000
+        },
+        {
+          "ym": "2026-06",
+          "v": 201000
+        },
+        {
+          "ym": "2026-07",
+          "v": 90500
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 101
+      },
+      "position": 42,
+      "absolute": 50,
+      "url": "https://lucen.app/blog/situationship",
+      "title": "What Is a Situationship? Types, Signs & How to Handle One",
+      "etv": 1.2,
+      "paidCost": 0.1,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "types of situationships",
+      "volume": 260,
+      "cpc": null,
+      "competition": 0.019999999552965164,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 260
+        },
+        {
+          "ym": "2025-09",
+          "v": 320
+        },
+        {
+          "ym": "2025-10",
+          "v": 260
+        },
+        {
+          "ym": "2025-11",
+          "v": 210
+        },
+        {
+          "ym": "2025-12",
+          "v": 260
+        },
+        {
+          "ym": "2026-01",
+          "v": 320
+        },
+        {
+          "ym": "2026-02",
+          "v": 260
+        },
+        {
+          "ym": "2026-03",
+          "v": 260
+        },
+        {
+          "ym": "2026-04",
+          "v": 210
+        },
+        {
+          "ym": "2026-05",
+          "v": 210
+        },
+        {
+          "ym": "2026-06",
+          "v": 210
+        },
+        {
+          "ym": "2026-07",
+          "v": 140
+        }
+      ],
+      "trend": {
+        "dir": "down",
+        "pct": -23
+      },
+      "position": 8,
+      "absolute": 11,
+      "url": "https://lucen.app/blog/situationship",
+      "title": "What Is a Situationship? Types, Signs & How to Handle One",
+      "etv": 1,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "ai conversation analysis",
+      "volume": 40,
+      "cpc": 8.880000114440918,
+      "competition": 0.5699999928474426,
+      "competitionLevel": "MEDIUM",
+      "lowBid": 2.109999895095825,
+      "highBid": 6.989999771118164,
+      "kd": 4,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 70
+        },
+        {
+          "ym": "2025-09",
+          "v": 40
+        },
+        {
+          "ym": "2025-10",
+          "v": 50
+        },
+        {
+          "ym": "2025-11",
+          "v": 40
+        },
+        {
+          "ym": "2025-12",
+          "v": 40
+        },
+        {
+          "ym": "2026-01",
+          "v": 40
+        },
+        {
+          "ym": "2026-02",
+          "v": 40
+        },
+        {
+          "ym": "2026-03",
+          "v": 50
+        },
+        {
+          "ym": "2026-04",
+          "v": 40
+        },
+        {
+          "ym": "2026-05",
+          "v": 30
+        },
+        {
+          "ym": "2026-06",
+          "v": 20
+        },
+        {
+          "ym": "2026-07",
+          "v": 30
+        }
+      ],
+      "trend": {
+        "dir": "down",
+        "pct": -38
+      },
+      "position": 4,
+      "absolute": 5,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 1,
+      "paidCost": 9.1,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "snapchat decoder",
+      "volume": 140,
+      "cpc": null,
+      "competition": 0,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 140
+        },
+        {
+          "ym": "2025-09",
+          "v": 110
+        },
+        {
+          "ym": "2025-10",
+          "v": 110
+        },
+        {
+          "ym": "2025-11",
+          "v": 110
+        },
+        {
+          "ym": "2025-12",
+          "v": 140
+        },
+        {
+          "ym": "2026-01",
+          "v": 110
+        },
+        {
+          "ym": "2026-02",
+          "v": 110
+        },
+        {
+          "ym": "2026-03",
+          "v": 140
+        },
+        {
+          "ym": "2026-04",
+          "v": 140
+        },
+        {
+          "ym": "2026-05",
+          "v": 140
+        },
+        {
+          "ym": "2026-06",
+          "v": 170
+        },
+        {
+          "ym": "2026-07",
+          "v": 110
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": 8
+      },
+      "position": 7,
+      "absolute": 8,
+      "url": "https://lucen.app/snapchat-chat-analyzer",
+      "title": "Snapchat Chat Analyzer | Decode Blue Bubble Conversations",
+      "etv": 0.9,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "conversation analyzer",
+      "volume": 50,
+      "cpc": 12.680000305175781,
+      "competition": 0.4699999988079071,
+      "competitionLevel": "MEDIUM",
+      "lowBid": 2.0799999237060547,
+      "highBid": 6.599999904632568,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 70
+        },
+        {
+          "ym": "2025-09",
+          "v": 50
+        },
+        {
+          "ym": "2025-10",
+          "v": 50
+        },
+        {
+          "ym": "2025-11",
+          "v": 70
+        },
+        {
+          "ym": "2025-12",
+          "v": 70
+        },
+        {
+          "ym": "2026-01",
+          "v": 70
+        },
+        {
+          "ym": "2026-02",
+          "v": 40
+        },
+        {
+          "ym": "2026-03",
+          "v": 50
+        },
+        {
+          "ym": "2026-04",
+          "v": 50
+        },
+        {
+          "ym": "2026-05",
+          "v": 40
+        },
+        {
+          "ym": "2026-06",
+          "v": 40
+        },
+        {
+          "ym": "2026-07",
+          "v": 30
+        }
+      ],
+      "trend": {
+        "dir": "down",
+        "pct": -21
+      },
+      "position": 3,
+      "absolute": 4,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 0.9,
+      "paidCost": 12,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "ai dating coach",
+      "volume": 140,
+      "cpc": 5,
+      "competition": 0.17000000178813934,
+      "competitionLevel": "LOW",
+      "lowBid": 1.7799999713897705,
+      "highBid": 6.699999809265137,
+      "kd": 11,
+      "intent": "commercial",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 110
+        },
+        {
+          "ym": "2025-09",
+          "v": 170
+        },
+        {
+          "ym": "2025-10",
+          "v": 140
+        },
+        {
+          "ym": "2025-11",
+          "v": 140
+        },
+        {
+          "ym": "2025-12",
+          "v": 90
+        },
+        {
+          "ym": "2026-01",
+          "v": 170
+        },
+        {
+          "ym": "2026-02",
+          "v": 140
+        },
+        {
+          "ym": "2026-03",
+          "v": 140
+        },
+        {
+          "ym": "2026-04",
+          "v": 140
+        },
+        {
+          "ym": "2026-05",
+          "v": 140
+        },
+        {
+          "ym": "2026-06",
+          "v": 140
+        },
+        {
+          "ym": "2026-07",
+          "v": 90
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": -12
+      },
+      "position": 13,
+      "absolute": 16,
+      "url": "https://lucen.app/ai-dating-coach",
+      "title": "AI Dating Coach | Know Where You Stand - Lucen.App",
+      "etv": 0.9,
+      "paidCost": 4.6,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "analyzer for whatsapp",
+      "volume": 140,
+      "cpc": null,
+      "competition": 0,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 7,
+      "intent": "transactional",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 90
+        },
+        {
+          "ym": "2025-09",
+          "v": 140
+        },
+        {
+          "ym": "2025-10",
+          "v": 140
+        },
+        {
+          "ym": "2025-11",
+          "v": 140
+        },
+        {
+          "ym": "2025-12",
+          "v": 140
+        },
+        {
+          "ym": "2026-01",
+          "v": 140
+        },
+        {
+          "ym": "2026-02",
+          "v": 170
+        },
+        {
+          "ym": "2026-03",
+          "v": 170
+        },
+        {
+          "ym": "2026-04",
+          "v": 210
+        },
+        {
+          "ym": "2026-05",
+          "v": 170
+        },
+        {
+          "ym": "2026-06",
+          "v": 140
+        },
+        {
+          "ym": "2026-07",
+          "v": 110
+        }
+      ],
+      "trend": {
+        "dir": "down",
+        "pct": -24
+      },
+      "position": 7,
+      "absolute": 8,
+      "url": "https://lucen.app/whatsapp-chat-analyzer",
+      "title": "WhatsApp Chat Analyzer - Lucen.App",
+      "etv": 0.7,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "why do men lose interest after sex",
+      "volume": 140,
+      "cpc": 0.019999999552965164,
+      "competition": 0.009999999776482582,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 210
+        },
+        {
+          "ym": "2025-09",
+          "v": 170
+        },
+        {
+          "ym": "2025-10",
+          "v": 170
+        },
+        {
+          "ym": "2025-11",
+          "v": 140
+        },
+        {
+          "ym": "2025-12",
+          "v": 140
+        },
+        {
+          "ym": "2026-01",
+          "v": 140
+        },
+        {
+          "ym": "2026-02",
+          "v": 140
+        },
+        {
+          "ym": "2026-03",
+          "v": 140
+        },
+        {
+          "ym": "2026-04",
+          "v": 140
+        },
+        {
+          "ym": "2026-05",
+          "v": 90
+        },
+        {
+          "ym": "2026-06",
+          "v": 140
+        },
+        {
+          "ym": "2026-07",
+          "v": 140
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": -12
+      },
+      "position": 7,
+      "absolute": 10,
+      "url": "https://lucen.app/blog/why-do-men-lose-interest-after-sex",
+      "title": "Why Do Men Lose Interest After Sex? What It Really Means",
+      "etv": 0.7,
+      "paidCost": 0,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "instagram messages counter",
+      "volume": 40,
+      "cpc": null,
+      "competition": 0,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 0,
+      "intent": "navigational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 10
+        },
+        {
+          "ym": "2025-09",
+          "v": 10
+        },
+        {
+          "ym": "2025-10",
+          "v": 20
+        },
+        {
+          "ym": "2025-11",
+          "v": 10
+        },
+        {
+          "ym": "2025-12",
+          "v": 20
+        },
+        {
+          "ym": "2026-01",
+          "v": 20
+        },
+        {
+          "ym": "2026-02",
+          "v": 70
+        },
+        {
+          "ym": "2026-03",
+          "v": 50
+        },
+        {
+          "ym": "2026-04",
+          "v": 50
+        },
+        {
+          "ym": "2026-05",
+          "v": 70
+        },
+        {
+          "ym": "2026-06",
+          "v": 90
+        },
+        {
+          "ym": "2026-07",
+          "v": 50
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 24
+      },
+      "position": 5,
+      "absolute": 7,
+      "url": "https://lucen.app/instagram-dm-analysis",
+      "title": "Instagram Chat Analyzer | Decode Blue Bubble Conversations",
+      "etv": 0.7,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "love analysis app",
+      "volume": 70,
+      "cpc": 8.149999618530273,
+      "competition": 0.10000000149011612,
+      "competitionLevel": "LOW",
+      "lowBid": 2.1600000858306885,
+      "highBid": 7.190000057220459,
+      "kd": 6,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 0
+        },
+        {
+          "ym": "2025-09",
+          "v": 0
+        },
+        {
+          "ym": "2025-10",
+          "v": 0
+        },
+        {
+          "ym": "2025-11",
+          "v": 0
+        },
+        {
+          "ym": "2025-12",
+          "v": 0
+        },
+        {
+          "ym": "2026-01",
+          "v": 0
+        },
+        {
+          "ym": "2026-02",
+          "v": 0
+        },
+        {
+          "ym": "2026-03",
+          "v": 10
+        },
+        {
+          "ym": "2026-04",
+          "v": 170
+        },
+        {
+          "ym": "2026-05",
+          "v": 210
+        },
+        {
+          "ym": "2026-06",
+          "v": 260
+        },
+        {
+          "ym": "2026-07",
+          "v": 90
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 211
+      },
+      "position": 6,
+      "absolute": 8,
+      "url": "https://lucen.app/relationship-text-analysis",
+      "title": "Relationship Text Analysis | AI Chat Analyzer - Lucen.App",
+      "etv": 0.6,
+      "paidCost": 5.2,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "imessage exporter",
+      "volume": 1300,
+      "cpc": 3.6100001335144043,
+      "competition": 0.17000000178813934,
+      "competitionLevel": "LOW",
+      "lowBid": 1.1299999952316284,
+      "highBid": 3.7899999618530273,
+      "kd": 12,
+      "intent": "transactional",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 880
+        },
+        {
+          "ym": "2025-09",
+          "v": 880
+        },
+        {
+          "ym": "2025-10",
+          "v": 1000
+        },
+        {
+          "ym": "2025-11",
+          "v": 1000
+        },
+        {
+          "ym": "2025-12",
+          "v": 1000
+        },
+        {
+          "ym": "2026-01",
+          "v": 1300
+        },
+        {
+          "ym": "2026-02",
+          "v": 1300
+        },
+        {
+          "ym": "2026-03",
+          "v": 1600
+        },
+        {
+          "ym": "2026-04",
+          "v": 1600
+        },
+        {
+          "ym": "2026-05",
+          "v": 1600
+        },
+        {
+          "ym": "2026-06",
+          "v": 1300
+        },
+        {
+          "ym": "2026-07",
+          "v": 1600
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": 0
+      },
+      "position": 39,
+      "absolute": 46,
+      "url": "https://lucen.app/how-to-export-imessage-texts",
+      "title": "How to Export iMessage Texts - Lucen.App",
+      "etv": 0.6,
+      "paidCost": 2.1,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "love analysis site",
+      "volume": 50,
+      "cpc": 5.079999923706055,
+      "competition": 0.14000000059604645,
+      "competitionLevel": "LOW",
+      "lowBid": 2.4600000381469727,
+      "highBid": 6.720000267028809,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 0
+        },
+        {
+          "ym": "2025-09",
+          "v": 0
+        },
+        {
+          "ym": "2025-10",
+          "v": 0
+        },
+        {
+          "ym": "2025-11",
+          "v": 0
+        },
+        {
+          "ym": "2025-12",
+          "v": 0
+        },
+        {
+          "ym": "2026-01",
+          "v": 0
+        },
+        {
+          "ym": "2026-02",
+          "v": 0
+        },
+        {
+          "ym": "2026-03",
+          "v": 10
+        },
+        {
+          "ym": "2026-04",
+          "v": 170
+        },
+        {
+          "ym": "2026-05",
+          "v": 170
+        },
+        {
+          "ym": "2026-06",
+          "v": 170
+        },
+        {
+          "ym": "2026-07",
+          "v": 90
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 139
+      },
+      "position": 7,
+      "absolute": 8,
+      "url": "https://lucen.app/relationship-text-analysis",
+      "title": "Relationship Text Analysis | AI Chat Analyzer - Lucen.App",
+      "etv": 0.5,
+      "paidCost": 2.8,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "analyze this text",
+      "volume": 170,
+      "cpc": 2.430000066757202,
+      "competition": 0.05000000074505806,
+      "competitionLevel": "LOW",
+      "lowBid": 0.5899999737739563,
+      "highBid": 3.2300000190734863,
+      "kd": 5,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 20
+        },
+        {
+          "ym": "2025-09",
+          "v": 40
+        },
+        {
+          "ym": "2025-10",
+          "v": 50
+        },
+        {
+          "ym": "2025-11",
+          "v": 50
+        },
+        {
+          "ym": "2025-12",
+          "v": 70
+        },
+        {
+          "ym": "2026-01",
+          "v": 110
+        },
+        {
+          "ym": "2026-02",
+          "v": 170
+        },
+        {
+          "ym": "2026-03",
+          "v": 210
+        },
+        {
+          "ym": "2026-04",
+          "v": 260
+        },
+        {
+          "ym": "2026-05",
+          "v": 260
+        },
+        {
+          "ym": "2026-06",
+          "v": 260
+        },
+        {
+          "ym": "2026-07",
+          "v": 480
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 56
+      },
+      "position": 23,
+      "absolute": 27,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 0.5,
+      "paidCost": 1.3,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "how to download imessage conversation",
+      "volume": 210,
+      "cpc": 4.510000228881836,
+      "competition": 0.18000000715255737,
+      "competitionLevel": "LOW",
+      "lowBid": 0.9900000095367432,
+      "highBid": 3.119999885559082,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 170
+        },
+        {
+          "ym": "2025-09",
+          "v": 210
+        },
+        {
+          "ym": "2025-10",
+          "v": 210
+        },
+        {
+          "ym": "2025-11",
+          "v": 210
+        },
+        {
+          "ym": "2025-12",
+          "v": 210
+        },
+        {
+          "ym": "2026-01",
+          "v": 210
+        },
+        {
+          "ym": "2026-02",
+          "v": 260
+        },
+        {
+          "ym": "2026-03",
+          "v": 260
+        },
+        {
+          "ym": "2026-04",
+          "v": 170
+        },
+        {
+          "ym": "2026-05",
+          "v": 210
+        },
+        {
+          "ym": "2026-06",
+          "v": 210
+        },
+        {
+          "ym": "2026-07",
+          "v": 210
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": -9
+      },
+      "position": 13,
+      "absolute": 17,
+      "url": "https://lucen.app/blog/how-to-export-imessage-texts",
+      "title": "How to Export iMessage Conversation: A Step-by-Step Guide",
+      "etv": 0.5,
+      "paidCost": 2.3,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "how to export imessage conversation",
+      "volume": 480,
+      "cpc": 4.199999809265137,
+      "competition": 0.1599999964237213,
+      "competitionLevel": "LOW",
+      "lowBid": 1,
+      "highBid": 2.740000009536743,
+      "kd": 4,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 320
+        },
+        {
+          "ym": "2025-09",
+          "v": 260
+        },
+        {
+          "ym": "2025-10",
+          "v": 320
+        },
+        {
+          "ym": "2025-11",
+          "v": 320
+        },
+        {
+          "ym": "2025-12",
+          "v": 390
+        },
+        {
+          "ym": "2026-01",
+          "v": 480
+        },
+        {
+          "ym": "2026-02",
+          "v": 390
+        },
+        {
+          "ym": "2026-03",
+          "v": 590
+        },
+        {
+          "ym": "2026-04",
+          "v": 590
+        },
+        {
+          "ym": "2026-05",
+          "v": 590
+        },
+        {
+          "ym": "2026-06",
+          "v": 590
+        },
+        {
+          "ym": "2026-07",
+          "v": 590
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": 13
+      },
+      "position": 30,
+      "absolute": 36,
+      "url": "https://lucen.app/how-to-export-imessage-texts",
+      "title": "How to Export iMessage Texts - Lucen.App",
+      "etv": 0.5,
+      "paidCost": 2.1,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "whatsapp chat analyzer",
+      "volume": 40,
+      "cpc": 4.860000133514404,
+      "competition": 0.03999999910593033,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 7,
+      "intent": "transactional",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 50
+        },
+        {
+          "ym": "2025-09",
+          "v": 30
+        },
+        {
+          "ym": "2025-10",
+          "v": 30
+        },
+        {
+          "ym": "2025-11",
+          "v": 50
+        },
+        {
+          "ym": "2025-12",
+          "v": 30
+        },
+        {
+          "ym": "2026-01",
+          "v": 70
+        },
+        {
+          "ym": "2026-02",
+          "v": 20
+        },
+        {
+          "ym": "2026-03",
+          "v": 40
+        },
+        {
+          "ym": "2026-04",
+          "v": 40
+        },
+        {
+          "ym": "2026-05",
+          "v": 70
+        },
+        {
+          "ym": "2026-06",
+          "v": 50
+        },
+        {
+          "ym": "2026-07",
+          "v": 20
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 40
+      },
+      "position": 8,
+      "absolute": 9,
+      "url": "https://lucen.app/whatsapp-chat-analyzer",
+      "title": "WhatsApp Chat Analyzer - Lucen.App",
+      "etv": 0.5,
+      "paidCost": 2.3,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "imessage analyzer",
+      "volume": 50,
+      "cpc": null,
+      "competition": 0.019999999552965164,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 50
+        },
+        {
+          "ym": "2025-09",
+          "v": 50
+        },
+        {
+          "ym": "2025-10",
+          "v": 50
+        },
+        {
+          "ym": "2025-11",
+          "v": 50
+        },
+        {
+          "ym": "2025-12",
+          "v": 90
+        },
+        {
+          "ym": "2026-01",
+          "v": 70
+        },
+        {
+          "ym": "2026-02",
+          "v": 40
+        },
+        {
+          "ym": "2026-03",
+          "v": 50
+        },
+        {
+          "ym": "2026-04",
+          "v": 40
+        },
+        {
+          "ym": "2026-05",
+          "v": 30
+        },
+        {
+          "ym": "2026-06",
+          "v": 40
+        },
+        {
+          "ym": "2026-07",
+          "v": 40
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": -15
+      },
+      "position": 6,
+      "absolute": 7,
+      "url": "https://lucen.app/imessage-text-analysis",
+      "title": "iMessage Text Message Analyzer - Lucen.App",
+      "etv": 0.5,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "imessage-exporter",
+      "volume": 1300,
+      "cpc": 3.6100001335144043,
+      "competition": 0.17000000178813934,
+      "competitionLevel": "LOW",
+      "lowBid": 1.1299999952316284,
+      "highBid": 3.7899999618530273,
+      "kd": 19,
+      "intent": "transactional",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 880
+        },
+        {
+          "ym": "2025-09",
+          "v": 880
+        },
+        {
+          "ym": "2025-10",
+          "v": 1000
+        },
+        {
+          "ym": "2025-11",
+          "v": 1000
+        },
+        {
+          "ym": "2025-12",
+          "v": 1000
+        },
+        {
+          "ym": "2026-01",
+          "v": 1300
+        },
+        {
+          "ym": "2026-02",
+          "v": 1300
+        },
+        {
+          "ym": "2026-03",
+          "v": 1600
+        },
+        {
+          "ym": "2026-04",
+          "v": 1600
+        },
+        {
+          "ym": "2026-05",
+          "v": 1600
+        },
+        {
+          "ym": "2026-06",
+          "v": 1300
+        },
+        {
+          "ym": "2026-07",
+          "v": 1600
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": 0
+      },
+      "position": 40,
+      "absolute": 46,
+      "url": "https://lucen.app/how-to-export-imessage-texts",
+      "title": "How to Export iMessage Texts - Lucen.App",
+      "etv": 0.5,
+      "paidCost": 1.6,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "text analyzer app",
+      "volume": 20,
+      "cpc": 6.070000171661377,
+      "competition": 0.3199999928474426,
+      "competitionLevel": "LOW",
+      "lowBid": 2.3499999046325684,
+      "highBid": 4.429999828338623,
+      "kd": 11,
+      "intent": "transactional",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 30
+        },
+        {
+          "ym": "2025-09",
+          "v": 30
+        },
+        {
+          "ym": "2025-10",
+          "v": 30
+        },
+        {
+          "ym": "2025-11",
+          "v": 30
+        },
+        {
+          "ym": "2025-12",
+          "v": 20
+        },
+        {
+          "ym": "2026-01",
+          "v": 10
+        },
+        {
+          "ym": "2026-02",
+          "v": 10
+        },
+        {
+          "ym": "2026-03",
+          "v": 20
+        },
+        {
+          "ym": "2026-04",
+          "v": 30
+        },
+        {
+          "ym": "2026-05",
+          "v": 40
+        },
+        {
+          "ym": "2026-06",
+          "v": 10
+        },
+        {
+          "ym": "2026-07",
+          "v": 10
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": 0
+      },
+      "position": 5,
+      "absolute": 6,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 0.4,
+      "paidCost": 2.4,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "ai relationship coach",
+      "volume": 170,
+      "cpc": 6.170000076293945,
+      "competition": 0.30000001192092896,
+      "competitionLevel": "LOW",
+      "lowBid": 1.5399999618530273,
+      "highBid": 5.28000020980835,
+      "kd": 0,
+      "intent": "commercial",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 140
+        },
+        {
+          "ym": "2025-09",
+          "v": 90
+        },
+        {
+          "ym": "2025-10",
+          "v": 140
+        },
+        {
+          "ym": "2025-11",
+          "v": 140
+        },
+        {
+          "ym": "2025-12",
+          "v": 140
+        },
+        {
+          "ym": "2026-01",
+          "v": 140
+        },
+        {
+          "ym": "2026-02",
+          "v": 170
+        },
+        {
+          "ym": "2026-03",
+          "v": 140
+        },
+        {
+          "ym": "2026-04",
+          "v": 260
+        },
+        {
+          "ym": "2026-05",
+          "v": 210
+        },
+        {
+          "ym": "2026-06",
+          "v": 170
+        },
+        {
+          "ym": "2026-07",
+          "v": 90
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": -18
+      },
+      "position": 24,
+      "absolute": 28,
+      "url": "https://lucen.app/ai-dating-coach",
+      "title": "AI Dating Coach | Know Where You Stand - Lucen.App",
+      "etv": 0.4,
+      "paidCost": 2.4,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "how to export imessages",
+      "volume": 210,
+      "cpc": 2.740000009536743,
+      "competition": 0.20999999344348907,
+      "competitionLevel": "LOW",
+      "lowBid": 1.149999976158142,
+      "highBid": 3,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 170
+        },
+        {
+          "ym": "2025-09",
+          "v": 170
+        },
+        {
+          "ym": "2025-10",
+          "v": 210
+        },
+        {
+          "ym": "2025-11",
+          "v": 260
+        },
+        {
+          "ym": "2025-12",
+          "v": 170
+        },
+        {
+          "ym": "2026-01",
+          "v": 210
+        },
+        {
+          "ym": "2026-02",
+          "v": 170
+        },
+        {
+          "ym": "2026-03",
+          "v": 210
+        },
+        {
+          "ym": "2026-04",
+          "v": 210
+        },
+        {
+          "ym": "2026-05",
+          "v": 260
+        },
+        {
+          "ym": "2026-06",
+          "v": 210
+        },
+        {
+          "ym": "2026-07",
+          "v": 210
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": 15
+      },
+      "position": 10,
+      "absolute": 14,
+      "url": "https://lucen.app/blog/how-to-export-imessage-texts",
+      "title": "How to Export iMessage Conversation: A Step-by-Step Guide",
+      "etv": 0.4,
+      "paidCost": 1,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "ai analyze text messages",
+      "volume": 40,
+      "cpc": 3.700000047683716,
+      "competition": 0.6700000166893005,
+      "competitionLevel": "HIGH",
+      "lowBid": 1.340000033378601,
+      "highBid": 4.739999771118164,
+      "kd": 13,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 70
+        },
+        {
+          "ym": "2025-09",
+          "v": 70
+        },
+        {
+          "ym": "2025-10",
+          "v": 50
+        },
+        {
+          "ym": "2025-11",
+          "v": 50
+        },
+        {
+          "ym": "2025-12",
+          "v": 50
+        },
+        {
+          "ym": "2026-01",
+          "v": 40
+        },
+        {
+          "ym": "2026-02",
+          "v": 30
+        },
+        {
+          "ym": "2026-03",
+          "v": 20
+        },
+        {
+          "ym": "2026-04",
+          "v": 20
+        },
+        {
+          "ym": "2026-05",
+          "v": 20
+        },
+        {
+          "ym": "2026-06",
+          "v": 20
+        },
+        {
+          "ym": "2026-07",
+          "v": 10
+        }
+      ],
+      "trend": {
+        "dir": "down",
+        "pct": -29
+      },
+      "position": 6,
+      "absolute": 7,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 0.4,
+      "paidCost": 1.4,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "my crush ai",
+      "volume": 210,
+      "cpc": 2.6700000762939453,
+      "competition": 0.019999999552965164,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 19,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 110
+        },
+        {
+          "ym": "2025-09",
+          "v": 140
+        },
+        {
+          "ym": "2025-10",
+          "v": 140
+        },
+        {
+          "ym": "2025-11",
+          "v": 210
+        },
+        {
+          "ym": "2025-12",
+          "v": 210
+        },
+        {
+          "ym": "2026-01",
+          "v": 260
+        },
+        {
+          "ym": "2026-02",
+          "v": 260
+        },
+        {
+          "ym": "2026-03",
+          "v": 210
+        },
+        {
+          "ym": "2026-04",
+          "v": 210
+        },
+        {
+          "ym": "2026-05",
+          "v": 260
+        },
+        {
+          "ym": "2026-06",
+          "v": 210
+        },
+        {
+          "ym": "2026-07",
+          "v": 210
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": 0
+      },
+      "position": 33,
+      "absolute": 34,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 0.4,
+      "paidCost": 1,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "how to save an imessage conversation",
+      "volume": 170,
+      "cpc": 1.690000057220459,
+      "competition": 0.12999999523162842,
+      "competitionLevel": "LOW",
+      "lowBid": 0.5600000023841858,
+      "highBid": 1.600000023841858,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 170
+        },
+        {
+          "ym": "2025-09",
+          "v": 170
+        },
+        {
+          "ym": "2025-10",
+          "v": 140
+        },
+        {
+          "ym": "2025-11",
+          "v": 140
+        },
+        {
+          "ym": "2025-12",
+          "v": 210
+        },
+        {
+          "ym": "2026-01",
+          "v": 170
+        },
+        {
+          "ym": "2026-02",
+          "v": 170
+        },
+        {
+          "ym": "2026-03",
+          "v": 260
+        },
+        {
+          "ym": "2026-04",
+          "v": 170
+        },
+        {
+          "ym": "2026-05",
+          "v": 210
+        },
+        {
+          "ym": "2026-06",
+          "v": 170
+        },
+        {
+          "ym": "2026-07",
+          "v": 210
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": -2
+      },
+      "position": 20,
+      "absolute": 25,
+      "url": "https://lucen.app/blog/how-to-export-imessage-texts",
+      "title": "How to Export iMessage Conversation: A Step-by-Step Guide",
+      "etv": 0.3,
+      "paidCost": 0.6,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "chat analysis",
+      "volume": 50,
+      "cpc": 6.75,
+      "competition": 0.05000000074505806,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 16,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 70
+        },
+        {
+          "ym": "2025-09",
+          "v": 70
+        },
+        {
+          "ym": "2025-10",
+          "v": 70
+        },
+        {
+          "ym": "2025-11",
+          "v": 70
+        },
+        {
+          "ym": "2025-12",
+          "v": 40
+        },
+        {
+          "ym": "2026-01",
+          "v": 30
+        },
+        {
+          "ym": "2026-02",
+          "v": 30
+        },
+        {
+          "ym": "2026-03",
+          "v": 40
+        },
+        {
+          "ym": "2026-04",
+          "v": 50
+        },
+        {
+          "ym": "2026-05",
+          "v": 30
+        },
+        {
+          "ym": "2026-06",
+          "v": 50
+        },
+        {
+          "ym": "2026-07",
+          "v": 40
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": 0
+      },
+      "position": 6,
+      "absolute": 7,
+      "url": "https://lucen.app/",
+      "title": "Lucen: Chat Analyzer & AI Dating Coach",
+      "etv": 0.3,
+      "paidCost": 2.3,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "how to save imessage",
+      "volume": 140,
+      "cpc": 2.4200000762939453,
+      "competition": 0.09000000357627869,
+      "competitionLevel": "LOW",
+      "lowBid": 0.2800000011920929,
+      "highBid": 2.0399999618530273,
+      "kd": 3,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 170
+        },
+        {
+          "ym": "2025-09",
+          "v": 170
+        },
+        {
+          "ym": "2025-10",
+          "v": 140
+        },
+        {
+          "ym": "2025-11",
+          "v": 140
+        },
+        {
+          "ym": "2025-12",
+          "v": 110
+        },
+        {
+          "ym": "2026-01",
+          "v": 170
+        },
+        {
+          "ym": "2026-02",
+          "v": 110
+        },
+        {
+          "ym": "2026-03",
+          "v": 140
+        },
+        {
+          "ym": "2026-04",
+          "v": 90
+        },
+        {
+          "ym": "2026-05",
+          "v": 110
+        },
+        {
+          "ym": "2026-06",
+          "v": 140
+        },
+        {
+          "ym": "2026-07",
+          "v": 140
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": 15
+      },
+      "position": 14,
+      "absolute": 18,
+      "url": "https://lucen.app/blog/how-to-export-imessage-texts",
+      "title": "How to Export iMessage Conversation: A Step-by-Step Guide",
+      "etv": 0.3,
+      "paidCost": 0.8,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "love insights ai",
+      "volume": 110,
+      "cpc": 6.690000057220459,
+      "competition": 0.12999999523162842,
+      "competitionLevel": "LOW",
+      "lowBid": 2.3499999046325684,
+      "highBid": 5.720000267028809,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 0
+        },
+        {
+          "ym": "2025-09",
+          "v": 0
+        },
+        {
+          "ym": "2025-10",
+          "v": 0
+        },
+        {
+          "ym": "2025-11",
+          "v": 0
+        },
+        {
+          "ym": "2025-12",
+          "v": 0
+        },
+        {
+          "ym": "2026-01",
+          "v": 0
+        },
+        {
+          "ym": "2026-02",
+          "v": 0
+        },
+        {
+          "ym": "2026-03",
+          "v": 70
+        },
+        {
+          "ym": "2026-04",
+          "v": 590
+        },
+        {
+          "ym": "2026-05",
+          "v": 320
+        },
+        {
+          "ym": "2026-06",
+          "v": 260
+        },
+        {
+          "ym": "2026-07",
+          "v": 140
+        }
+      ],
+      "trend": {
+        "dir": "flat",
+        "pct": 9
+      },
+      "position": 11,
+      "absolute": 14,
+      "url": "https://lucen.app/relationship-text-analysis",
+      "title": "Relationship Text Analysis | AI Chat Analyzer - Lucen.App",
+      "etv": 0.3,
+      "paidCost": 2.1,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "how to export imessage conversation from iphone",
+      "volume": 170,
+      "cpc": 2.700000047683716,
+      "competition": 0.25999999046325684,
+      "competitionLevel": "LOW",
+      "lowBid": 0.7799999713897705,
+      "highBid": 2.2200000286102295,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 170
+        },
+        {
+          "ym": "2025-09",
+          "v": 110
+        },
+        {
+          "ym": "2025-10",
+          "v": 110
+        },
+        {
+          "ym": "2025-11",
+          "v": 140
+        },
+        {
+          "ym": "2025-12",
+          "v": 170
+        },
+        {
+          "ym": "2026-01",
+          "v": 210
+        },
+        {
+          "ym": "2026-02",
+          "v": 110
+        },
+        {
+          "ym": "2026-03",
+          "v": 170
+        },
+        {
+          "ym": "2026-04",
+          "v": 140
+        },
+        {
+          "ym": "2026-05",
+          "v": 210
+        },
+        {
+          "ym": "2026-06",
+          "v": 210
+        },
+        {
+          "ym": "2026-07",
+          "v": 260
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 62
+      },
+      "position": 23,
+      "absolute": 28,
+      "url": "https://lucen.app/blog/how-to-export-imessage-texts",
+      "title": "How to Export iMessage Conversation: A Step-by-Step Guide",
+      "etv": 0.3,
+      "paidCost": 0.8,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    },
+    {
+      "keyword": "friends with benefits vs situationship",
+      "volume": 260,
+      "cpc": null,
+      "competition": 0.009999999776482582,
+      "competitionLevel": "LOW",
+      "lowBid": null,
+      "highBid": null,
+      "kd": 0,
+      "intent": "informational",
+      "months": [
+        {
+          "ym": "2025-08",
+          "v": 170
+        },
+        {
+          "ym": "2025-09",
+          "v": 210
+        },
+        {
+          "ym": "2025-10",
+          "v": 260
+        },
+        {
+          "ym": "2025-11",
+          "v": 260
+        },
+        {
+          "ym": "2025-12",
+          "v": 260
+        },
+        {
+          "ym": "2026-01",
+          "v": 260
+        },
+        {
+          "ym": "2026-02",
+          "v": 210
+        },
+        {
+          "ym": "2026-03",
+          "v": 170
+        },
+        {
+          "ym": "2026-04",
+          "v": 210
+        },
+        {
+          "ym": "2026-05",
+          "v": 210
+        },
+        {
+          "ym": "2026-06",
+          "v": 260
+        },
+        {
+          "ym": "2026-07",
+          "v": 320
+        }
+      ],
+      "trend": {
+        "dir": "up",
+        "pct": 34
+      },
+      "position": 16,
+      "absolute": 20,
+      "url": "https://lucen.app/blog/situationship-vs-friends-with-benefits",
+      "title": "Situationship vs Friends With Benefits - Lucen.App",
+      "etv": 0.3,
+      "paidCost": null,
+      "type": "organic",
+      "isNew": false,
+      "isUp": false,
+      "isDown": false,
+      "isLost": false
+    }
+  ],
+  "fromCache": true,
+  "cost": 0,
+  "charged": 5
+}

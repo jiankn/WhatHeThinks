@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatHeThinks 首页文案与关键词诊断</title>
+  <style>
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #f5f5f5;
+    }
+
+    /* ── Layout ── */
+    header, main, footer {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #fff;
+      border-bottom: 3px solid #0f62fe;
+      padding-top: 32px;
+      padding-bottom: 24px;
+      margin-bottom: 0;
+      max-width: 100%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    header .inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .report-badge {
+      display: inline-block;
+      background: #0f62fe;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 3px;
+      margin-bottom: 10px;
+    }
+    header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0a0a0a;
+      margin-bottom: 8px;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 10px;
+      font-size: 13px;
+      color: #555;
+    }
+    .meta-row span strong { color: #333; }
+
+    /* ── Main content ── */
+    main {
+      padding-top: 28px;
+      padding-bottom: 48px;
+    }
+
+    /* ── Section ── */
+    section {
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+      margin-bottom: 20px;
+      /* 不用 overflow:hidden，否则小屏下表格横向滚动会被裁切 */
+    }
+    section > h2 {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #0f62fe;
+      padding: 14px 20px;
+      border-bottom: 1px solid #e8e8e8;
+      background: #f9fbff;
+    }
+    section > .section-body {
+      padding: 20px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ── Executive summary ── */
+    .summary-verdict {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .summary-groups {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .summary-group {
+      border-radius: 5px;
+      padding: 12px 14px;
+    }
+    .summary-group.critical { background: #fff0f0; border: 1px solid #fcd0d0; }
+    .summary-group.warnings { background: #fffbea; border: 1px solid #f0e08a; }
+    .summary-group.passing  { background: #f0faf3; border: 1px solid #b8e8c8; }
+    .summary-group-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 8px;
+    }
+    .summary-group.critical .summary-group-label { color: #c0392b; }
+    .summary-group.warnings .summary-group-label { color: #856404; }
+    .summary-group.passing  .summary-group-label { color: #1a6b35; }
+    .summary-group ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .summary-group ul li {
+      font-size: 13px;
+      color: #333;
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      line-height: 1.45;
+    }
+    .summary-group ul li:last-child { border-bottom: none; }
+    .summary-group ul li::before {
+      margin-right: 5px;
+    }
+    .summary-group.critical ul li::before { content: "✕"; color: #c0392b; font-weight: 700; }
+    .summary-group.warnings ul li::before { content: "!"; color: #856404; font-weight: 700; }
+    .summary-group.passing  ul li::before { content: "✓"; color: #1a6b35; font-weight: 700; }
+    .summary-empty {
+      font-size: 12px;
+      color: #aaa;
+      font-style: italic;
+    }
+
+    /* ── Check table ── */
+    .table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 0 0 12px;
+    }
+    .table-scroll:last-child { margin-bottom: 0; }
+    .check-table {
+      width: 100%;
+      min-width: 32rem;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    /* E-E-A-T 等四列表格需要更宽的最小宽度 */
+    .check-table:has(thead tr th:nth-child(4)) {
+      min-width: 42rem;
+    }
+    .check-table th {
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 8px 12px;
+      border-bottom: 1px solid #e8e8e8;
+      background: #fafafa;
+    }
+    .check-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .check-table th:nth-child(1),
+    .check-table td:nth-child(1) { min-width: 6.5rem; }
+    .check-table th:nth-child(2),
+    .check-table td:nth-child(2) { width: 5.5rem; white-space: nowrap; }
+    .check-table th:nth-child(3),
+    .check-table td:nth-child(3) { min-width: 8rem; }
+    .check-table tr:last-child td { border-bottom: none; }
+    /* Detail cell: issue description + fix suggestion */
+    .detail-issue {
+      font-size: 13px;
+      color: #333;
+      line-height: 1.55;
+    }
+    .detail-fix {
+      margin-top: 5px;
+      font-size: 12px;
+      color: #1a6b35;
+      line-height: 1.5;
+    }
+    .detail-fix::before {
+      content: "Fix: ";
+      font-weight: 700;
+    }
+
+    /* ── Status badges ── */
+    .status {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .status-pass  { background: #d4edda; color: #155724; }
+    .status-fail  { background: #f8d7da; color: #721c24; }
+    .status-warn  { background: #fff3cd; color: #856404; }
+    .status-info  { background: #d1ecf1; color: #0c5460; }
+    .status-na    { background: #e9ecef; color: #495057; }
+
+    /* ── Finding articles ── */
+    article.finding {
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    article.finding:last-child { margin-bottom: 0; }
+    .finding-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: #fafafa;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .finding-header h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      flex: 1;
+    }
+    .finding-body {
+      padding: 14px 16px;
+      display: grid;
+      gap: 10px;
+    }
+    .finding-field {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 8px;
+      font-size: 14px;
+    }
+    .finding-field .label {
+      font-weight: 600;
+      color: #555;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding-top: 2px;
+    }
+    .finding-field .value { color: #333; }
+
+    /* ── Priority actions ── */
+    ol.priority-list {
+      padding-left: 20px;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.8;
+    }
+    ol.priority-list li { margin-bottom: 6px; }
+
+    /* ── Sub-section label (within Site Checks) ── */
+    .subsection-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #0f62fe;
+      background: #f0f5ff;
+      border-left: 3px solid #0f62fe;
+      padding: 6px 10px;
+      margin: 20px 0 12px;
+      border-radius: 0 3px 3px 0;
+    }
+    .subsection-label:first-child { margin-top: 0; }
+
+    /* ── Limitations ── */
+
+    /* ── Upgrade prompt ── */
+    .upgrade-box {
+      background: #eef4ff;
+      border: 1px solid #b8d0ff;
+      border-radius: 5px;
+      padding: 16px 20px;
+      font-size: 14px;
+      color: #1a3c7a;
+    }
+    .upgrade-box strong { color: #0f62fe; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      padding-top: 16px;
+      padding-bottom: 32px;
+      border-top: 1px solid #e0e0e0;
+      margin-top: 0;
+      max-width: 100%;
+      background: #fff;
+    }
+    footer .inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 16px 24px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .summary-groups {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      header, main, footer,
+      header .inner {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      header { padding-top: 24px; padding-bottom: 18px; }
+      header h1 { font-size: 20px; line-height: 1.35; }
+      .meta-row { flex-direction: column; gap: 8px; }
+      .meta-row span { word-break: break-all; }
+      main { padding-top: 20px; padding-bottom: 32px; }
+      section > h2 { padding: 12px 16px; }
+      section > .section-body { padding: 14px 16px; }
+      .check-table {
+        min-width: 28rem;
+        font-size: 13px;
+      }
+      .check-table th,
+      .check-table td { padding: 8px 10px; }
+      .finding-header {
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+      .finding-header h3 { font-size: 13px; }
+      .finding-field {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+      .finding-field .label { padding-top: 0; }
+      .upgrade-box { padding: 14px 16px; font-size: 13px; }
+    }
+
+    @media (max-width: 480px) {
+      body { font-size: 14px; }
+      .summary-groups { gap: 10px; }
+      .summary-group { padding: 10px 12px; }
+      .check-table { min-width: 26rem; }
+      .check-table:has(thead tr th:nth-child(4)) { min-width: 34rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <span class="report-badge">SEO Audit Report</span>
+    <h1>WhatHeThinks 首页文案与关键词诊断</h1>
+    <div class="meta-row">
+      <span><strong>URL:</strong> http://localhost:3000/ (local version)</span>
+      <span><strong>Audit Level:</strong> Homepage copy and keyword review</span>
+      <span><strong>Created:</strong> 2026-09-19</span>
+      <span><strong>Powered by:</strong> Jeff</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  
+  <section>
+    <h2>Audit Summary</h2>
+    <div class="section-body">
+
+      
+      <p class="summary-verdict">11 项页面检查：6 项通过、5 项建议优化。未修改网站文案。</p>
+
+      <div class="summary-groups">
+
+        
+        <div class="summary-group critical">
+          <div class="summary-group-label">Critical</div>
+          <ul>
+            <li>本次范围内未确认阻断性问题。</li>
+            
+            
+          </ul>
+        </div>
+
+        
+        <div class="summary-group warnings">
+          <div class="summary-group-label">Warnings</div>
+          <ul>
+            <li>工具身份、隐私边界、使用流程、关键词分工。</li>
+            
+            
+          </ul>
+        </div>
+
+        
+        <div class="summary-group passing">
+          <div class="summary-group-label">Passing</div>
+          <ul>
+            <li>单一 H1、完整描述、canonical、alt 和基础结构化数据。</li>
+            
+            
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  
+  <section>
+    <h2>Site Checks</h2>
+    <div class="section-body">
+
+      
+      <p>线上抓取与索引未审计；本轮仅审阅本地首页文案。</p>
+      
+
+      
+      <p>已有隐私、条款、FAQ 入口；隐私页提供联系邮箱。全站信任信息未全面核验。</p>
+      
+
+    </div>
+  </section>
+
+  
+  <section>
+    <h2>Page Checks</h2>
+    <div class="section-body">
+      <table><thead><tr><th>Check</th><th>Status</th><th>Detail</th></tr></thead><tbody><tr><td>URL Slug</td><td>pass</td><td>首页根路径</td></tr><tr><td>Title Tag</td><td>warn</td><td>缺少明确工具类别词</td></tr><tr><td>Meta Description</td><td>warn</td><td>129 字符；建议提前说明工具与具体输出</td></tr><tr><td>H1 Tag</td><td>warn</td><td>单一 H1；建议在邻近可见文本明确工具身份</td></tr><tr><td>Canonical Tag</td><td>pass</td><td>已设置生产域名 canonical；未核验生产跳转</td></tr><tr><td>Image Alt Text</td><td>pass</td><td>图片均具备 alt 属性</td></tr><tr><td>Word Count</td><td>pass</td><td>约 334 词；不设机械字数门槛</td></tr><tr><td>Keyword Placement</td><td>warn</td><td>首屏未明确工具类别；pattern/patterns 出现 7 次</td></tr><tr><td>Heading Structure</td><td>pass</td><td>正文 1 H1、8 H2、3 H3</td></tr><tr><td>Internal Links</td><td>warn</td><td>正文链接均为流程或样例；建议增加上下文专题链接</td></tr><tr><td>Schema (JSON-LD)</td><td>pass</td><td>已有三类相关实体；logo 为推荐补充项</td></tr></tbody></table>
+      
+    </div>
+  </section>
+
+  
+  <section>
+    <h2>Priority Actions</h2>
+    <div class="section-body">
+      <ol><li>明确首页工具类别与输入输出。</li><li>补充隐私、价格及平台限制。</li><li>完善流程与专题页内链。</li></ol>
+      
+    </div>
+  </section>
+
+  
+  <section>
+    <h2>Insight Walkthrough <span style="font-size:11px;font-weight:400;color:#aaa;letter-spacing:0;text-transform:none;margin-left:6px;">optional — detailed evidence &amp; reasoning</span></h2>
+    <div class="section-body">
+      <div style="white-space:pre-wrap;line-height:1.8"># WhatHeThinks 首页文案与关键词诊断
+
+日期：2026-09-19。审阅对象：当前本地首页源码与渲染 HTML，非线上部署确认。已核对平台支持、上传数据、隐私页、定价与专题页。未接入 GSC、搜索量、KD 或转化数据；关键词建议为待验证的定位方向。本轮没有修改网站文案。
+
+## 结论
+
+首页有一致的品牌表达，但工具类别、使用过程和限制说明不足。主要改进方向是让访客更快理解“输入什么、得到什么、哪些免费、哪些数据会发送”。不需要靠重复关键词或增加字数解决。
+
+## 证据与建议
+
+| 优先级 | 观察到的文案或结构 | 用户与 SEO 影响 | 建议 |
+| --- | --- | --- | --- |
+| 高 | Title 为 WhatHeThinks — Read the Pattern Behind His Texts；H1 同样围绕 pattern | 搜索结果和首屏没有直接说明这是聊天分析工具 | Title 加入 Relationship Text Analyzer；首屏说明 WhatsApp 输入与具体输出 |
+| 高 | Your full chat stays in your browser; sensitive details are redacted. | 完整聊天留在本地属实，但容易让人误以为任何消息内容都不会发送；sensitive details 范围过宽 | 明确会发送统计和最多 120 条脱敏摘录。实际替换参与者姓名、邮箱、电话和链接；不要声称完全匿名 |
+| 高 | how-it-works 区域是理念段落，没有操作流程 | 用户不知道开始分析前需要准备什么 | 简述导入聊天、确认人物、查看免费预览；按实际功能说明预览和完整报告的区别 |
+| 中 | 首屏有 Free preview，$9.99 完整报告价格在页面底部 | 免费与付费边界获知较晚 | 首屏按钮下补充 Free preview · Full report $9.99 · One-time payment |
+| 中 | 已区分 WhatsApp TXT/ZIP 导入与其他平台粘贴，但没写无时间戳限制 | 多平台展示可能让人误解为分析能力完全相同 | 补充 Reply-time and trend analysis require timestamps. |
+| 中 | Spot the week... changed；messages behind every finding | 短聊天、稳定聊天或无时间戳数据不保证有转折；每项结论不一定都对应单条消息 | 改成 See whether reply times or consistency changed over time；Review the metrics and selected messages behind your report |
+| 中 | main 文本约 334 个空白分词，pattern/patterns 出现 7 次；正文 9 个链接均指向分析流程或样例 | 品牌词反复出现但具体信息不足；专题页主要依靠页脚入口 | 用流程、指标和限制替代重复口号；在相关问题旁补充 2–3 个专题或工具入口 |
+
+## 首屏文案建议
+
+Title：WhatHeThinks — Relationship Text Analyzer
+
+Meta description：Analyze your relationship texts for reply times, who texts first, and changes in effort. Start with a free preview of your WhatsApp chat.
+
+小标题：Relationship text analyzer
+
+H1：Read the pattern behind his texts.
+
+副标题：Import your WhatsApp chat to compare reply times, who texts first, and how effort changes over time.
+
+按钮：Analyze my chat
+
+按钮旁说明：Free preview · Full report $9.99 · One-time payment
+
+隐私补充：Your full chat stays on your device. We send statistics and up to 120 excerpts with participant names, emails, phone numbers, and links replaced to create your report.
+
+这些是建议稿，未写入页面。H1 不必强行重复主关键词，重要的是邻近的可见文本明确说明产品用途。
+
+## 候选关键词分工
+
+| 页面 | 建议承担的搜索意图 |
+| --- | --- |
+| 首页 | relationship text analyzer；relationship chat analysis |
+| /whatsapp-relationship-analyzer | WhatsApp relationship analyzer 与导出分析 |
+| /does-he-like-me-text-analyzer | does he like me text analyzer |
+| /mixed-signals-text-analyzer | mixed signals text analyzer |
+| /tools/who-texts-first | who texts first 与主动发起比例 |
+| /tools/reply-time-calculator | reply time calculator |
+
+这是页面职责规划，不是已确认的关键词蚕食，也不代表已验证搜索量或排名难度。不建议以泛词 text analyzer 为唯一方向；不要宣传截图识别、完全免费完整报告或未实现的原生平台导入。
+
+## 已具备与不应误判的内容
+
+- 首页有一个 H1、完整 meta description（129 字符）、生产域名 canonical、图片 alt 和 Organization / WebSite / WebApplication 结构化数据。
+- 334 词或 8 个正文 H2 本身不是 SEO 错误，不为字数或标题数量扩写。
+- Organization 缺少 logo 是可改进项，不是必填字段缺失；多个相关实体一起出现不是结构化数据冲突。不提供站内搜索时，无需伪造 SearchAction。
+- sample report、免费预览、非订阅价格、无法读心的边界说明值得保留。
+- 示例问题明确说明不是用户评价，这一点应保留；若移除头像，才可简化重复的示例标签。
+- 不需要添加 meta keywords，Google 不使用该标签。
+
+## 核验说明与来源
+
+页面脚本不接受 localhost，因此使用本地 HTTP 提取当前渲染 HTML；结构化数据脚本使用缓存 HTML 运行后，按 Google 官方文档进行了人工复核。Agent Reach 的 Exa 入口失败，采用可用网页检索。线上 robots、sitemap、重定向和索引状态不在本次文案审阅范围。
+
+- [Google：标题链接](https://developers.google.com/search/docs/appearance/title-link)
+- [Google：搜索结果摘要与描述](https://developers.google.com/search/docs/appearance/snippet)
+- [Google：SEO 入门指南](https://developers.google.com/search/docs/fundamentals/seo-starter-guide)
+- [Google：Organization 结构化数据](https://developers.google.com/search/docs/appearance/structured-data/organization)
+</div>
+      
+    </div>
+  </section>
+
+  
+  <section>
+    <h2>Want a Deeper Analysis?</h2>
+    <div class="section-body">
+      <div class="upgrade-box">
+        This was a <strong>seo-audit</strong> — Basic tier. It covers robots.txt, sitemap.xml, canonical, TDK, H1, and heading structure.
+        Upgrade to <strong>seo-audit-full</strong> to unlock advanced technical checks, social tags, content quality analysis, GSC crawl status, and competitor benchmarking.
+        <br><br>
+        Say: <code>deep audit: http://localhost:3000/ (local version)</code>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="inner">
+    Powered by OpenSource Project - <strong><a href="https://github.com/JeffLi1993/seo-audit-skill">seo-audit-skill</a></strong> · Basic SEO Audit Report · 2026-09-19
+  </div>
+</footer>
+
+</body>
+</html>

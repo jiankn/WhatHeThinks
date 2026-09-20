@@ -24,10 +24,14 @@ export function AnalyzingStep({
   const current = stage === "done" ? STAGES.length : STAGES.findIndex((s) => s.key === stage);
 
   return (
-    <section className="pt-10 text-center" aria-live="polite">
-      <div className="mx-auto h-14 w-14 animate-spin rounded-full border-[3px] border-rose-soft border-t-rose [animation-duration:1.4s]" />
-      <h1 className="mt-6 font-display text-3xl font-semibold">Reading the signals…</h1>
-      <p className="mt-2 text-muted">This happens on your device. It only takes a moment.</p>
+    <section className="pt-10 text-center">
+      {failed ? (
+        <div className="analyzing-error-mark" aria-hidden="true">!</div>
+      ) : (
+        <div className="mx-auto h-14 w-14 animate-spin rounded-full border-[3px] border-rose-soft border-t-rose [animation-duration:1.4s]" aria-hidden="true" />
+      )}
+      <h1 className="mt-6 font-display text-3xl font-semibold">{failed ? "Your analysis is ready, but we couldn't save it." : "Reading the signals…"}</h1>
+      <p className="mt-2 text-muted" aria-live="polite">{failed ? "Your chat is still on this device. Try saving the report again." : `Now: ${STAGES[Math.max(0, current)]?.label ?? "Finishing your report"}.`}</p>
 
       <ol className="mx-auto mt-8 max-w-xs space-y-3 text-left">
         {STAGES.map((s, i) => {
@@ -51,7 +55,7 @@ export function AnalyzingStep({
       {failed && (
         <div className="mt-8 space-y-3">
           <p role="alert" className="text-sm text-rose-dark">
-            We analyzed your chat but couldn't save the report. Check your connection and try again.
+            Check your connection, then try again. You do not need to upload the chat again.
           </p>
           <button className="btn-primary" onClick={onRetry}>
             Try again

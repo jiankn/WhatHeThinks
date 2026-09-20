@@ -24,11 +24,22 @@ export function EvidenceDrawer({
   onClose: () => void;
 }) {
   const closeBtn = useRef<HTMLButtonElement>(null);
+  const dialog = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null;
     closeBtn.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "Tab") {
+        const items = dialog.current?.querySelectorAll<HTMLElement>('button:not([tabindex="-1"]), a[href], input, select, textarea, [tabindex="0"]');
+        if (!items?.length) return;
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
     document.addEventListener("keydown", onKey);
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -40,9 +51,9 @@ export function EvidenceDrawer({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal aria-labelledby="evidence-title">
+    <div ref={dialog} className="evidence-dialog fixed inset-0 flex items-end justify-center sm:items-center" role="dialog" aria-modal aria-labelledby="evidence-title">
       <button className="absolute inset-0 bg-ink/40" aria-label="Close" tabIndex={-1} onClick={onClose} />
-      <div className="relative flex max-h-[85dvh] w-full max-w-lg flex-col rounded-t-3xl bg-paper shadow-2xl sm:rounded-3xl">
+      <div className="relative flex max-h-[85dvh] w-full max-w-lg flex-col rounded-t-[var(--radius-card)] bg-paper shadow-2xl sm:rounded-[var(--radius-card)]">
         <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
           <div>
             <p className="eyebrow">The receipts</p>
@@ -50,7 +61,7 @@ export function EvidenceDrawer({
               {title}
             </h3>
           </div>
-          <button ref={closeBtn} onClick={onClose} className="rounded-full px-3 py-1 text-sm text-muted hover:bg-line/60 hover:text-ink">
+          <button ref={closeBtn} type="button" onClick={onClose} className="inline-flex min-h-11 items-center rounded-full px-3 text-sm text-muted hover:bg-line/60 hover:text-ink">
             Close
           </button>
         </div>
@@ -65,13 +76,13 @@ export function EvidenceDrawer({
                 return (
                   <li key={m.id} className={`flex flex-col ${mine ? "items-end" : "items-start"}`}>
                     {divider && (
-                      <span className="my-2 flex w-full items-center gap-3 text-[11px] font-medium tracking-wide text-rose uppercase">
+                      <span className="my-2 flex w-full items-center gap-3 text-xs font-medium tracking-wide text-rose uppercase">
                         <span className="h-px flex-1 bg-rose/30" />
                         Around {fmtDateLong(splitAt)}
                         <span className="h-px flex-1 bg-rose/30" />
                       </span>
                     )}
-                    <span className="mb-1 px-1 text-[11px] text-faint">
+                    <span className="mb-1 px-1 text-xs text-faint">
                       {mine ? "You" : "Him"} · {fmtDateTime(m.ts)}
                     </span>
                     <span

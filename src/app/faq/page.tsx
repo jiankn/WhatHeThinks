@@ -26,8 +26,9 @@ const SECTIONS: { title: string; items: { q: string; a: string }[] }[] = [
     items: [
       { q: "Is my chat uploaded?", a: "No. Your chat is read and analyzed in your browser. To create your report we send statistics plus up to 120 example messages, with names, emails, phone numbers and links replaced." },
       { q: "How long do you keep my data?", a: "Example messages are deleted automatically after 30 days. Your report's statistics and findings stay until you delete the report." },
-      { q: "How do I delete my report?", a: "Use the delete button at the bottom of your report, or paste your report link on the Delete my data page. Deletion is immediate and permanent." },
-      { q: "Do you use my messages to train AI?", a: "No. Never." },
+      { q: "How do I delete my report?", a: "If you have an account, manage and delete reports from My account. Guest reports can still be deleted from the report page or with the private report link. Deletion is immediate and permanent." },
+      { q: "How is the report written?", a: "The current version uses measured chat statistics and structured explanations. It does not send your messages to an external language model or use them to train a model." },
+      { q: "Can I share the result?", a: "Yes, including your free preview. Preview a summary card, choose whether to include statistics, then download an image or publish a link. No names or message excerpts are included. Links expire after 30 days and can be revoked from your report." },
     ],
   },
   {
@@ -36,7 +37,7 @@ const SECTIONS: { title: string; items: { q: string; a: string }[] }[] = [
       { q: "What's free?", a: "The preview: message and activity stats, who starts conversations, typical reply times and the biggest change we found." },
       { q: "What does the full report cost?", a: `${SKUS.full_report.label}, one time. No subscription and no account needed.` },
       { q: "Can I get a refund?", a: "If your report can't be generated after you pay, you're refunded in full automatically. For anything else, contact us within 14 days." },
-      { q: "How do I get back to my report?", a: "Your report link is saved in your browser and emailed to you after purchase. The link is the key — keep it private." },
+      { q: "How do I get back to my report?", a: "If you are signed in, your reports appear in My account. Otherwise, your private report link is saved in your browser and emailed after purchase — keep it private." },
     ],
   },
 ];
@@ -45,7 +46,7 @@ export default function FaqPage() {
   return (
     <main className="mx-auto w-full max-w-2xl px-4 pt-10 pb-8">
       <p className="eyebrow">Help</p>
-      <h1 className="mt-2 font-display text-4xl font-semibold">Frequently asked questions</h1>
+      <h1 className="mt-2 font-display text-3xl font-medium">Questions before you bring the chat?</h1>
       <p className="mt-3 text-muted">
         Short version: we analyze his texting behavior, not his mind — and your full chat never leaves your device. More
         detail in our <Link href="/privacy" className="text-rose underline underline-offset-2">privacy policy</Link>.

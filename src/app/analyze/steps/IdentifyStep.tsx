@@ -27,7 +27,7 @@ export function IdentifyStep({
 
   return (
     <section>
-      <p className="eyebrow">Step 3</p>
+      <p className="eyebrow">Step 2</p>
       <h1 className="mt-2 font-display text-3xl leading-tight font-semibold sm:text-4xl">Which one is you?</h1>
       <p className="mt-2 text-muted">
         <span className="num text-ink">{fmtInt(summary.messageCount)}</span> messages
@@ -82,8 +82,8 @@ export function IdentifyStep({
       ) : (
         <div className="mt-6 grid gap-4">
           <p className="text-sm text-muted">This looks like a group chat. Pick the two people to compare.</p>
-          <PersonSelect label="You are" value={you} onChange={setYou} people={people} />
-          <PersonSelect label="He is" value={him} onChange={setHim} people={people} />
+          <PersonSelect label="You are" value={you} onChange={setYou} people={people} exclude={him} />
+          <PersonSelect label="He is" value={him} onChange={setHim} people={people} exclude={you} />
         </div>
       )}
 
@@ -142,11 +142,13 @@ function PersonSelect({
   value,
   onChange,
   people,
+  exclude,
 }: {
   label: string;
   value: string | null;
   onChange: (v: string) => void;
   people: ParseSummary["participants"];
+  exclude: string | null;
 }) {
   return (
     <label className="grid gap-1.5 text-sm font-medium">
@@ -160,8 +162,8 @@ function PersonSelect({
           Select…
         </option>
         {people.map((p) => (
-          <option key={p.name} value={p.name}>
-            {p.name} ({fmtInt(p.count)} msgs)
+          <option key={p.name} value={p.name} disabled={p.name === exclude}>
+            {p.name} ({fmtInt(p.count)} msgs){p.name === exclude ? " - already selected" : ""}
           </option>
         ))}
       </select>

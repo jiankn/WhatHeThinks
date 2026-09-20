@@ -7,6 +7,7 @@ import { MAX_BODY_BYTES, validateUpload, type ReportUpload } from "@/lib/report/
 import { getDB } from "@/lib/server/env";
 import { error, json } from "@/lib/server/http";
 import { createReport } from "@/lib/server/reports";
+import { getRequestUser } from "@/lib/server/auth";
 
 export async function POST(req: Request): Promise<Response> {
   const len = Number(req.headers.get("content-length") ?? 0);
@@ -24,6 +25,8 @@ export async function POST(req: Request): Promise<Response> {
   const problem = validateUpload(body);
   if (problem) return error(problem, 400);
 
-  const { id, token } = await createReport(await getDB(), body as ReportUpload);
+  const db = await getDB();
+  const user = await getRequestUser(req, db);
+  const { id, token } = await createReport(db, body as ReportUpload, user?.id ?? null);
   return json({ id, token }, 201);
 }

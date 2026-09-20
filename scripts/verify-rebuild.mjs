@@ -1,0 +1,104 @@
+// Isolated local UI/API smoke test. Uses fictional messages, never submits a payment.
+import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve, sep } from "node:path";
+const base = process.argv[2] ?? "http://localhost:3002";
+assert(["localhost", "127.0.0.1"].includes(new URL(base).hostname), "Only run against a local test server");
+assert((await fetch(base)).ok, "Local server must be ready before running browser checks");
+const output = resolve("design/rebuild");
+await mkdir(output, { recursive: true });
+const profile = await mkdtemp(join(tmpdir(), "wht-rebuild-test-"));
+const chrome = spawn(process.env.CHROME_PATH ?? "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", ["--headless=new", "--disable-gpu", "--hide-scrollbars", "--remote-debugging-port=9225", `--user-data-dir=${profile}`, "about:blank"], { stdio: "ignore", windowsHide: true });
+let socket;
+let reportId, token;
+const results = [];
+const delay = ms => new Promise(r => setTimeout(r, ms));
+try {
+  let target;
+  for (let i = 0; i < 50; i++) {
+    try { target = (await (await fetch("http://127.0.0.1:9225/json/list")).json()).find(t => t.type === "page"); if (target) break; } catch {}
+    await delay(100);
+  }
+  assert(target, "Headless browser started");
+  socket = new WebSocket(target.webSocketDebuggerUrl);
+  await new Promise((resolve, reject) => { socket.addEventListener("open", resolve, { once: true }); socket.addEventListener("error", reject, { once: true }); });
+  let serial = 0;
+  const pending = new Map();
+  socket.addEventListener("message", ({ data }) => { const r = JSON.parse(data); const p = pending.get(r.id); if (p) { pending.delete(r.id); clearTimeout(p.timer); r.error ? p.reject(new Error(r.error.message)) : p.resolve(r.result); } });
+  const send = (method, params = {}) => new Promise((resolve, reject) => { const id = ++serial; const timer = setTimeout(() => { pending.delete(id); reject(new Error(`Timed out: ${method}`)); }, 20000); pending.set(id, { resolve, reject, timer }); socket.send(JSON.stringify({ id, method, params })); });
+  const evaluate = async expression => { const r = await send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true, userGesture: true }); if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text); return r.result.value; };
+  const wait = async (expression, description) => { for (let i = 0; i < 80; i++) { if (await evaluate(expression)) return; await delay(150); } throw new Error(`Missing: ${description}`); };
+  const go = async path => { await send("Page.navigate", { url: `${base}${path}` }); await wait("document.readyState === 'complete' && !!document.querySelector('h1')", path); await evaluate("document.fonts.ready.then(() => true)"); await delay(250); };
+  const clickText = async (selector, text) => evaluate(`(() => { const el = [...document.querySelectorAll(${JSON.stringify(selector)})].find(e => e.getClientRects().length > 0 && e.textContent.includes(${JSON.stringify(text)})); if (!el || el.disabled) throw new Error('Missing or disabled control: ' + ${JSON.stringify(text)}); el.click(); })()`);
+  const screenshot = async name => { const image = await send("Page.captureScreenshot", { format: "png", captureBeyondViewport: false }); await writeFile(join(output, name), Buffer.from(image.data, "base64")); };
+  const layout = async name => { const data = await evaluate(`({ width: innerWidth, scroll: document.documentElement.scrollWidth, h1: [...document.querySelectorAll('h1')].filter(e => e.getClientRects().length > 0).length, brokenImages: [...document.images].filter(i => i.offsetWidth && i.complete && !i.naturalWidth).length })`); assert(data.scroll <= data.width, `${name}: page overflow`); assert.equal(data.h1, 1, `${name}: one H1`); assert.equal(data.brokenImages, 0, `${name}: images`); results.push({ page: name, ...data }); };
+  await send("Page.enable"); await send("Runtime.enable");
+  await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  for (const [path, image] of [["/", "home-mobile.png"], ["/analyze", "setup-mobile.png"], ["/login", "login-mobile.png"], ["/sample-report?preview=1", "preview-mobile.png"], ["/sample-report", "report-mobile.png"]]) { await go(path); await layout(path); await screenshot(image); }
+  await clickText("summary", "Explore the week-by-week"); await delay(250); await layout("expanded timeline");
+  const chart = await evaluate("(() => { const s = document.querySelector('.trend-chart svg'); return { width: s.getBoundingClientRect().width, parent: s.parentElement.getBoundingClientRect().width }; })()");
+  assert(chart.width <= chart.parent + 1, "Chart fits its container after expansion");
+  await clickText("button", "See supporting messages"); await wait("!!document.querySelector('[role=dialog]')", "evidence dialog");
+  await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape" }); await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape" }); await wait("!document.querySelector('[role=dialog]')", "dialog closes with Escape");
+  await clickText("button", "Share my result"); await wait("!!document.querySelector('.v3-share-editor')", "sample share composer");
+  await evaluate("document.querySelector('.v3-share-editor').scrollIntoView({ behavior: 'instant', block: 'start' })"); await delay(300); await screenshot("share-mobile.png");
+  await clickText("button", "Download PNG"); await wait("document.body.innerText.includes('Image download started.')", "PNG export");
+  await go("/analyze?q=mixed_signals&utm_source=tiktok&utm_campaign=smoke");
+  await clickText("button", "Continue"); await wait("document.querySelector('h1')?.textContent.includes('Where')", "platform step");
+  await clickText("button", "Continue"); await wait("!!document.querySelector('.import-form') && !document.querySelector('.import-form').closest('[hidden]')", "import step");
+  await screenshot("upload-mobile.png");
+  await clickText("button", "Paste text");
+  const lines = Array.from({ length: 360 }, (_, i) => { const day = new Date(Date.UTC(2026, 3, 1 + Math.floor(i / 4))); const name = i % 2 ? "Jamie" : "Alex"; const texts = ["How was your day? Want to get coffee on Saturday?", "Sounds good! Let us make a plan.", "I can do 4pm. I really enjoyed seeing you.", "Yes, looking forward to it! How is work?"]; return `[${day.getUTCMonth()+1}/${day.getUTCDate()}/2026, 10:${String((i % 4) * 10).padStart(2,"0")}:00 AM] ${name}: ${texts[i % 4]}`; }).join("\n");
+  await evaluate(`(() => { const el = document.querySelector('#chat-paste'); Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(el, ${JSON.stringify(lines)}); el.dispatchEvent(new Event('input', { bubbles: true })); })()`);
+  await clickText("button", "Use this text"); await wait("[...document.querySelectorAll('h1')].some(e => e.getClientRects().length > 0 && e.textContent.includes('Which one'))", "participants");
+  await clickText("button", "Alex"); await clickText("button", "Analyze our chat");
+  await wait("location.pathname.startsWith('/r/') && !!document.querySelector('.reader-free')", "private preview");
+  const privateData = await evaluate("({ id: location.pathname.split('/')[2], token: new URLSearchParams(location.hash.slice(1)).get('t') })");
+  reportId = privateData.id; token = privateData.token;
+  assert(reportId && token, "Private report credentials created");
+  await layout("real preview"); await screenshot("real-preview-mobile.png");
+  const request = (path, opts) => fetch(`${base}${path}`, opts);
+  const sharePath = `/api/reports/${reportId}/share`;
+  const headers = { "content-type": "application/json", "x-report-token": token, origin: base };
+  assert.equal((await request(sharePath)).status, 404);
+  assert.equal((await request(sharePath, { method: "POST", headers: { "content-type": "application/json" }, body: '{"showMetrics":true}' })).status, 404);
+  assert.equal((await request(sharePath, { method: "POST", headers: { ...headers, origin: "https://untrusted.invalid" }, body: '{"showMetrics":true}' })).status, 403);
+  assert.equal((await request(sharePath, { method: "POST", headers, body: "null" })).status, 400);
+  const published = await request(sharePath, { method: "POST", headers, body: '{"showMetrics":false}' });
+  assert.equal(published.status, 201); const share = await published.json(); assert.match(share.shareId, /^[\w-]{24}$/);
+  const shared = await request(`/s/${share.shareId}`); const sharedText = await shared.text();
+  assert.equal(shared.status, 200); assert(sharedText.includes("What does your chat look like?"));
+  for (const secret of [token, "Alex", "Jamie"]) assert(!sharedText.includes(secret), "No private data in share HTML");
+  assert(!sharedText.includes("Chats I started"), "Hidden metrics not rendered");
+  assert(sharedText.includes("noindex"), "Shares not indexable");
+  const og = await request(`/s/${share.shareId}/image`); assert.equal(og.status, 200); assert(og.headers.get("content-type").includes("image/png"));
+  await writeFile(join(output, "share-og.png"), Buffer.from(await og.arrayBuffer()));
+  const updated = await request(sharePath, { method: "POST", headers, body: '{"showMetrics":true}' });
+  assert.equal((await updated.json()).shareId, share.shareId, "Republishing updates same link");
+  await go(`/s/${share.shareId}`); await layout("public share"); await screenshot("public-share-mobile.png");
+  assert.equal((await request(sharePath, { method: "DELETE" })).status, 404);
+  assert.equal((await request(sharePath, { method: "DELETE", headers })).status, 200);
+  assert.equal((await request(`/s/${share.shareId}/image`)).status, 404, "Revoked image unavailable");
+  const expired = await request(`/s/${share.shareId}`); assert((await expired.text()).includes("no longer available"));
+  const republished = await (await request(sharePath, { method: "POST", headers, body: '{"showMetrics":true}' })).json();
+  assert.notEqual(republished.shareId, share.shareId, "Revocation cannot revive an old link");
+  const deleted = await request(`/api/reports/${reportId}`, { method: "DELETE", headers }); assert.equal(deleted.status, 200);
+  assert.equal((await request(`/s/${republished.shareId}/image`)).status, 404, "Report deletion removes public share");
+  reportId = null;
+  assert.equal((await request("/api/events", { method: "POST", headers: { "content-type": "application/json" }, body: '{"name":"paid"}' })).status, 400, "Client cannot spoof paid events");
+  for (const width of [320, 1440]) { await send("Emulation.setDeviceMetricsOverride", { width, height: 1000, deviceScaleFactor: 1, mobile: width < 768 }); for (const path of ["/", "/does-he-like-me-text-analyzer", "/sample-report", "/signup", "/account", "/faq"]) { await go(path); await layout(`${width} ${path}`); } }
+  await send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 1050, deviceScaleFactor: 1, mobile: false }); await go("/"); await screenshot("home-desktop.png");
+  await writeFile(join(output, "verification.json"), JSON.stringify({ passed: true, checkedAt: new Date().toISOString(), checks: ["local worker import to real preview", "sample image export", "evidence keyboard dismissal", "responsive pages", "unauthorized share denial", "cross-origin mutation denial", "public snapshot privacy", "OG image", "update and revoke", "report deletion revokes share", "paid event spoof rejection"], layouts: results }, null, 2));
+  console.log(`PASS: ${results.length} layout checks; import, evidence, PNG export and share lifecycle verified. No payment was submitted.`);
+} finally {
+  if (reportId && token) await fetch(`${base}/api/reports/${reportId}`, { method: "DELETE", headers: { "x-report-token": token } }).catch(() => {});
+  socket?.close();
+  chrome.kill();
+  if (chrome.exitCode === null) await new Promise(r => chrome.once("exit", r));
+  const safeTemp = resolve(tmpdir()) + sep;
+  const resolvedProfile = resolve(profile);
+  if (!resolvedProfile.startsWith(safeTemp) || !resolvedProfile.split(sep).at(-1).startsWith("wht-rebuild-test-")) throw new Error("Unsafe temporary path");
+  await rm(resolvedProfile, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+}

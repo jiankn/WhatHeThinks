@@ -8,11 +8,12 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TrashIcon } from "@/components/icons";
+import { FocusPicker } from "@/components/report/FocusPicker";
 import { FullReportView } from "@/components/report/FullReportView";
 import { Paywall } from "@/components/report/Paywall";
-import { PreviewSection } from "@/components/report/PreviewSection";
+import { PreviewHeading, PreviewSection } from "@/components/report/PreviewSection";
+import { ShareResult } from "@/components/report/ShareResult";
 import { track } from "@/lib/events";
-import { questionLabel } from "@/lib/questions";
 import { clearToken, tokenFromHash } from "@/lib/report/token-store";
 import type { ReportView } from "@/lib/report/view";
 
@@ -27,14 +28,17 @@ type State =
 export function ReportClient({ id }: { id: string }) {
   const [state, setState] = useState<State>({ kind: "loading" });
   const [checkoutBusy, setCheckoutBusy] = useState(false);
+  const [focusReady, setFocusReady] = useState(true);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const token = useRef<string | null>(null);
   const tracked = useRef(false);
 
   const load = useCallback(async () => {
-    if (!token.current) return setState({ kind: "missing" });
     try {
-      const res = await fetch(`/api/reports/${id}`, { headers: { "x-report-token": token.current } });
+      const headers = token.current ? { "x-report-token": token.current } : undefined;
+      const res = await fetch(`/api/reports/${id}`, { headers });
       if (res.status === 404) return setState({ kind: "missing" });
       if (!res.ok) return setState({ kind: "error" });
       const view = (await res.json()) as ReportView;
@@ -52,7 +56,7 @@ export function ReportClient({ id }: { id: string }) {
     window.scrollTo({ top: 0 });
     token.current = tokenFromHash(id);
     const sessionId = new URLSearchParams(window.location.search).get("session_id");
-    if (!sessionId || !token.current) {
+    if (!sessionId) {
       void load();
       return;
     }
@@ -78,6 +82,7 @@ export function ReportClient({ id }: { id: string }) {
   }, [generating, load]);
 
   const unlock = async () => {
+    if (!focusReady) { setCheckoutError("Save your report focus before continuing."); return; }
     setCheckoutBusy(true);
     setCheckoutError(null);
     track("checkout_click", {}, id);
@@ -105,14 +110,21 @@ export function ReportClient({ id }: { id: string }) {
 
   const remove = async () => {
     if (!confirm("Delete this report and all of its data? This can't be undone.")) return;
-    const res = await fetch(`/api/reports/${id}`, {
-      method: "DELETE",
-      headers: { "x-report-token": token.current ?? "" },
-    });
-    if (res.ok) {
+    setDeleteBusy(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch(`/api/reports/${id}`, {
+        method: "DELETE",
+        headers: { "x-report-token": token.current ?? "" },
+      });
+      if (!res.ok) throw new Error("delete failed");
       track("delete", {});
       clearToken(id);
       setState({ kind: "deleted" });
+    } catch {
+      setDeleteError("We couldn't delete the report. Check your connection and try again.");
+    } finally {
+      setDeleteBusy(false);
     }
   };
 
@@ -144,7 +156,7 @@ export function ReportClient({ id }: { id: string }) {
     const copy = {
       missing: {
         title: "We can't open this report.",
-        body: "The link may be incomplete, or the report was deleted. Use the full link from your browser or your email — it contains the key after “#t=”.",
+        body: "The link may be incomplete, the report was deleted, or it belongs to another account. Sign in or use the full private link from your email.",
       },
       deleted: { title: "Report deleted.", body: "This report and its example messages have been permanently removed." },
       error: { title: "Something went wrong.", body: "We couldn't load your report. Refresh the page to try again." },
@@ -153,48 +165,55 @@ export function ReportClient({ id }: { id: string }) {
       <Shell>
         <h1 className="font-display text-3xl font-semibold">{copy.title}</h1>
         <p className="mt-3 text-muted">{copy.body}</p>
-        <Link href="/analyze" className="btn-primary mt-6">
-          Analyze a chat
-        </Link>
+        <div className="mt-6 flex flex-wrap gap-3">
+          {state.kind === "error" && <button type="button" className="btn-primary" onClick={() => void load()}>Try again</button>}
+          <Link href={state.kind === "deleted" ? "/" : "/analyze"} className={state.kind === "error" ? "btn-secondary" : "btn-primary"}>
+            {state.kind === "deleted" ? "Go home" : "Analyze a chat"}
+          </Link>
+        </div>
       </Shell>
     );
   }
 
   const { view } = state;
+  if (view.paid && view.report) return <FullReportView view={view} report={view.report} token={token.current ?? ""} onDelete={remove} deleteBusy={deleteBusy} deleteError={deleteError} />;
   return (
     <Shell>
-      <p className="eyebrow">You asked</p>
-      <h1 className="mt-2 font-display text-3xl leading-tight font-semibold sm:text-4xl">
-        “{questionLabel(view.question, view.customQuestion)}”
-      </h1>
+      <PreviewHeading preview={view.preview} />
 
-      <div className="mt-6">
-        {view.paid && view.report ? (
-          <FullReportView view={view} report={view.report} token={token.current ?? ""} />
-        ) : view.paid ? (
+      <div>
+        {view.paid ? (
           <Generating failed={view.status === "failed"} />
         ) : (
           <>
             <PreviewSection preview={view.preview} />
+            <details className="reader-details"><summary>Change what your full report focuses on</summary><FocusPicker
+              reportId={id}
+              token={token.current ?? ""}
+              preview={view.preview}
+              question={view.question}
+              customQuestion={view.customQuestion}
+              onReadyChange={setFocusReady}
+            /></details>
             <Paywall preview={view.preview} busy={checkoutBusy} error={checkoutError} onUnlock={unlock} />
-            <p className="mt-8 text-center text-xs text-muted">
-              Bookmark this page — the link is your key to this report.
-            </p>
+            <ShareResult preview={view.preview} reportId={id} token={token.current ?? ""} />
           </>
         )}
       </div>
 
-      <div className="mt-12 border-t border-line pt-6 text-center">
-        <button onClick={remove} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-rose-dark">
-          <TrashIcon /> Delete this report and its data
+      <div className="report-delete">
+        <button type="button" onClick={remove} disabled={deleteBusy} className="inline-flex min-h-11 items-center gap-1.5 text-sm text-muted hover:text-rose-dark disabled:opacity-60">
+          <TrashIcon /> {deleteBusy ? "Deleting…" : "Delete this report and its data"}
         </button>
       </div>
+      {deleteError && <p role="alert" className="mt-2 text-center text-sm text-rose-dark">{deleteError}</p>}
+      <p className="mt-4 text-center text-xs text-muted">Bookmark this page. The link is your key to this report.</p>
     </Shell>
   );
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
-  return <main className="mx-auto w-full max-w-2xl px-4 pt-8 pb-10 sm:pt-12">{children}</main>;
+  return <main className="reader-shell">{children}</main>;
 }
 
 function Generating({ failed }: { failed: boolean }) {

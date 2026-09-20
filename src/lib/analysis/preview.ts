@@ -10,15 +10,15 @@ import type {
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-/** 选出预览用的头条转折点：优先近期的 high/medium cooling，shift 最负。 */
+/** Pick the strongest supported change without preferring a negative result. */
 export function pickHeadline(tps: TurningPoint[]): TurningPoint | null {
   const strong = tps.filter((t) => t.confidence !== "low");
   if (strong.length === 0) return null;
-  const cooling = strong.filter((t) => t.direction === "cooling");
-  const pool = cooling.length ? cooling : strong;
-  return pool.reduce((best, t) =>
-    Math.abs(t.shift) > Math.abs(best.shift) ? t : best,
-  );
+  return strong.reduce((best, t) => {
+    if (t.confidence !== best.confidence) return t.confidence === "high" ? t : best;
+    if (Math.abs(t.shift) !== Math.abs(best.shift)) return Math.abs(t.shift) > Math.abs(best.shift) ? t : best;
+    return t.date > best.date ? t : best;
+  });
 }
 
 function headlineMetric(
@@ -68,7 +68,12 @@ export function buildPreview(
     headline = {
       date: tp.date,
       metric,
+      direction: tp.direction,
       sentence: headlineSentence(metric, tp.direction, fmtDate(tp.date)),
+      comparison: {
+        initiation: { before: tp.before.initShare, after: tp.after.initShare },
+        reply: { before: tp.before.replyP50, after: tp.after.replyP50 },
+      },
     };
   }
 

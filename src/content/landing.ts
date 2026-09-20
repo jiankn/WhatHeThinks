@@ -36,6 +36,8 @@ export interface LandingPage {
   faq: { q: string; a: string }[];
   /** 正文内指向相关页面的链接（描述性锚文本）。 */
   related: { slug: string; text: string }[];
+  /** 精简布局：首屏直接上传，正文只留测量项 + FAQ（answers/useCases 不渲染，问答并入 faq）。 */
+  simple?: boolean;
 }
 
 export const LANDING_UPDATED = "2026-09-18";
@@ -96,14 +98,14 @@ export const LANDING_PAGES: LandingPage[] = [
   },
   {
     slug: "does-he-like-me-text-analyzer",
+    simple: true,
     question: "likes_me",
     title: "Does He Like Me? Text Analyzer for Your Full Chat",
     description:
       "Find out what his texting actually shows: who initiates, how curious he is, whether he makes plans. Analyze your whole WhatsApp chat — free preview, private by default.",
     eyebrow: "Does he like me?",
-    h1: "Does he like me? Let his texting behavior answer.",
-    lede:
-      "Interest shows up in effort you can count: how often he reaches out first, whether he asks about your life, how quickly he replies, and whether he turns flirting into actual plans. We read your entire chat and rate his observable interest as strong, moderate, mixed or low — with the messages behind it.",
+    h1: "Does he like me? Let his texts answer.",
+    lede: "Add your WhatsApp chat. We count how often he reaches out, asks about you and makes plans — then rate his interest.",
     cta: "Analyze his interest",
     measures: [
       { name: "Initiative", how: "His share of conversation starts in recent weeks. Around 40–50% is typical of mutual interest." },
@@ -114,32 +116,21 @@ export const LANDING_PAGES: LandingPage[] = [
     ],
     sample: "interest",
     sampleCaption: "Sample from a full report — the interest breakdown.",
-    answers: [
+    answers: [],
+    useCases: [],
+    faq: [
       {
         q: "How can you tell if a guy likes you over text?",
-        a: "Look for effort that costs him something: he texts first without a reason, asks follow-up questions, remembers details you mentioned, and suggests specific plans. Fast replies and emojis are nice but weaker signals. The strongest single sign is a concrete invitation — a day, a time and something to do.",
-        list: [
-          "He starts conversations, not just answers them",
-          "He asks about your life and follows up",
-          "He suggests specific plans, not “sometime”",
-          "His effort is consistent week to week",
-        ],
+        a: "Look for effort that costs him something: he texts first without a reason, asks follow-up questions and suggests specific plans — a day, a time, something to do. Fast replies and emojis are weaker signals. What counts most is that the effort stays consistent week to week.",
       },
+      { q: "Will it tell me if he loves me?", a: "No. We don't guess feelings or give a “love score.” We rate observable interest — strong, moderate, mixed or low — and show the behavior behind it." },
       {
         q: "Why not just ask ChatGPT about a screenshot?",
-        a: "A screenshot shows a moment. Whether he likes you is a pattern across weeks or months — who reaches out, how that changed, whether plans happen. We count those patterns across your entire chat history, which a screenshot can't show.",
+        a: "A screenshot shows a moment. Whether he likes you is a pattern across weeks — who reaches out, whether plans happen. We count that across your whole chat.",
       },
-    ],
-    useCases: [
-      { title: "The talking stage", body: "A few weeks in and you can't tell if it's going anywhere. See whether his effort matches yours." },
-      { title: "The overthinker's check", body: "Replace re-reading the thread at 1am with numbers: who starts, who asks, who plans." },
-      { title: "After you met in person", body: "See whether his texting picked up or stayed the same after your dates." },
-    ],
-    faq: [
-      { q: "Will it tell me if he loves me?", a: "No. We don't guess feelings or give a “love score.” We rate observable interest — strong, moderate, mixed or low — and show the behavior behind it." },
-      { q: "Which chats can I analyze?", a: "WhatsApp exports (.txt or .zip) work best because they include timestamps. You can also paste text, but without timestamps we can't measure reply times or changes over time." },
-      { q: "How many messages do I need?", a: "At least 50. For the timeline of when things changed, you'll want at least three weeks and a few hundred messages." },
-      { q: "Is it free?", a: "The preview — message counts, who starts conversations, reply times and the biggest change we found — is free. The full report is a one-time $9.99." },
+      { q: "What do I need?", a: "A WhatsApp chat export (.txt or .zip) with at least 50 messages. To see when things changed, a few weeks and a few hundred messages work best." },
+      { q: "Is my chat uploaded?", a: "Your full chat is read on your device. For your report we keep statistics and up to 120 anonymized example messages, and delete the examples after 30 days." },
+      { q: "Is it free?", a: "The preview — who starts conversations, reply times and the biggest change we found — is free. The full report is a one-time $9.99." },
     ],
     related: [
       { slug: "is-he-losing-interest", text: "check whether his interest is fading" },
@@ -148,14 +139,14 @@ export const LANDING_PAGES: LandingPage[] = [
   },
   {
     slug: "mixed-signals-text-analyzer",
+    simple: true,
     question: "mixed_signals",
     title: "Mixed Signals Text Analyzer — Where His Words and Actions Differ",
     description:
       "Hot and cold? Analyze your chat to see where his warmth and his follow-through don't match. Free preview of your full WhatsApp history.",
     eyebrow: "Mixed signals",
-    h1: "Mixed signals? See exactly where his words and actions split.",
-    lede:
-      "Mixed signals usually mean two measurable things are pointing in different directions — warm texts but no plans, instant replies but he never starts a conversation, long silences followed by intense attention. We check your chat for each of these patterns and show both columns side by side.",
+    h1: "Mixed signals? See where his words and actions split.",
+    lede: "Add your WhatsApp chat. We check for warm texts with no plans, fast replies with no effort, and disappear-and-return cycles.",
     cta: "Decode the mixed signals",
     measures: [
       { name: "Warmth without plans", how: "He sends affectionate messages at least as often as you do, but proposed one or no concrete plans recently." },
@@ -166,25 +157,21 @@ export const LANDING_PAGES: LandingPage[] = [
     ],
     sample: "mixed",
     sampleCaption: "Sample from a full report — both columns of the mixed signals check.",
-    answers: [
+    answers: [],
+    useCases: [],
+    faq: [
       {
         q: "What counts as mixed signals from a guy?",
-        a: "Mixed signals are when his words suggest interest but his actions don't match — or his attention comes and goes. Common versions: flirty texts with no real plans, quick replies but he never reaches out first, or disappearing for days and returning as if nothing happened. The mismatch itself is the signal.",
+        a: "His words suggest interest but his actions don't match — or his attention comes and goes. Flirty texts with no real plans, quick replies but he never reaches out first, or disappearing for days and returning as if nothing happened.",
       },
       {
         q: "Should I trust his words or his actions?",
-        a: "When they disagree over several weeks, actions tend to be the more reliable signal — especially plans that actually happen. Words are cheap to send; reaching out first and following through take effort. That's why our report separates what he says from what he does.",
+        a: "When they disagree for several weeks, actions are usually the more reliable signal — especially plans that actually happen. Words are cheap; reaching out first and following through take effort.",
       },
-    ],
-    useCases: [
-      { title: "Hot and cold", body: "See whether the warm stretches and cold stretches are random — or a repeating cycle." },
-      { title: "All talk, no plans", body: "Count how many plans he floated versus how many had an actual day and time." },
-      { title: "The late-night texter", body: "Check when his conversations actually start." },
-    ],
-    faq: [
-      { q: "Is this the same as a red flag detector?", a: "No. We don't label him or diagnose anything. We show where his behavior points in two directions and what that combination may suggest." },
       { q: "What if nothing is mixed?", a: "Then the report says so. Consistent signals — in either direction — are a clear answer too." },
-      { q: "Do you store my chat?", a: "No. Your full chat is analyzed on your device. We keep statistics and up to 120 anonymized example messages for your report, and delete the examples after 30 days." },
+      { q: "Is this a red flag detector?", a: "No. We don't label him or diagnose anything. We show where his behavior points in two directions." },
+      { q: "Is my chat uploaded?", a: "Your full chat is read on your device. For your report we keep statistics and up to 120 anonymized example messages, and delete the examples after 30 days." },
+      { q: "Is it free?", a: "The preview is free. The full report, with both columns and the messages behind them, is a one-time $9.99." },
     ],
     related: [
       { slug: "breadcrumbing-test", text: "take the breadcrumbing test" },

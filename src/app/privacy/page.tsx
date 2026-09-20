@@ -1,6 +1,6 @@
 /**
  * 隐私政策（草稿）。内容必须与实际架构一致：见 docs/PRD.md §5.3、§5.7、§7。
- * 注意：上线前需法务审核；接入真实 LLM 后要补充 AI 服务商条款。
+ * 注意：上线前仍需按目标市场和最终服务商配置完成法务审核。
  */
 
 import type { Metadata } from "next";
@@ -9,17 +9,18 @@ import { Prose } from "@/components/marketing/Prose";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "How WhatHeThinks handles your chat: analyzed on your device, minimal data stored, examples deleted after 30 days, never sold or used for training.",
+  description: "How WhatHeThinks handles your chat: local analysis, limited redacted excerpts, 30-day deletion, AI processing and your deletion controls.",
   alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {
   return (
-    <Prose eyebrow="Privacy" title="Privacy Policy" updated="2026-09-18">
+    <Prose eyebrow="Privacy" title="Privacy Policy" updated="2026-09-20">
       <p>
-        WhatHeThinks is built so that your conversation stays with you. This policy explains exactly what happens to
-        your data. The short version: <strong>your full chat never leaves your device</strong>, we store only what we
-        need to show you your report, and you can delete it at any time.
+        WhatHeThinks is built to minimize how much of your conversation leaves your device. This policy explains exactly
+        what happens to your data. The short version: <strong>your full chat export never leaves your device</strong>,
+        but statistics and up to 120 redacted excerpts are sent to create and support your report. You can delete the
+        stored report data at any time.
       </p>
 
       <h2>What happens on your device</h2>
@@ -45,6 +46,15 @@ export default function PrivacyPage() {
           <strong>Your email address</strong>, if you pay (so we can send your report link) or leave a follow-up question.
         </li>
         <li>
+          <strong>Optional account details</strong> — your email address, name, and, if you use Google sign-in, your
+          Google account identifier and profile image. If you use a password, we store a salted password hash, never the
+          password itself.
+        </li>
+        <li>
+          <strong>Sign-in and password-reset records</strong> — short-lived reset tokens and account sessions. The
+          tokens stored in our database are hashed and expire automatically.
+        </li>
+        <li>
           <strong>Basic usage events</strong> — such as “preview viewed” or “checkout started” — with no chat content, to
           understand how the product is used.
         </li>
@@ -59,14 +69,19 @@ export default function PrivacyPage() {
       <ul>
         <li>Example messages are deleted automatically 30 days after your report is created.</li>
         <li>Your report's statistics and findings are kept until you delete the report.</li>
+        <li>Account sessions expire after 30 days. Password-reset links expire after one hour and work once.</li>
         <li>Payment records (amount, date and payment reference) are kept as required for accounting. They contain no chat content.</li>
       </ul>
+
+      <h2>Sharing is your choice</h2>
+      <p>Reports are private by default. You can download an image or explicitly publish a selected summary. The summary contains a general finding and, if you choose, two statistics. It never includes names, message excerpts, dates, or your private report key. Anyone with the summary link can view it for 30 days. Revoke it from the report at any time; deleting the report or account also removes the summary. Images already saved and previews cached by other services cannot be recalled.</p>
+      <p>We use an anonymous session identifier in browser session storage to connect basic product events, referral sources and campaign labels. These events do not contain messages, questions you write, or private report keys. Downloading a card does not tell us whether you sent it to anyone.</p>
 
       <h2>What we never do</h2>
       <ul>
         <li>We never sell your data.</li>
         <li>We never use your data for advertising or share it with advertisers.</li>
-        <li>We never use your messages to train AI models.</li>
+        <li>WhatHeThinks does not train its own AI models on your chat or report.</li>
         <li>We never log the content of your messages.</li>
       </ul>
 
@@ -74,27 +89,41 @@ export default function PrivacyPage() {
       <p>We use a small number of providers to run the service:</p>
       <ul>
         <li>
-          <strong>Cloudflare</strong> — hosting and database.
+          <strong>Cloudflare</strong> — hosting, database and Turnstile security checks that help prevent automated abuse.
         </li>
         <li>
           <strong>Stripe</strong> — payments. Your card details go directly to Stripe; we never see them.
         </li>
         <li>
-          <strong>Resend</strong> — sending your report link by email.
+          <strong>Google</strong> — optional account sign-in. Google receives the information needed to complete the
+          sign-in flow, and we receive your verified email and basic profile details.
+        </li>
+        <li>
+          <strong>Resend</strong> — sending report links and password-reset emails.
         </li>
       </ul>
 
+      <h2>International data transfers</h2>
+      <p>
+        Cloudflare, Stripe, Google and Resend may process data in countries other than the one where you live. Those
+        countries may have different data-protection rules. Contact{" "}
+        <a href="mailto:privacy@whathethinks.com">privacy@whathethinks.com</a> if you want more information about where
+        your data is processed or the safeguards that apply.
+      </p>
+
       <h2>Deleting your data</h2>
       <p>
-        You can delete a report at any time from the bottom of the report page, or on the{" "}
-        <Link href="/delete">delete my data</Link> page using your report link. Deletion is permanent and removes the
-        report, its statistics and its example messages.
+        If you have an account, use <Link href="/account">My account</Link> to review and delete individual reports or
+        delete the account and its stored report data. If you used WhatHeThinks without an account, you can still delete
+        a report from its page or on the <Link href="/delete">private-link deletion page</Link>. Deletion is permanent.
       </p>
 
       <h2>Cookies and local storage</h2>
       <p>
         We don't use advertising or tracking cookies. Your browser's local storage is used to remember the key to your
-        report on this device.
+        report on this device. If you sign in, we use a secure, HTTP-only session cookie. Google sign-in briefly uses
+        state and nonce cookies to complete the sign-in securely. Cloudflare Turnstile may process standard network and
+        security signals to distinguish people from automated requests.
       </p>
 
       <h2>Age</h2>

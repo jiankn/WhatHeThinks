@@ -13,6 +13,8 @@ import { generateReport } from "@/lib/server/generate";
 import { error, json, TOKEN_HEADER } from "@/lib/server/http";
 import { getAuthorizedRow, markPaid } from "@/lib/server/reports";
 import { createCheckoutSession } from "@/lib/server/stripe";
+import { getRequestUser } from "@/lib/server/auth";
+import type { ReportRow } from "@/lib/server/reports";
 
 export async function POST(req: Request): Promise<Response> {
   let body: { reportId?: unknown };
@@ -24,7 +26,11 @@ export async function POST(req: Request): Promise<Response> {
   if (typeof body.reportId !== "string") return error("missing reportId", 400);
 
   const db = await getDB();
-  const row = await getAuthorizedRow(db, body.reportId, req.headers.get(TOKEN_HEADER));
+  const rowByToken = await getAuthorizedRow(db, body.reportId, req.headers.get(TOKEN_HEADER));
+  const user = rowByToken ? null : await getRequestUser(req, db);
+  const row = rowByToken ?? (user
+    ? await db.prepare(`SELECT * FROM reports WHERE id = ? AND user_id = ?`).bind(body.reportId, user.id).first<ReportRow>()
+    : null);
   if (!row) return error("not found", 404);
   if (row.paid_at !== null) return json({ unlocked: true });
 

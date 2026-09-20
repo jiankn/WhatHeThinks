@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <Prose eyebrow="Terms" title="Terms of Service" updated="2026-09-18">
+    <Prose eyebrow="Terms" title="Terms of Service" updated="2026-09-19">
       <p>
         These terms apply when you use WhatHeThinks. By using the service, you agree to them. If you don't agree,
         please don't use the service.
@@ -36,11 +36,13 @@ export default function TermsPage() {
       <ul>
         <li>You must be at least 18 years old.</li>
         <li>You may only analyze conversations you are a participant in.</li>
+        <li>You must have any permission or legal right required in your country to process the conversation.</li>
         <li>
           You may not use the service to monitor, harass, stalk or control another person, or to analyze anyone's
           messages without being part of that conversation.
         </li>
         <li>You are responsible for how you use your report, including anything you choose to share.</li>
+        <li>If you create an account, you are responsible for keeping its sign-in details secure.</li>
       </ul>
 
       <h2>Payments and refunds</h2>
@@ -70,8 +72,9 @@ export default function TermsPage() {
 
       <h2>Your data</h2>
       <p>
-        How we handle your data is described in our <Link href="/privacy">privacy policy</Link>. You can delete your
-        report at any time.
+        How we handle your data is described in our <Link href="/privacy">privacy policy</Link>. You can delete reports
+        at any time. If you create an account, you can also delete the account and its stored report data from your
+        account page.
       </p>
 
       <h2>Changes and contact</h2>

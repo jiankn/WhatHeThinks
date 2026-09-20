@@ -1,50 +1,54 @@
 "use client";
 
 /**
- * 免费工具组件：上传/粘贴 → 选"哪个是你" → 只展示一个指标（按月拆分）。
+ * 免费工具组件：上传 → 选"哪个是你" → 一句话答案 + 按月趋势。
  * 复用 /analyze 的 Web Worker；全程在浏览器内完成，不上传任何数据。
  */
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRightIcon, LockIcon, UploadIcon } from "@/components/icons";
+import { ArrowRightIcon, LockIcon } from "@/components/icons";
 import { SplitBar } from "@/components/report/SplitBar";
+import { ChatDropzone } from "@/components/upload/ChatDropzone";
+import { ExportHelp } from "@/components/upload/ExportHelp";
 import type { Analysis } from "@/lib/analysis/analysis-types";
 import { track } from "@/lib/events";
 import { fmtMinutes, fmtPct } from "@/lib/format";
 import { ERROR_COPY, type ParseSummary, type WorkerIn, type WorkerOut } from "@/app/analyze/worker-protocol";
 
 type Tool = "who-texts-first" | "reply-time";
+const MAX_FILE_BYTES = 50 * 1024 * 1024;
+/** 按月趋势只展示最近 12 个月，长聊天也不会拉出一长串。 */
+const MAX_MONTHS = 12;
 
 interface MonthRow {
   month: string;
   yInit: number;
   hInit: number;
-  yReply: number | null;
   hReply: number | null;
 }
 
 /** 周桶 → 月度汇总（发起次数求和；回复时间取各周中位数的均值）。 */
 function byMonth(a: Analysis): MonthRow[] {
-  const map = new Map<string, { yI: number; hI: number; yR: number[]; hR: number[] }>();
+  const map = new Map<string, { yI: number; hI: number; hR: number[] }>();
   for (const w of a.weeks) {
     const key = new Date(w.weekStart).toISOString().slice(0, 7);
-    const m = map.get(key) ?? { yI: 0, hI: 0, yR: [], hR: [] };
+    const m = map.get(key) ?? { yI: 0, hI: 0, hR: [] };
     m.yI += w.Y.initiations;
     m.hI += w.H.initiations;
-    if (w.Y.replyP50 > 0) m.yR.push(w.Y.replyP50);
     if (w.H.replyP50 > 0) m.hR.push(w.H.replyP50);
     map.set(key, m);
   }
   const avg = (xs: number[]) => (xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : null);
-  return [...map.entries()].map(([k, m]) => ({
-    month: new Date(`${k}-01T00:00:00Z`).toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" }),
+  return [...map.entries()].slice(-MAX_MONTHS).map(([k, m]) => ({
+    month: new Date(`${k}-01T00:00:00Z`).toLocaleDateString("en-US", { month: "short", year: "2-digit", timeZone: "UTC" }),
     yInit: m.yI,
     hInit: m.hI,
-    yReply: avg(m.yR),
     hReply: avg(m.hR),
   }));
 }
+
+const hasReply = (x: number) => Number.isFinite(x) && x > 0;
 
 export function ToolWidget({ tool }: { tool: Tool }) {
   const [summary, setSummary] = useState<ParseSummary | null>(null);
@@ -62,6 +66,10 @@ export function ToolWidget({ tool }: { tool: Tool }) {
       pending.current?.(e.data);
       pending.current = null;
     };
+    w.onerror = () => {
+      pending.current?.({ type: "error", code: "unknown" });
+      pending.current = null;
+    };
     worker.current = w;
     return () => w.terminate();
   }, []);
@@ -69,8 +77,12 @@ export function ToolWidget({ tool }: { tool: Tool }) {
   const call = useCallback(
     (msg: WorkerIn, transfer?: Transferable[]) =>
       new Promise<WorkerOut>((resolve) => {
+        if (!worker.current) {
+          resolve({ type: "error", code: "unknown" });
+          return;
+        }
         pending.current = resolve;
-        worker.current?.postMessage(msg, transfer ?? []);
+        worker.current.postMessage(msg, transfer ?? []);
       }),
     [],
   );
@@ -86,29 +98,46 @@ export function ToolWidget({ tool }: { tool: Tool }) {
 
   const onFile = async (f: File) => {
     setError(null);
+    if (f.size > MAX_FILE_BYTES) {
+      setError("That file is over 50 MB. Export the chat without media and try again.");
+      return;
+    }
     setBusy(true);
-    const buf = await f.arrayBuffer();
-    onParsed(await call({ type: "parseFile", name: f.name, buf }, [buf]));
-    setBusy(false);
+    try {
+      const buf = await f.arrayBuffer();
+      onParsed(await call({ type: "parseFile", name: f.name, buf }, [buf]));
+    } catch {
+      setError("We couldn't read that file. Export the chat again without media, then retry.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const onPaste = async () => {
     setError(null);
     setBusy(true);
-    onParsed(await call({ type: "parseText", text }));
-    setBusy(false);
+    try {
+      onParsed(await call({ type: "parseText", text }));
+    } catch {
+      setError("We couldn't read that text. Check the format and try again.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const pick = async (you: string) => {
     const him = summary!.participants.find((p) => p.name !== you)?.name;
     if (!him) return;
     setBusy(true);
-    const res = await call({ type: "analyze", youName: you, himName: him });
-    setBusy(false);
-    if (res.type === "error") return setError(ERROR_COPY[res.code]);
-    if (res.type === "analyzed") {
-      setResult(res.analysis);
-      track("tool_used", { tool });
+    try {
+      const res = await call({ type: "analyze", youName: you, himName: him });
+      if (res.type === "error") return setError(ERROR_COPY[res.code]);
+      if (res.type === "analyzed") {
+        setResult(res.analysis);
+        track("tool_used", { tool });
+      }
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -131,51 +160,55 @@ export function ToolWidget({ tool }: { tool: Tool }) {
           {paste ? (
             <div className="space-y-3">
               <textarea
+                aria-label="Paste an exported WhatsApp chat"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 rows={7}
-                placeholder="Paste an exported WhatsApp chat…"
+                placeholder={"[5/18/25, 9:41:05 PM] Jake: hey you\n[5/18/25, 9:43:10 PM] Emma: hiii"}
                 className="w-full rounded-2xl border border-line bg-paper px-4 py-3 font-mono text-sm outline-none focus:border-rose"
               />
-              <button className="btn-primary w-full" disabled={busy || text.trim().length < 20} onClick={onPaste}>
+              <button type="button" className="btn-primary w-full" disabled={busy || text.trim().length < 20} onClick={onPaste}>
                 {busy ? "Reading…" : "Calculate"}
               </button>
             </div>
           ) : (
-            <label className={`flex cursor-pointer flex-col items-center rounded-3xl border-2 border-dashed border-line px-6 py-10 text-center transition hover:border-rose/50 ${busy ? "pointer-events-none opacity-60" : ""}`}>
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-rose-soft text-rose">
-                <UploadIcon />
-              </span>
-              <span className="mt-3 font-semibold">{busy ? "Reading your chat…" : "Upload your WhatsApp export"}</span>
-              <span className="mt-1 text-sm text-muted">.txt or .zip</span>
-              <input type="file" accept=".txt,.zip,text/plain,application/zip" className="sr-only" onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} />
-            </label>
+            <ChatDropzone busy={busy} onFile={onFile} />
           )}
-          <div className="mt-3 flex items-center justify-between gap-3 text-xs text-muted">
+
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm text-muted">
             <span className="flex items-center gap-1.5">
-              <LockIcon className="h-3.5 w-3.5" /> Runs entirely on your device. Nothing is uploaded.
+              <LockIcon className="h-3.5 w-3.5" /> Runs on your device. Nothing is uploaded.
             </span>
-            <button onClick={() => setPaste((v) => !v)} className="shrink-0 underline underline-offset-2 hover:text-ink">
+            <button type="button" onClick={() => setPaste((v) => !v)} className="inline-flex min-h-11 shrink-0 items-center underline underline-offset-2 hover:text-ink">
               {paste ? "Upload a file" : "Paste instead"}
             </button>
           </div>
+
+          <ExportHelp />
         </>
       )}
 
       {summary && !result && (
         <div>
           <p className="font-semibold">Which one is you?</p>
-          {summary.participants.length > 2 && (
-            <p className="mt-1 text-sm text-muted">This tool compares two people — for group chats, use the full analyzer.</p>
+          {summary.participants.length > 2 ? (
+            <div className="mt-3 rounded-[var(--radius-card)] bg-rose-soft px-4 py-4">
+              <p className="text-sm text-muted">This free tool is for one-to-one chats. The full analyzer lets you choose any two people from a group chat.</p>
+              <Link href="/analyze" className="text-link mt-3">Open the full analyzer <ArrowRightIcon /></Link>
+            </div>
+          ) : (
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {summary.participants.map((p) => (
+                <button type="button" key={p.name} disabled={busy} onClick={() => pick(p.name)} className="rounded-2xl border border-line bg-paper px-4 py-3 text-left transition hover:border-you">
+                  <span className="font-medium">{p.name}</span>
+                  <span className="num ml-2 text-sm text-muted">{p.count.toLocaleString("en-US")} msgs</span>
+                </button>
+              ))}
+            </div>
           )}
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {summary.participants.slice(0, 2).map((p) => (
-              <button key={p.name} disabled={busy} onClick={() => pick(p.name)} className="rounded-2xl border border-line bg-paper px-4 py-3 text-left transition hover:border-you">
-                <span className="font-medium">{p.name}</span>
-                <span className="num ml-2 text-sm text-muted">{p.count.toLocaleString("en-US")} msgs</span>
-              </button>
-            ))}
-          </div>
+          <button type="button" onClick={reset} className="mt-4 inline-flex min-h-11 items-center text-sm text-muted underline underline-offset-2 hover:text-ink">
+            Use a different chat
+          </button>
         </div>
       )}
 
@@ -186,96 +219,124 @@ export function ToolWidget({ tool }: { tool: Tool }) {
 
 function Result({ tool, a, onReset }: { tool: Tool; a: Analysis; onReset: () => void }) {
   const months = byMonth(a);
-  const t = a.totals;
+  const { Y, H } = a.totals;
+  const convos = Y.initiations + H.initiations;
+  const hisShare = convos ? H.initiations / convos : 0.5;
+  const hisReply = hasReply(H.replyP50) ? fmtMinutes(H.replyP50) : null;
+
+  // 顺带给出另一个指标：数据已在手，不必让用户再去另一个工具重传一次。
+  const alsoInitiation = convos ? `he starts ${fmtPct(hisShare)} of your conversations.` : null;
+  const alsoReply = hisReply ? `he usually replies in ${hisReply}.` : null;
 
   return (
     <div className="space-y-6">
       {tool === "who-texts-first" ? (
         <>
-          <SplitBar label="Who starts conversations" you={a.preview.initiation.you} him={a.preview.initiation.him} />
-          <p className="text-sm text-muted">
-            You started <span className="num text-ink">{t.Y.initiations}</span> conversations and he started{" "}
-            <span className="num text-ink">{t.H.initiations}</span>. A new conversation starts after 6+ hours of silence.
-          </p>
+          <div>
+            <p className="font-display text-3xl leading-tight font-semibold">
+              {!convos
+                ? "Not enough conversations yet."
+                : hisShare < 0.4
+                  ? "You text first more often."
+                  : hisShare > 0.6
+                    ? "He texts first more often."
+                    : "You take turns texting first."}
+            </p>
+            {convos > 0 && (
+              <p className="mt-2 text-muted">
+                He started <span className="num text-ink">{fmtPct(hisShare)}</span> of your{" "}
+                <span className="num text-ink">{convos.toLocaleString("en-US")}</span> conversations.
+              </p>
+            )}
+          </div>
+          {convos > 0 && <SplitBar label="Who starts conversations" you={Y.initiations} him={H.initiations} />}
           {months.length > 1 && (
             <div>
-              <p className="text-sm font-medium">By month</p>
+              <p className="text-sm font-medium">How often he texts first, by month</p>
               <ul className="mt-2 space-y-2">
                 {months.map((m) => {
                   const tot = m.yInit + m.hInit;
-                  const y = tot ? m.yInit / tot : 0.5;
+                  const h = tot ? m.hInit / tot : 0;
                   return (
-                    <li key={m.month} className="grid grid-cols-[4.5rem_1fr_5.5rem] items-center gap-3 text-sm">
+                    <li key={m.month} className="grid grid-cols-[3.75rem_1fr_2.75rem] items-center gap-3 text-sm">
                       <span className="num text-muted">{m.month}</span>
-                      <span className="flex h-2 gap-0.5">
-                        <span className="rounded-l-full bg-you" style={{ width: `${y * 100}%` }} />
-                        <span className="rounded-r-full bg-him" style={{ width: `${(1 - y) * 100}%` }} />
+                      <span className="h-2 overflow-hidden rounded-full bg-line">
+                        <span className="block h-full rounded-full bg-him" style={{ width: `${h * 100}%` }} />
                       </span>
-                      <span className="num text-right text-xs text-muted">{tot ? `him ${fmtPct(1 - y)}` : "—"}</span>
+                      <span className="num text-right text-muted">{tot ? fmtPct(h) : "—"}</span>
                     </li>
                   );
                 })}
               </ul>
             </div>
           )}
+          {alsoReply && <p className="text-sm text-muted">Also in this chat: {alsoReply}</p>}
         </>
       ) : (
-        <>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs text-muted">
-                <th className="pb-2 font-medium">Reply time</th>
-                <th className="pb-2 text-right font-medium text-you">You</th>
-                <th className="pb-2 text-right font-medium text-him">Him</th>
-              </tr>
-            </thead>
-            <tbody className="num">
-              {(
-                [
-                  ["Typical (median)", t.Y.replyP50, t.H.replyP50],
-                  ["Slower replies (75th pct)", t.Y.replyP75, t.H.replyP75],
-                  ["Slowest 10% start at", t.Y.replyP90, t.H.replyP90],
-                ] as const
-              ).map(([l, y, h]) => (
-                <tr key={l} className="border-t border-dashed border-line">
-                  <td className="py-2 font-sans text-muted">{l}</td>
-                  <td className="py-2 text-right font-semibold">{fmtMinutes(y)}</td>
-                  <td className="py-2 text-right font-semibold">{fmtMinutes(h)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {months.length > 1 && (
-            <div>
-              <p className="text-sm font-medium">His typical reply time by month</p>
-              <table className="mt-2 w-full text-sm">
-                <tbody className="num">
-                  {months.map((m) => (
-                    <tr key={m.month} className="border-t border-line">
-                      <td className="py-1.5 text-muted">{m.month}</td>
-                      <td className="py-1.5 text-right">{m.hReply === null ? "—" : fmtMinutes(m.hReply)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
+        <ReplyResult a={a} months={months} also={alsoInitiation} />
       )}
 
       <div className="rounded-2xl bg-plum px-5 py-5 text-paper">
-        <p className="font-display text-xl">Want to know if it's a pattern?</p>
+        <p className="font-display text-xl">One number doesn&apos;t tell you why.</p>
         <p className="mt-1 text-sm text-paper/75">
-          {a.preview.headline ? "We spotted a change in his behavior in this chat. " : ""}
-          The full analysis finds the week his texting changed, checks for mixed signals and shows the messages behind it.
+          {a.preview.headline ? "We spotted a change in this chat. " : ""}
+          The full analysis finds the week things changed and shows the messages behind it.
         </p>
-        <Link href="/analyze?q=energy_changed" className="mt-4 inline-flex items-center gap-2 rounded-full bg-paper px-5 py-2.5 text-sm font-semibold text-ink">
-          See when it changed <ArrowRightIcon />
+        <Link
+          href={tool === "who-texts-first" ? "/analyze?q=more_invested" : "/analyze?q=losing_interest"}
+          className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-paper px-5 py-2.5 text-sm font-semibold text-ink"
+        >
+          See the full picture <ArrowRightIcon />
         </Link>
       </div>
-      <button onClick={onReset} className="text-sm text-muted underline underline-offset-2 hover:text-ink">
+      <button type="button" onClick={onReset} className="inline-flex min-h-11 items-center text-sm text-muted underline underline-offset-2 hover:text-ink">
         Try another chat
       </button>
     </div>
+  );
+}
+
+function ReplyResult({ a, months, also }: { a: Analysis; months: MonthRow[]; also: string | null }) {
+  const { Y, H } = a.totals;
+  const maxReply = Math.max(0, ...months.map((m) => m.hReply ?? 0));
+
+  if (!hasReply(H.replyP50)) {
+    return <p className="font-display text-3xl leading-tight font-semibold">Not enough replies from him to measure yet.</p>;
+  }
+
+  return (
+    <>
+      <div>
+        <p className="font-display text-3xl leading-tight font-semibold">
+          He usually replies in <span className="num text-him">{fmtMinutes(H.replyP50)}</span>.
+        </p>
+        <p className="mt-2 text-muted">
+          You usually reply in <span className="num text-ink">{hasReply(Y.replyP50) ? fmtMinutes(Y.replyP50) : "—"}</span>.
+          {hasReply(H.replyP90) && (
+            <>
+              {" "}1 in 10 of his replies takes longer than <span className="num text-ink">{fmtMinutes(H.replyP90)}</span>.
+            </>
+          )}
+        </p>
+      </div>
+      {months.length > 1 && (
+        <div>
+          <p className="text-sm font-medium">His typical reply time, by month</p>
+          <ul className="mt-2 space-y-2">
+            {months.map((m) => (
+              <li key={m.month} className="grid grid-cols-[3.75rem_1fr_4.5rem] items-center gap-3 text-sm">
+                <span className="num text-muted">{m.month}</span>
+                <span className="h-2 overflow-hidden rounded-full bg-line">
+                  <span className="block h-full rounded-full bg-him" style={{ width: `${m.hReply && maxReply ? (m.hReply / maxReply) * 100 : 0}%` }} />
+                </span>
+                <span className="num text-right text-muted">{m.hReply === null ? "—" : fmtMinutes(m.hReply)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-xs text-muted">Longer bar = slower replies. Gaps of 6+ hours don&apos;t count as a reply.</p>
+        </div>
+      )}
+      {also && <p className="text-sm text-muted">Also in this chat: {also}</p>}
+    </>
   );
 }

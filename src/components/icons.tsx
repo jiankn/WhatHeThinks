@@ -40,3 +40,30 @@ export const SparkIcon = ({ className = "h-4 w-4" }: P) => (
     <path d="M12 3v4m0 10v4M3 12h4m10 0h4M6 6l2.5 2.5m7 7L18 18M6 18l2.5-2.5m7-7L18 6" />
   </svg>
 );
+
+export const MessageIcon = ({ className = "h-6 w-6" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}>
+    <path d="M5.5 5.5h13a2.5 2.5 0 0 1 2.5 2.5v6a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 3v-3h-1A2.5 2.5 0 0 1 3 14V8a2.5 2.5 0 0 1 2.5-2.5Z" />
+    <path d="M7.5 11h.01m4.49 0h.01m4.49 0h.01" />
+  </svg>
+);
+
+export const LightbulbIcon = ({ className = "h-6 w-6" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}>
+    <path d="M8.5 15.5c-1.4-1.1-2.5-2.8-2.5-5a6 6 0 1 1 12 0c0 2.2-1.1 3.9-2.5 5-.7.6-1 1.1-1 2h-5c0-.9-.3-1.4-1-2Z" />
+    <path d="M9.5 20h5M12 2V.5M4.9 3.4 3.8 2.3m15.3 1.1 1.1-1.1M3 10.5H1.5m21 0H21" />
+  </svg>
+);
+
+export const HeartIcon = ({ className = "h-6 w-6" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}>
+    <path d="M20.8 5.9c-2-2-5.2-2-7.2 0L12 7.5l-1.6-1.6a5.1 5.1 0 0 0-7.2 7.2L12 22l8.8-8.9a5.1 5.1 0 0 0 0-7.2Z" />
+  </svg>
+);
+
+export const ShieldCheckIcon = ({ className = "h-6 w-6" }: P) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden {...base}>
+    <path d="M12 2.5 19 5v5.8c0 4.6-2.8 8.5-7 10.7-4.2-2.2-7-6.1-7-10.7V5l7-2.5Z" />
+    <path d="m8.5 11.8 2.2 2.2 4.8-5" />
+  </svg>
+);

@@ -1,35 +1,8 @@
+"use client";
 import Link from "next/link";
-import { Logo } from "./Logo";
-
-const LINKS = [
-  { href: "/tools/who-texts-first", label: "Who texts first" },
-  { href: "/tools/reply-time-calculator", label: "Reply time calculator" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/privacy", label: "Privacy" },
-  { href: "/terms", label: "Terms" },
-  { href: "/delete", label: "Delete my data" },
-];
-
+import { usePathname } from "next/navigation";
 export function SiteFooter() {
-  return (
-    <footer className="mt-20 border-t border-line bg-paper">
-      <div className="mx-auto grid max-w-5xl gap-6 px-4 py-10 sm:grid-cols-[1fr_auto]">
-        <div className="space-y-2">
-          <Logo />
-          <p className="max-w-sm text-sm text-muted">
-            We analyze his texting behavior — not his mind. Patterns, not predictions. Not therapy or professional
-            advice.
-          </p>
-        </div>
-        <nav className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted sm:justify-end" aria-label="Footer">
-          {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="hover:text-ink">
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-      </div>
-      <p className="pb-8 text-center text-xs text-faint">© {new Date().getFullYear()} WhatHeThinks</p>
-    </footer>
-  );
+  const path = usePathname();
+  if (["/analyze", "/setup", "/login", "/signup", "/forgot-password", "/reset-password"].includes(path)) return null;
+  return <footer className="v3-footer"><p>© {new Date().getFullYear()} WhatHeThinks</p><nav aria-label="Footer">{[["/", "Home"], ["/account", "Account"], ["/faq", "FAQ"], ["/does-he-like-me-text-analyzer", "Does he like me?"], ["/mixed-signals-text-analyzer", "Mixed signals"], ["/who-texts-first", "Who texts first"], ["/reply-time-calculator", "Reply times"], ["/privacy", "Privacy"], ["/terms", "Terms"]].map(([href,label]) => <Link key={href} href={href}>{label}</Link>)}</nav><p className="v3-fine">Perspective on texting patterns. Not access to someone’s thoughts.</p></footer>;
 }

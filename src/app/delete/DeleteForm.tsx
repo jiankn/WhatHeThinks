@@ -45,17 +45,25 @@ export function DeleteForm() {
       </label>
       <input
         id="link"
+        type="url"
+        inputMode="url"
+        autoComplete="url"
+        required
         value={link}
         onChange={(e) => {
           setLink(e.target.value);
           setState("idle");
         }}
         placeholder="https://whathethinks.com/r/…#t=…"
+        aria-invalid={state === "invalid" || state === "notfound"}
+        aria-describedby="report-link-help report-link-error"
         className="w-full rounded-2xl border border-line bg-card px-4 py-3 font-mono text-sm outline-none focus:border-rose"
       />
-      <p className="text-xs text-muted">Use the full link from your browser or your report email — it includes the key after “#t=”.</p>
-      {state === "invalid" && <p className="text-sm text-rose-dark">That doesn't look like a complete report link.</p>}
-      {state === "notfound" && <p className="text-sm text-rose-dark">We couldn't find a report for that link. It may already be deleted.</p>}
+      <p id="report-link-help" className="text-sm text-muted">Use the full link from your browser or report email. It includes the key after “#t=”.</p>
+      <div id="report-link-error" aria-live="polite">
+        {state === "invalid" && <p className="text-sm text-rose-dark">That doesn't look like a complete report link.</p>}
+        {state === "notfound" && <p className="text-sm text-rose-dark">We couldn't find a report for that link. It may already be deleted.</p>}
+      </div>
       <button className="btn-primary w-full" disabled={!link.trim() || state === "working"}>
         {state === "working" ? "Deleting…" : "Delete permanently"}
       </button>

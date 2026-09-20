@@ -40,3 +40,6 @@ next-env.d.ts
 /local.db
 *.sqlite
 /public/__dev/
+
+# design working files (local only)
+/design/

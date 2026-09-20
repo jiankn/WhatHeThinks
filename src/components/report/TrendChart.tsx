@@ -18,7 +18,6 @@ const METRICS: { key: MetricKey; label: string; title: string; fmt: (v: number) 
   { key: "himMsgShare", label: "Message share", title: "His share of all messages, by week", fmt: fmtPct, unit: "share" },
 ];
 
-const H = 200;
 const PAD = { top: 24, right: 12, bottom: 26, left: 44 };
 
 function niceMax(v: number): number {
@@ -27,7 +26,8 @@ function niceMax(v: number): number {
   return steps.find((s) => s >= v * 1.1) ?? Math.ceil(v / 1440) * 1440;
 }
 
-export function TrendChart({ series, points }: { series: SeriesPoint[]; points: TPNarrative[] }) {
+export function TrendChart({ series, points, compact = false }: { series: SeriesPoint[]; points: TPNarrative[]; compact?: boolean }) {
+  const H = compact ? 120 : 200;
   const [metric, setMetric] = useState<MetricKey>("himInitShare");
   const [hover, setHover] = useState<number | null>(null);
   const [showTable, setShowTable] = useState(false);
@@ -37,7 +37,7 @@ export function TrendChart({ series, points }: { series: SeriesPoint[]; points: 
   useEffect(() => {
     const el = box.current;
     if (!el) return;
-    const ro = new ResizeObserver(([e]) => setWidth(Math.max(280, Math.round(e.contentRect.width))));
+    const ro = new ResizeObserver(([e]) => setWidth(Math.max(160, Math.floor(e.contentRect.width))));
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -50,10 +50,11 @@ export function TrendChart({ series, points }: { series: SeriesPoint[]; points: 
     const t1 = series[series.length - 1]?.weekStart ?? 1;
     const innerW = width - PAD.left - PAD.right;
     const innerH = H - PAD.top - PAD.bottom;
-    const yMax = m.unit === "share" ? 1 : niceMax(Math.max(0, ...values.filter((v): v is number => v !== null)));
+    const maxValue = Math.max(0, ...values.filter((v): v is number => v !== null));
+    const yMax = m.unit === "share" ? Math.min(1, Math.max(.25, Math.ceil((maxValue + .01) * 4) / 4)) : niceMax(maxValue);
     const x = (t: number) => PAD.left + (t1 === t0 ? innerW / 2 : ((t - t0) / (t1 - t0)) * innerW);
     const y = (v: number) => PAD.top + innerH - (Math.min(v, yMax) / yMax) * innerH;
-    const ticks = m.unit === "share" ? [0, 0.5, 1] : [0, yMax / 2, yMax];
+    const ticks = m.unit === "share" ? Array.from({ length: Math.round(yMax * 4) + 1 }, (_, i) => i / 4) : [0, yMax / 2, yMax];
 
     // null 断开折线
     const segments: string[] = [];
@@ -67,7 +68,7 @@ export function TrendChart({ series, points }: { series: SeriesPoint[]; points: 
     });
     if (cur.length) segments.push(cur.join(" "));
     return { x, y, ticks, segments, t0, t1, innerW };
-  }, [series, values, width, m.unit]);
+  }, [series, values, width, m.unit, H]);
 
   if (series.length < 2) return null;
 
@@ -91,22 +92,21 @@ export function TrendChart({ series, points }: { series: SeriesPoint[]; points: 
   const xLabels = [series[0], series[Math.floor(series.length / 2)], series[series.length - 1]];
 
   return (
-    <figure className="card px-4 pt-4 pb-3 sm:px-5">
+    <figure className={`trend-chart card px-4 pt-4 pb-3 sm:px-5 ${compact ? "trend-chart-compact" : ""}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <figcaption className="text-sm font-medium">{m.title}</figcaption>
-        <div role="tablist" aria-label="Metric" className="flex rounded-full border border-line p-0.5 text-xs">
+        <figcaption className="text-sm text-muted">{compact ? "Conversations he started (%)" : m.title}</figcaption>
+        {!compact && <div role="group" aria-label="Metric" className="chart-controls flex rounded-lg border border-line p-0.5 text-xs">
           {METRICS.map((x) => (
             <button
               key={x.key}
-              role="tab"
-              aria-selected={metric === x.key}
+              aria-pressed={metric === x.key}
               onClick={() => setMetric(x.key)}
               className={`rounded-full px-2.5 py-1 font-medium transition ${metric === x.key ? "bg-ink text-paper" : "text-muted hover:text-ink"}`}
             >
               {x.label}
             </button>
           ))}
-        </div>
+        </div>}
       </div>
 
       <div ref={box} className="relative mt-3">
@@ -135,7 +135,7 @@ export function TrendChart({ series, points }: { series: SeriesPoint[]; points: 
               <g key={t}>
                 <line x1={PAD.left} x2={width - PAD.right} y1={geo.y(t)} y2={geo.y(t)} stroke="var(--color-line)" strokeDasharray={t === 0 ? undefined : "2 4"} />
                 <text x={PAD.left - 8} y={geo.y(t) + 4} textAnchor="end" className="fill-faint font-mono text-[10px]">
-                  {t === 0 ? "0" : m.fmt(t)}
+                  {m.fmt(t)}
                 </text>
               </g>
             ))}
@@ -153,9 +153,16 @@ export function TrendChart({ series, points }: { series: SeriesPoint[]; points: 
               );
             })}
 
-            {geo.segments.map((pts, i) => (
-              <polyline key={i} points={pts} fill="none" stroke="var(--color-him)" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
-            ))}
+            {geo.segments.map((pts, i) => {
+              const ends = pts.split(" ");
+              const left = ends[0].split(",")[0];
+              const right = ends[ends.length - 1].split(",")[0];
+              return <g key={i}>
+                <polygon points={`${left},${H - PAD.bottom} ${pts} ${right},${H - PAD.bottom}`} fill="var(--color-rose-soft)" fillOpacity={.6} />
+                <polyline points={pts} fill="none" stroke="var(--color-him)" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+              </g>;
+            })}
+            {series.map((s, i) => values[i] !== null && <circle key={s.weekStart} cx={geo.x(s.weekStart)} cy={geo.y(values[i]!)} r={3} fill="var(--color-him)" />)}
 
             {xLabels.map((s, i) => (
               <text
@@ -191,7 +198,7 @@ export function TrendChart({ series, points }: { series: SeriesPoint[]; points: 
 
       </div>
 
-      <div className="mt-2 flex items-center justify-between gap-3">
+      <div className={`chart-readout flex items-center justify-between gap-3 ${compact ? "" : "mt-2"}`}>
         <p className="text-xs text-muted" aria-live="polite">
           {!showTable && hover !== null ? (
             <>
@@ -199,7 +206,7 @@ export function TrendChart({ series, points }: { series: SeriesPoint[]; points: 
               <span className="num font-semibold text-ink">{hv === null ? "no data" : m.fmt(hv)}</span>
             </>
           ) : (
-            !showTable && "Hover or tap the line for weekly values"
+            !showTable && !compact && "Hover or tap the line for weekly values"
           )}
         </p>
         <button onClick={() => setShowTable((v) => !v)} className="text-xs text-muted underline-offset-2 hover:text-ink hover:underline">

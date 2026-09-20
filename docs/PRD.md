@@ -58,7 +58,7 @@ Follow-up CTA (MVP: collect the question + waitlist; ask whether this is the que
 | `/r/[id]` | Preview / full report (one page that switches on paid status) |
 | `/r/[id]/success` | Post-payment landing page (polls until the report is ready) |
 | 7 money pages | See keyword-research §2.1, same template |
-| `/tools/who-texts-first` `/tools/reply-time-calculator` | Free tools, run entirely client-side |
+| `/who-texts-first` `/reply-time-calculator` | Free tools, run entirely client-side |
 | `/privacy` `/terms` `/faq` | Required |
 | `/delete` | Delete data (by reportId + token, or by the email + reportId in the email) |
 

@@ -6,7 +6,6 @@ const PROMISES = [
   ["Minimal data", "Only statistics and up to 120 example messages — names, emails and numbers removed."],
   ["Auto-deleted", "Example messages are deleted after 30 days. Delete everything anytime."],
   ["Never sold or used for ads", "Your data isn't sold, shared with advertisers or used to target you."],
-  ["Never used for training", "We don't use your messages to train AI models."],
 ] as const;
 
 export function PrivacyPromises() {

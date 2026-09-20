@@ -8,14 +8,14 @@ import { LANDING_PAGES, LANDING_UPDATED } from "@/content/landing";
 import { SITE_URL } from "@/lib/site";
 
 const HOME_UPDATED = "2026-09-18";
-const TOOLS_UPDATED = "2026-09-18";
+const TOOLS_UPDATED = "2026-09-19";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: SITE_URL, lastModified: new Date(HOME_UPDATED) },
     ...LANDING_PAGES.map((p) => ({ url: `${SITE_URL}/${p.slug}`, lastModified: new Date(LANDING_UPDATED) })),
-    { url: `${SITE_URL}/tools/who-texts-first`, lastModified: new Date(TOOLS_UPDATED) },
-    { url: `${SITE_URL}/tools/reply-time-calculator`, lastModified: new Date(TOOLS_UPDATED) },
+    { url: `${SITE_URL}/who-texts-first`, lastModified: new Date(TOOLS_UPDATED) },
+    { url: `${SITE_URL}/reply-time-calculator`, lastModified: new Date(TOOLS_UPDATED) },
     { url: `${SITE_URL}/faq`, lastModified: new Date(HOME_UPDATED) },
   ];
 }

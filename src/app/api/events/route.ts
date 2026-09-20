@@ -1,6 +1,6 @@
 /** POST /api/events — 记录漏斗事件到 D1。 */
 
-import { isEventName } from "@/lib/events";
+import { cleanEventProps, isEventName } from "@/lib/events";
 import { getDB } from "@/lib/server/env";
 import { error, json } from "@/lib/server/http";
 
@@ -13,9 +13,9 @@ export async function POST(req: Request): Promise<Response> {
   } catch {
     return error("invalid json", 400);
   }
-  if (!isEventName(body.name)) return error("unknown event", 400);
+  if (!body || !isEventName(body.name) || body.name === "paid") return error("unknown event", 400);
   const reportId = typeof body.reportId === "string" && body.reportId.length <= 20 ? body.reportId : null;
-  const props = body.props && typeof body.props === "object" ? JSON.stringify(body.props).slice(0, 1000) : null;
+  const props = JSON.stringify(cleanEventProps(body.props));
 
   const db = await getDB();
   await db

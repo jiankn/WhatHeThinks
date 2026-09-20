@@ -81,9 +81,9 @@ Priority: **P0** = ships in launch week (7 money pages + 2 tools), **P1** = with
 
 | Keyword | Page | Priority |
 |---|---|---|
-| who texts first calculator / who texts more whatsapp | `/tools/who-texts-first` | P0 |
-| reply time calculator / average response time whatsapp | `/tools/reply-time-calculator` | P0 |
-| texting effort calculator | `/tools/texting-effort-calculator` | P2 |
+| who texts first calculator / who texts more whatsapp | `/who-texts-first` | P0 |
+| reply time calculator / average response time whatsapp | `/reply-time-calculator` | P0 |
+| texting effort calculator | `/texting-effort-calculator` | P2 |
 | mixed signals decoder (short paste) | Merged into `/mixed-signals-text-analyzer` | — |
 
 **How the free tools work:** They reuse the same browser-side parser. They show only the one requested stat, with no AI and no paywall. Every tool ends with the CTA "Want to know if it's a pattern? See when it changed →", which leads into the full analysis flow.
