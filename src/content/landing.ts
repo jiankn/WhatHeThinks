@@ -40,7 +40,7 @@ export interface LandingPage {
   simple?: boolean;
 }
 
-export const LANDING_UPDATED = "2026-09-18";
+export const LANDING_UPDATED = "2026-09-22";
 
 export const LANDING_PAGES: LandingPage[] = [
   {
@@ -100,15 +100,15 @@ export const LANDING_PAGES: LandingPage[] = [
     slug: "does-he-like-me-text-analyzer",
     simple: true,
     question: "likes_me",
-    title: "Does He Like Me? Text Analyzer for Your Full Chat",
+    title: "How to Know If Someone Likes You: Signs, Context & Texts",
     description:
-      "Find out what his texting actually shows: who initiates, how curious he is, whether he makes plans. Analyze your whole WhatsApp chat — free preview, private by default.",
+      "Learn how to know if someone likes you through curiosity, follow-through and clear communication. Put texting signals in context with examples and a chat preview.",
     eyebrow: "Does he like me?",
-    h1: "Does he like me? Let his texts answer.",
-    lede: "Add your WhatsApp chat. We count how often he reaches out, asks about you and makes plans — then rate his interest.",
+    h1: "How to know if someone likes you.",
+    lede: "Look for mutual curiosity, reliable plans and respect for your boundaries. Texts can add context, but a direct conversation tells you more than one message ever could.",
     cta: "Analyze his interest",
     measures: [
-      { name: "Initiative", how: "His share of conversation starts in recent weeks. Around 40–50% is typical of mutual interest." },
+      { name: "Initiative", how: "His share of conversation starts in recent weeks, compared with your share. No percentage proves mutual interest." },
       { name: "Curiosity", how: "How often his messages ask you something, compared with how often yours do." },
       { name: "Engagement", how: "His reply speed and message length relative to yours, plus his share of the conversation." },
       { name: "Planning", how: "Specific plans he proposes — a day, a time, an activity." },
@@ -141,7 +141,7 @@ export const LANDING_PAGES: LandingPage[] = [
     slug: "mixed-signals-text-analyzer",
     simple: true,
     question: "mixed_signals",
-    title: "Mixed Signals Text Analyzer — Where His Words and Actions Differ",
+    title: "Mixed Signals: Understand His Words, Actions and Texts",
     description:
       "Hot and cold? Analyze your chat to see where his warmth and his follow-through don't match. Free preview of your full WhatsApp history.",
     eyebrow: "Mixed signals",
@@ -225,14 +225,14 @@ export const LANDING_PAGES: LandingPage[] = [
   {
     slug: "breadcrumbing-test",
     question: "mixed_signals",
-    title: "Breadcrumbing Test — Check His Texts for the Pattern",
+    title: "Breadcrumbing Examples: Text Patterns and a Self-Check",
     description:
-      "Is he breadcrumbing you? Test your WhatsApp chat for the pattern: attention that comes and goes, flirting without plans, vague promises. Free preview.",
+      "Explore breadcrumbing examples, compare affectionate messages with concrete plans, and reflect on recurring patterns without assigning motives or a diagnosis.",
     eyebrow: "Breadcrumbing test",
-    h1: "Breadcrumbing test: check your chat for the pattern.",
+    h1: "Breadcrumbing examples: warmth without follow-through.",
     lede:
-      "Breadcrumbing is intermittent attention without follow-through — just enough to keep you around, never enough to move forward. We flag it only when two measurable patterns appear together: he disappears and returns, and his warmth isn't matched by concrete plans.",
-    cta: "Run the breadcrumbing test",
+      "An affectionate message can feel hopeful. Look at whether repeated contact leads to plans and clarity, or leaves you waiting for the same conversation again.",
+    cta: "Explore the pattern in my chat",
     measures: [
       { name: "Disappear-and-return cycles", how: "Two or more times he went quiet for 3+ days, then came back with a longer-than-usual conversation." },
       { name: "Flirting without plans", how: "His affectionate messages keep up with yours while concrete plans stay at one or none." },
@@ -275,11 +275,11 @@ export const LANDING_PAGES: LandingPage[] = [
   {
     slug: "ex-text-analyzer",
     question: "ex_came_back",
-    title: "Ex Text Analyzer — Why Did He Come Back?",
+    title: "Does My Ex Want Me Back? Put His Texts in Context",
     description:
       "Your ex texted again. Analyze your whole chat history to see when he pulled away before, and whether his effort now looks different. Free preview.",
     eyebrow: "Ex text analyzer",
-    h1: "Why did your ex text you? See what the history shows.",
+    h1: "Does my ex want me back, or just want to talk?",
     lede:
       "When an ex comes back, the useful question isn't what one message means — it's whether anything is different this time. We map your entire chat: when his effort dropped before, what that looked like, and how his behavior since he returned compares.",
     cta: "Analyze the chat with my ex",
@@ -319,11 +319,11 @@ export const LANDING_PAGES: LandingPage[] = [
   {
     slug: "whatsapp-relationship-analyzer",
     question: null,
-    title: "WhatsApp Relationship Analyzer — Private Chat Report",
+    title: "WhatsApp Chat Analyzer for Relationship Conversations",
     description:
       "Analyze your WhatsApp chat with him: who texts first, reply times, and the week things changed. Runs in your browser — your full chat is never uploaded.",
     eyebrow: "WhatsApp relationship analyzer",
-    h1: "WhatsApp relationship analyzer for the chat with him.",
+    h1: "WhatsApp chat analyzer for your relationship.",
     lede:
       "Export your WhatsApp chat and get a private report on your texting dynamic: who initiates, who replies faster, who asks and who plans — and the week his behavior changed. Your chat is read in your browser; the full conversation is never uploaded.",
     cta: "Analyze my WhatsApp chat",

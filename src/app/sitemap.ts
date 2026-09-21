@@ -6,13 +6,16 @@
 import type { MetadataRoute } from "next";
 import { LANDING_PAGES, LANDING_UPDATED } from "@/content/landing";
 import { SITE_URL } from "@/lib/site";
+import { GUIDES, GUIDES_UPDATED } from "@/content/guides";
 
-const HOME_UPDATED = "2026-09-18";
-const TOOLS_UPDATED = "2026-09-19";
+const HOME_UPDATED = "2026-09-22";
+const TOOLS_UPDATED = "2026-09-22";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: SITE_URL, lastModified: new Date(HOME_UPDATED) },
+    { url: `${SITE_URL}/guides`, lastModified: new Date(GUIDES_UPDATED) },
+    ...GUIDES.map(p => ({ url: `${SITE_URL}/${p.slug}`, lastModified: new Date(GUIDES_UPDATED) })),
     ...LANDING_PAGES.map((p) => ({ url: `${SITE_URL}/${p.slug}`, lastModified: new Date(LANDING_UPDATED) })),
     { url: `${SITE_URL}/who-texts-first`, lastModified: new Date(TOOLS_UPDATED) },
     { url: `${SITE_URL}/reply-time-calculator`, lastModified: new Date(TOOLS_UPDATED) },

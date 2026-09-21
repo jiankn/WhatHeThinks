@@ -6,6 +6,7 @@ import { SITE_NAME, SOCIAL_IMAGE } from "@/lib/site";
 import "./globals.css";
 import "./account.css";
 import "./experience.css";
+import "./guides.css";
 import { VisitTracker } from "@/components/VisitTracker";
 
 const inter = Geist({ subsets: ["latin"], variable: "--font-inter", display: "swap" });

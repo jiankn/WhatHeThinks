@@ -5,7 +5,8 @@ from types import SimpleNamespace
 OUT=Path('docs/seo-competitor-round2-2026-09-19');OUT.mkdir(exist_ok=True)
 spec=importlib.util.spec_from_file_location('kd',Path.home()/'.codex/skills/keyword-difficulty/scripts/estimate_keyword_difficulty.py')
 kd=importlib.util.module_from_spec(spec);spec.loader.exec_module(kd)
-ap=argparse.ArgumentParser();ap.add_argument('keywords',nargs='+');args=ap.parse_args()
+ap=argparse.ArgumentParser();ap.add_argument('keywords',nargs='+');ap.add_argument('--output-dir',type=Path,default=OUT);args=ap.parse_args()
+OUT=args.output_dir;OUT.mkdir(exist_ok=True)
 path=OUT/'gefei-results.json';saved=json.loads(path.read_text()) if path.exists() else {}
 token=kd.get_token();opts=SimpleNamespace(gl='us',hl='en',format='json',force=False)
 for index,keyword in enumerate(args.keywords):

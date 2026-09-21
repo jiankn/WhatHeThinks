@@ -1,0 +1,155 @@
+{
+  "layouts": [
+    {
+      "path": "/",
+      "width": 320,
+      "scroll": 320,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/guides",
+      "width": 320,
+      "scroll": 320,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/texting-styles",
+      "width": 320,
+      "scroll": 320,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/questions-to-ask-your-boyfriend",
+      "width": 320,
+      "scroll": 320,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/situationship-vs-relationship",
+      "width": 320,
+      "scroll": 320,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/love-bombing",
+      "width": 320,
+      "scroll": 320,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/does-he-like-me-text-analyzer",
+      "width": 320,
+      "scroll": 320,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/",
+      "width": 390,
+      "scroll": 390,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/guides",
+      "width": 390,
+      "scroll": 390,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/texting-styles",
+      "width": 390,
+      "scroll": 390,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/questions-to-ask-your-boyfriend",
+      "width": 390,
+      "scroll": 390,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/situationship-vs-relationship",
+      "width": 390,
+      "scroll": 390,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/love-bombing",
+      "width": 390,
+      "scroll": 390,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/does-he-like-me-text-analyzer",
+      "width": 390,
+      "scroll": 390,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/",
+      "width": 1280,
+      "scroll": 1280,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/guides",
+      "width": 1280,
+      "scroll": 1280,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/texting-styles",
+      "width": 1280,
+      "scroll": 1280,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/questions-to-ask-your-boyfriend",
+      "width": 1280,
+      "scroll": 1280,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/situationship-vs-relationship",
+      "width": 1280,
+      "scroll": 1280,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/love-bombing",
+      "width": 1280,
+      "scroll": 1280,
+      "h1": 1,
+      "navFits": true
+    },
+    {
+      "path": "/does-he-like-me-text-analyzer",
+      "width": 1280,
+      "scroll": 1280,
+      "h1": 1,
+      "navFits": true
+    }
+  ],
+  "copy": true,
+  "faq": true,
+  "analyzeEntry": true,
+  "uncaughtErrors": []
+}

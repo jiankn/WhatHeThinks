@@ -48,6 +48,7 @@ export function ToolPage({ c }: { c: ToolContent }) {
       </div>
 
       <div className="mt-14">
+        <section className="mb-8"><h2 className="text-2xl font-semibold">Put the number in context</h2><p className="mt-3 leading-relaxed text-muted">{c.tool === "who-texts-first" ? "Starting fewer chats does not measure how much someone cares. Compare similar periods and remember calls, time together and messages outside this export. Use a change as a reason to talk, not as a score for the relationship." : "A typical reply time is a description, not a deadline someone owes you. Sleep, work, time zones and the kind of message all matter. Compare your own usual rhythm before interpreting a change."}</p><p className="mt-3"><Link href="/texting-styles" className="underline underline-offset-4">Understand different texting styles</Link>{" · "}<Link href={c.tool === "who-texts-first" ? "/relationship-check-in-questions" : "/left-on-read"} className="underline underline-offset-4">{c.tool === "who-texts-first" ? "Prepare a relationship check-in" : "What being left on read can mean"}</Link></p></section>
         <Faq items={c.faq} />
         <p className="mt-6 text-sm text-muted">
           Want more than one number? The{" "}
