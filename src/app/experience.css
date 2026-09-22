@@ -141,7 +141,9 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .v3-option-icon { width: 32px; text-align: center; font-size: 24px; flex-shrink: 0; }
 .v3-option strong { display: block; font-weight: 500; font-size: 14px; }
 .v3-option small { display: block; font-size: 12px; line-height: 1.5; color: #626262; margin-top: 3px; }
-.v3-radio { width: 17px; height: 17px; flex-shrink: 0; border: 1px solid #ccc; border-radius: 50%; }
+.v3-radio { width: 17px; height: 17px; flex-shrink: 0; border: 1px solid #ccc; border-radius: 50%; position: relative; transition: border-color .15s ease, background-color .15s ease; }
+.v3-option[aria-pressed="true"] .v3-radio { border-color: #171717; background: #171717; }
+.v3-option[aria-pressed="true"] .v3-radio::after { content: ""; position: absolute; top: 50%; left: 50%; width: 7px; height: 7px; border-radius: 50%; background: #fff; transform: translate(-50%, -50%); }
 .v3-next {
   width: 100%;
   margin-top: 25px;
