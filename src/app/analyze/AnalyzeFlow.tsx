@@ -21,14 +21,22 @@ import { IdentifyStep } from "./steps/IdentifyStep";
 import { InputStep } from "./steps/InputStep";
 import { ERROR_COPY, type ParseSummary, type WorkerIn, type WorkerOut } from "./worker-protocol";
 import { SetupChoice } from "./steps/SetupChoice";
+import { buildFindings, type Findings } from "./findings";
+import { jitter, paced, sleep } from "./pacing";
+import "./analyze-flow.css";
 
 type Step = "focus" | "platform" | "input" | "identify" | "analyzing";
 const STEP_INDEX: Record<Step, number> = { focus: 0, platform: 1, input: 2, identify: 3, analyzing: 4 };
 const MAX_FILE_BYTES = 50 * 1024 * 1024;
-/** 给阶段状态留出可感知的反馈，同时不人为拖慢结果。 */
-const MIN_ANALYZE_MS = 1200;
+/**
+ * 分析页每个阶段停留的基准时长（毫秒，实际带 ±20% 抖动）。
+ * 本地计算一次就完成；这里按节奏逐条揭晓真实发现，总计约 10–12 秒，
+ * 最后的 "writing" 阶段挂在真实的保存请求上。
+ */
+const STAGE_MS = { parsing: 1700, sessions: 1800, trends: 2200, turning: 2000, evidence: 2000, writing: 1400 } as const;
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+type Analysis = Extract<WorkerOut, { type: "analyzed" }>["analysis"];
+type Intake = { label: string; summary: ParseSummary | null };
 
 export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuestion: QuestionId | null; initialPlatform: ChatPlatformId }) {
   const router = useRouter();
@@ -40,7 +48,11 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
   const [error, setError] = useState<string | null>(null);
   const [stage, setStage] = useState<Stage>("parsing");
   const [uploadFailed, setUploadFailed] = useState(false);
+  const [intake, setIntake] = useState<Intake | null>(null);
+  const [findings, setFindings] = useState<Findings | null>(null);
   const pair = useRef<{ you: string; him: string } | null>(null);
+  const lastAnalysis = useRef<Analysis | null>(null);
+  const runId = useRef(0);
 
   // ── Worker：一次一个请求，用 Promise 包装 ──
   const worker = useRef<Worker | null>(null);
@@ -80,13 +92,14 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
   const handleParsed = (res: WorkerOut) => {
     if (res.type === "parsed") {
       setSummary(res.summary);
-      setStep("identify");
+      setIntake((cur) => cur && { ...cur, summary: res.summary });
       track("upload_parsed", {
         messages: res.summary.messageCount,
         participants: res.summary.participants.length,
         lite: !res.summary.hadTimestamps,
       });
     } else if (res.type === "error") {
+      setIntake(null);
       setError(ERROR_COPY[res.code]);
       track("parse_failed", { code: res.code });
     }
@@ -98,11 +111,14 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
       setError("That file is over 50 MB. Export the chat “Without media” and try again.");
       return;
     }
+    setStep("input");
+    setIntake({ label: file.name, summary: null });
     setBusy(true);
     try {
       const buf = await file.arrayBuffer();
       handleParsed(await call({ type: "parseFile", name: file.name, buf }, [buf]));
     } catch {
+      setIntake(null);
       setError("We couldn't read that file. Try exporting the chat again, without media.");
     } finally {
       setBusy(false);
@@ -123,10 +139,13 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
 
   const onPaste = async (text: string) => {
     setError(null);
+    setStep("input");
+    setIntake({ label: "Pasted text", summary: null });
     setBusy(true);
     try {
       handleParsed(await call({ type: "parseText", text }));
     } catch {
+      setIntake(null);
       setError("We couldn't read that text. Check the format and try again.");
     } finally {
       setBusy(false);
@@ -137,14 +156,17 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
     setBusy(true);
     try {
       const res = await call({ type: "reparse", dateOrder });
-      if (res.type === "parsed") setSummary(res.summary);
+      if (res.type === "parsed") {
+        setSummary(res.summary);
+        setIntake((cur) => cur && { ...cur, summary: res.summary });
+      }
       else if (res.type === "error") setError(ERROR_COPY[res.code]);
     } finally {
       setBusy(false);
     }
   };
 
-  const upload = async (analysis: Extract<WorkerOut, { type: "analyzed" }>["analysis"]) => {
+  const upload = async (analysis: Analysis) => {
     const { you, him } = pair.current!;
     const payload = buildUpload(analysis, { question, youName: you, himName: him });
     const res = await fetch("/api/reports", {
@@ -156,43 +178,60 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
     return (await res.json()) as { id: string; token: string };
   };
 
+  /** 等保存完成（且最后一段至少停留片刻）后跳到报告；失败则显示重试。 */
+  const finish = async (run: number, saving: Promise<{ id: string; token: string }>) => {
+    setStage("writing");
+    try {
+      const [created] = await Promise.all([saving, sleep(paced(jitter(STAGE_MS.writing)))]);
+      if (run !== runId.current) return;
+      setStage("done");
+      saveToken(created.id, created.token);
+      track("report_created", { q: question }, created.id);
+      await sleep(paced(500));
+      router.push(`/r/${created.id}#t=${created.token}`);
+    } catch {
+      if (run === runId.current) setUploadFailed(true);
+    }
+  };
+
   const onAnalyze = async (you: string, him: string) => {
+    const run = ++runId.current;
     setError(null);
     setUploadFailed(false);
+    setFindings(null);
     pair.current = { you, him };
     setStep("analyzing");
     setStage("parsing");
     const started = Date.now();
 
-    // 阶段文案按时间推进；真实计算在 Worker 中一次完成。
-    const timers = (["sessions", "trends", "turning", "evidence"] as Stage[]).map((s, i) =>
-      setTimeout(() => setStage(s), (i + 1) * (MIN_ANALYZE_MS / 5)),
-    );
     const res = await call({ type: "analyze", youName: you, himName: him });
-    if (res.type === "error") {
-      timers.forEach(clearTimeout);
-      setError(ERROR_COPY[res.code]);
-      setStep("identify");
-      return;
-    }
     if (res.type !== "analyzed") {
-      timers.forEach(clearTimeout);
-      setError("We couldn't finish the analysis. Try again.");
+      setError(res.type === "error" ? ERROR_COPY[res.code] : "We couldn't finish the analysis. Try again.");
       setStep("identify");
       return;
     }
+    lastAnalysis.current = res.analysis;
+    // 保存请求立刻发出，与揭晓动画并行。
+    const saving = upload(res.analysis);
+    saving.catch(() => {});
+    setFindings(buildFindings(res.analysis, him));
 
-    try {
-      const [created] = await Promise.all([upload(res.analysis), sleep(Math.max(0, MIN_ANALYZE_MS - (Date.now() - started)))]);
-      timers.forEach(clearTimeout);
-      setStage("done");
-      saveToken(created.id, created.token);
-      track("report_created", { q: question }, created.id);
-      router.push(`/r/${created.id}#t=${created.token}`);
-    } catch {
-      timers.forEach(clearTimeout);
-      setUploadFailed(true);
+    // 结果已全部算好，按节奏逐条揭晓。
+    await sleep(Math.max(0, paced(jitter(STAGE_MS.parsing)) - (Date.now() - started)));
+    for (const s of ["sessions", "trends", "turning", "evidence"] as const) {
+      if (run !== runId.current) return;
+      setStage(s);
+      await sleep(paced(jitter(STAGE_MS[s])));
     }
+    if (run !== runId.current) return;
+    await finish(run, saving);
+  };
+
+  const onRetry = () => {
+    if (!lastAnalysis.current) return;
+    const run = ++runId.current;
+    setUploadFailed(false);
+    void finish(run, upload(lastAnalysis.current));
   };
 
   const back = () => {
@@ -235,7 +274,19 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
       {step === "focus" && <SetupChoice kind="focus" question={question} platform={platform} onQuestion={setQuestion} onPlatform={setPlatform} onContinue={() => { track("question_selected", { q: question }); setStep("platform"); }} />}
       {step === "platform" && <SetupChoice kind="platform" question={question} platform={platform} onQuestion={setQuestion} onPlatform={setPlatform} onContinue={() => setStep("input")} />}
       <div hidden={step !== "input"}>
-        <InputStep key={platform} busy={busy} onFile={onFile} onPaste={onPaste} initialPlatform={platform} />
+        <InputStep
+          key={platform}
+          busy={busy}
+          onFile={onFile}
+          onPaste={onPaste}
+          initialPlatform={platform}
+          intake={intake}
+          onContinue={() => setStep("identify")}
+          onReset={() => {
+            setIntake(null);
+            setSummary(null);
+          }}
+        />
       </div>
 
       {step === "identify" && summary && (
@@ -245,8 +296,9 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
       {step === "analyzing" && (
         <AnalyzingStep
           stage={stage}
+          findings={findings}
           failed={uploadFailed}
-          onRetry={() => pair.current && onAnalyze(pair.current.you, pair.current.him)}
+          onRetry={onRetry}
         />
       )}
     </main>

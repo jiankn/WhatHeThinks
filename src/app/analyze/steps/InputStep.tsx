@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon, UploadIcon } from "@/components/icons";
 import { CHAT_PLATFORMS, type ChatPlatformId } from "@/lib/platforms";
+import type { ParseSummary } from "../worker-protocol";
+import { ChatReveal } from "./ChatReveal";
 
 type Mode = "upload" | "paste";
 
@@ -13,11 +15,18 @@ export function InputStep({
   onFile,
   onPaste,
   initialPlatform,
+  intake,
+  onContinue,
+  onReset,
 }: {
   busy: boolean;
   onFile: (f: File) => void;
   onPaste: (text: string) => void;
   initialPlatform: ChatPlatformId;
+  /** 正在读取或已读完的聊天；有值时用揭晓动画替换上传框。 */
+  intake: { label: string; summary: ParseSummary | null } | null;
+  onContinue: () => void;
+  onReset: () => void;
 }) {
   const selectedPlatform = CHAT_PLATFORMS.find((platform) => platform.id === initialPlatform)!;
   const [mode, setMode] = useState<Mode>(selectedPlatform.nativeUpload ? "upload" : "paste");
@@ -28,10 +37,15 @@ export function InputStep({
   return (
     <section className="import-layout" aria-busy={busy}>
       <div className="import-form">
-      <h1>Add your {selectedPlatform.name} chat</h1>
+      <h1>{intake ? `Reading your ${selectedPlatform.name} chat` : `Add your ${selectedPlatform.name} chat`}</h1>
       <p className="import-question text-muted">
-        We'll read the pattern first, then you choose what to dig into.
+        {intake ? "Everything happens on this device. Nothing has been sent yet." : "We'll read the pattern first, then you choose what to dig into."}
       </p>
+
+      {intake ? (
+        <ChatReveal label={intake.label} summary={intake.summary} onContinue={onContinue} onReset={onReset} />
+      ) : (
+      <>
 
       {!selectedPlatform.nativeUpload && <div className="platform-import-note"><strong>Paste messages from {selectedPlatform.name}</strong><span>Copy part of the conversation and paste it below. File upload isn&apos;t supported yet.</span></div>}
       <div role="group" aria-label="Chat input method" className="import-tabs">
@@ -137,6 +151,8 @@ export function InputStep({
         By continuing, you confirm that you are part of this conversation and agree to our{" "}
         <Link href="/terms">Terms</Link> and <Link href="/privacy">Privacy Policy</Link>.
       </p>
+      </>
+      )}
       </div>
       <aside className="import-privacy">
         <Image src="/images/privacy-envelope.webp" alt="A private letter in a plum envelope, beside a rose." width={1000} height={1000} sizes="(max-width: 767px) 80vw, 36vw" />
