@@ -35,6 +35,8 @@ export async function POST(req: Request): Promise<Response> {
   if (row.paid_at !== null) return json({ unlocked: true });
 
   const env = await getEnv();
+  // Do not accept new payments while the report provider is unconfigured.
+  if (!env.DEEPSEEK_API_KEY?.trim()) return error("report generation unavailable", 503);
   if (env.STRIPE_SECRET_KEY) {
     const sku = SKUS.full_report;
     const origin = new URL(req.url).origin;
@@ -60,7 +62,7 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   if (env.DEV_UNLOCK === "1") {
-    if (await markPaid(db, row.id, null)) await generateReport(db, row.id);
+    if (await markPaid(db, row.id, null)) await generateReport(db, row.id, env);
     return json({ unlocked: true });
   }
   return error("checkout unavailable", 503);

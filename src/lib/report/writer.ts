@@ -1,5 +1,5 @@
 /**
- * ReportWriter 接口。MVP 用 MockReportWriter；之后接 LLMReportWriter 时不改前端与数据模型。
+ * ReportWriter 接口。付费报告使用 DeepSeek；MockReportWriter 仅为测量数据与测试提供确定性结构。
  * 详见 docs/prompt-architecture.md §3。
  */
 

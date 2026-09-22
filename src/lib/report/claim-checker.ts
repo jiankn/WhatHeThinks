@@ -14,6 +14,8 @@ export interface Violation {
 }
 
 export interface CheckContext {
+  /** Legacy templates require hedge tokens; evidence-led prose need not repeat them. */
+  requireHedges?: boolean;
   /** FactBook 登记过的数字/日期字符串。 */
   allowed: string[];
   /** 本报告可引用的证据 id。 */
@@ -61,7 +63,7 @@ function checkClaim(path: string, c: Claim, ctx: CheckContext, out: Violation[])
   checkText(`${path}.fact`, c.fact, ctx, out);
   if (c.interpretation !== undefined) {
     checkText(`${path}.interpretation`, c.interpretation, ctx, out);
-    if (!HEDGE.test(c.interpretation)) {
+    if (ctx.requireHedges !== false && !HEDGE.test(c.interpretation)) {
       out.push({ path: `${path}.interpretation`, kind: "hedge", detail: "interpretation is not hedged" });
     }
   }

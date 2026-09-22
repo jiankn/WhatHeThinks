@@ -19,7 +19,7 @@ const guides = {
 } as const;
 
 /** Shared by the fictional sample and purchased reports, including older saved reports. */
-export function NextStepAdvice({ nextStep }: { nextStep: FullReport["nextStep"] }) {
+export function NextStepAdvice({ nextStep }: { nextStep: FullReport["nextStep"] & { watchFor?: string } }) {
   const [copyState, setCopyState] = useState("");
   const guide = guides[nextStep.responseGuide === "plans" ? "plans" : "conversation"];
 
@@ -41,6 +41,7 @@ export function NextStepAdvice({ nextStep }: { nextStep: FullReport["nextStep"] 
     <p className="reader-copy-status" role="status">{copyState}</p>
     <p>{nextStep.howToAsk}</p>
     <h3>After you ask</h3>
+    {nextStep.watchFor && <p className="reader-lead">{nextStep.watchFor}</p>}
     <p>These are possible responses to consider. Give the conversation some room; a single delayed reply won&apos;t settle it.</p>
     <dl className="reader-response-guide">
       {guide.map(([title, body]) => <div key={title}><dt>{title}</dt><dd>{body}</dd></div>)}

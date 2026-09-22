@@ -21,6 +21,7 @@ node --version                   # 需要 Node 20+
 ```
 
 - 不填 `STRIPE_SECRET_KEY` 且 `DEV_UNLOCK=1` 时，付费按钮直接解锁（仅开发用）。
+- 报告需要 `.dev.vars` 中的 `DEEPSEEK_API_KEY`；未配置时阻止新结账，不再生成模板报告。
 - 测试 Stripe：填入 test mode 的 `sk_test_…`，用测试卡 `4242 4242 4242 4242` 付款。付款回跳时服务器会主动向 Stripe 确认，本地不配 webhook 也能完成。
 - 测试 webhook：`stripe listen --forward-to localhost:3000/api/stripe/webhook`，把输出的 `whsec_…` 填入 `STRIPE_WEBHOOK_SECRET`。
 - 手动测试用的聊天样例：`npx vite-node scripts/make-sample-chat.ts sample.txt`
@@ -35,6 +36,8 @@ npm run deploy
 ```
 
 生产环境**不要**设置 `DEV_UNLOCK`。
+
+DeepSeek 接入与 Cloudflare 控制台 / CLI 配置步骤见 [配置指引](docs/deepseek-cloudflare-setup.md)。报告输出固定为英文。
 
 ## 文档
 

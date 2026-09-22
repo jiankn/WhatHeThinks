@@ -67,6 +67,8 @@ export interface SeriesPoint {
 export type ModuleKey = "summary" | "interest" | "investment" | "timeline" | "mixedSignals" | "nextStep";
 
 export interface FullReport {
+  /** English, evidence-led interpretation. Absent on legacy and fictional reports. */
+  narrative?: ReportNarrative;
   summary: { headline: string; paragraphs: string[]; claims: Claim[] };
   interest: { level: InterestLevel; trendDeclining: boolean; dimensions: Dim[]; note: string; claims: Claim[] };
   investment: { rows: InvestRow[]; takeaway: string; claims: Claim[] };
@@ -76,4 +78,28 @@ export interface FullReport {
   /** 模块展示顺序，按用户选的问题调整（prompt-architecture §7）。 */
   order: ModuleKey[];
   meta: { writer: "mock" | "llm"; model?: string; version: string; generatedAt: number };
+}
+
+export interface GroundedClaim extends Claim {
+  /** An exact, server-computed fact, or null for an observation grounded in messages. */
+  factId: string | null;
+}
+
+export interface ReportNarrative {
+  language: "en";
+  question: string;
+  headline: string;
+  answer: string;
+  supporting: GroundedClaim[];
+  counterEvidence: GroundedClaim[];
+  counterEvidenceNote: string;
+  misread: string;
+  limitation: string;
+  nextStep: {
+    question: string;
+    why: string;
+    howToAsk: string;
+    watchFor: string;
+    responseGuide: "plans" | "conversation";
+  };
 }

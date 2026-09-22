@@ -5,6 +5,8 @@
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "workers_dev": true,
+  // Preserve dashboard-managed variables that are not declared below.
+  "keep_vars": true,
   "routes": [
     { "pattern": "whathethinks.com/*", "zone_name": "whathethinks.com" },
     { "pattern": "www.whathethinks.com", "custom_domain": true }
@@ -24,6 +26,8 @@
     }
   ],
   "vars": {
-    "SITE_URL": "https://whathethinks.com"
+    "SITE_URL": "https://whathethinks.com",
+    "GOOGLE_CLIENT_ID": "810001412993-r1qeqgt9klps7059ic6btirlnf4ql0u4.apps.googleusercontent.com",
+    "DEEPSEEK_MODEL": "deepseek-flash"
   }
 }

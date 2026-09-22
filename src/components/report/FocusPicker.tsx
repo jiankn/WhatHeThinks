@@ -21,6 +21,7 @@ export function FocusPicker({
   question: initial,
   customQuestion: initialCustom,
   onReadyChange,
+  onSaved,
 }: {
   reportId: string;
   token: string;
@@ -28,6 +29,7 @@ export function FocusPicker({
   question: QuestionId;
   customQuestion: string | null;
   onReadyChange?: (ready: boolean) => void;
+  onSaved?: (question: QuestionId, customQuestion: string | null) => void;
 }) {
   const [question, setQuestion] = useState<QuestionId>(initial);
   const [custom, setCustom] = useState(initialCustom ?? "");
@@ -43,7 +45,7 @@ export function FocusPicker({
   }
   const options: FocusOption[] = [
     ...suggestions,
-    { id: DEFAULT_QUESTION, label: "Just show me everything", reason: "Interest, effort, changes and mixed signals, in that order." },
+    { id: DEFAULT_QUESTION, label: "Just show me everything", reason: "A clear read, the evidence on both sides, and a useful next step." },
   ];
   const allOptions: FocusOption[] = [
     ...options,
@@ -59,7 +61,7 @@ export function FocusPicker({
         body: JSON.stringify({ question: q, customQuestion }),
       });
       setSave(res.ok ? "saved" : "error");
-      if (res.ok) setDirty(false);
+      if (res.ok) { setDirty(false); onSaved?.(q, customQuestion ?? null); }
     } catch {
       setSave("error");
     }

@@ -28,7 +28,7 @@ export async function fulfillSession(db: D1Database, env: CloudflareEnv, s: Chec
     .bind(reportId, JSON.stringify({ sku: s.metadata?.sku ?? SKUS.full_report.sku, cents: s.amount_total }), Date.now())
     .run();
 
-  const ok = await generateReport(db, reportId);
+  const ok = await generateReport(db, reportId, env);
   if (!ok) {
     if (s.payment_intent && env.STRIPE_SECRET_KEY) {
       try {

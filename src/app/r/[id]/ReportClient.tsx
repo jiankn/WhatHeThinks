@@ -194,8 +194,9 @@ export function ReportClient({ id }: { id: string }) {
               question={view.question}
               customQuestion={view.customQuestion}
               onReadyChange={setFocusReady}
+              onSaved={(question, customQuestion) => setState(current => current.kind === "ok" ? { ...current, view: { ...current.view, question, customQuestion } } : current)}
             /></details>
-            <Paywall preview={view.preview} busy={checkoutBusy} error={checkoutError} onUnlock={unlock} />
+            <Paywall preview={view.preview} question={view.question} busy={checkoutBusy} error={checkoutError} onUnlock={unlock} />
             <ShareResult preview={view.preview} reportId={id} token={token.current ?? ""} />
           </>
         )}
@@ -225,6 +226,7 @@ function Generating({ failed }: { failed: boolean }) {
           Your payment went through, but something failed while writing the report. You'll receive an automatic full
           refund. If you need help, email support@whathethinks.com.
         </p>
+        <Link href="/analyze" className="btn-secondary mt-4">Start a new free preview</Link>
       </div>
     );
   }
@@ -232,7 +234,7 @@ function Generating({ failed }: { failed: boolean }) {
     <div className="card px-5 py-10 text-center" aria-live="polite">
       <div className="mx-auto h-10 w-10 animate-spin rounded-full border-[3px] border-rose-soft border-t-rose" />
       <p className="mt-4 font-display text-xl font-semibold">Writing your full report…</p>
-      <p className="mt-1 text-sm text-muted">This usually takes a few seconds.</p>
+      <p className="mt-1 text-sm text-muted">We’re checking the evidence and writing your report in English. This may take up to two minutes.</p>
     </div>
   );
 }

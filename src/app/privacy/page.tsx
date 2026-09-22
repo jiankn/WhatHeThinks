@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <Prose eyebrow="Privacy" title="Privacy Policy" updated="2026-09-20">
+    <Prose eyebrow="Privacy" title="Privacy Policy" updated="2026-09-22">
       <p>
         WhatHeThinks is built to minimize how much of your conversation leaves your device. This policy explains exactly
         what happens to your data. The short version: <strong>your full chat export never leaves your device</strong>,
@@ -92,6 +92,11 @@ export default function PrivacyPage() {
           <strong>Cloudflare</strong> — hosting, database and Turnstile security checks that help prevent automated abuse.
         </li>
         <li>
+          <strong>DeepSeek</strong> — writing your English-language report. We send your selected or custom question,
+          measured patterns and up to 120 redacted message excerpts to its API. We do not send your full export,
+          payment details, account email or private report key. Avoid including identifying information in your custom question.
+        </li>
+        <li>
           <strong>Stripe</strong> — payments. Your card details go directly to Stripe; we never see them.
         </li>
         <li>
@@ -105,7 +110,7 @@ export default function PrivacyPage() {
 
       <h2>International data transfers</h2>
       <p>
-        Cloudflare, Stripe, Google and Resend may process data in countries other than the one where you live. Those
+        Cloudflare, DeepSeek, Stripe, Google and Resend may process data in countries other than the one where you live. Those
         countries may have different data-protection rules. Contact{" "}
         <a href="mailto:privacy@whathethinks.com">privacy@whathethinks.com</a> if you want more information about where
         your data is processed or the safeguards that apply.
