@@ -5,7 +5,8 @@ import { getDB } from "./env";
 
 export const SESSION_COOKIE = "wht_session";
 export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
-const PASSWORD_ITERATIONS = 600_000;
+// workerd rejects PBKDF2 requests above 100,000 iterations.
+const PASSWORD_ITERATIONS = 100_000;
 
 export interface UserRow {
   id: string;
