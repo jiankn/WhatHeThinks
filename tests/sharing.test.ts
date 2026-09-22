@@ -14,19 +14,51 @@ describe("public summary boundary", () => {
     expect(JSON.parse(serialized).metrics).toHaveLength(2);
   });
   it("omits statistics when the owner hides them", () => {
-    expect(buildShareSnapshot(sampleReport.preview, false).metrics).toEqual([]);
+    const snapshot = buildShareSnapshot(sampleReport.preview, false);
+    expect(snapshot.metrics).toEqual([]);
+    expect(snapshot.headline).toBe("A fresh look at our conversation.");
   });
   it("does not claim timing or changes for snippets without timestamps", () => {
     const p = { ...sampleReport.preview, liteMode: true };
     const snapshot = buildShareSnapshot(p);
-    expect(snapshot.headline).toBe("A fresh look at our conversation.");
+    expect(snapshot.headline).toBe("A small sample of our conversation.");
     expect(snapshot.metrics.map(m => m.label)).toEqual(["My share of messages", "His messages with questions"]);
     expect(JSON.stringify(snapshot)).not.toMatch(/reply|May|changed/);
   });
-  it("accepts a warming result without reframing it as negative", () => {
+  it("uses measured initiation changes rather than an unrelated direction label", () => {
     const p = structuredClone(sampleReport.preview);
     p.headline!.direction = "warming";
-    expect(buildShareSnapshot(p).headline).toContain("momentum");
+    p.headline!.comparison!.initiation = { before: .22, after: .54 };
+    const snapshot = buildShareSnapshot(p);
+    expect(snapshot.headline).toContain("greater share");
+    expect(snapshot.metrics).toEqual([
+      { label: "Chats he started · before", value: "22%" },
+      { label: "Chats he started · after", value: "54%" },
+    ]);
+  });
+  it("supports a slower reply headline with before and after reply times", () => {
+    const p = structuredClone(sampleReport.preview);
+    p.headline!.metric = "reply";
+    const snapshot = buildShareSnapshot(p);
+    expect(snapshot.headline).toBe("His replies got slower.");
+    expect(snapshot.metrics.map(m => m.value)).toEqual(["18 min", "2h"]);
+  });
+  it("uses overall statistics for older reports without comparisons", () => {
+    const p = structuredClone(sampleReport.preview);
+    delete p.headline!.comparison;
+    p.initiation = { you: .5, him: .5 };
+    const snapshot = buildShareSnapshot(p);
+    expect(snapshot.headline).toBe("We start conversations about equally.");
+    expect(snapshot.metrics[0]).toEqual({ label: "Chats I started", value: "50%" });
+  });
+  it("avoids change claims when displayed values are equal or evidence is limited", () => {
+    const p = structuredClone(sampleReport.preview);
+    p.headline!.comparison!.initiation = { before: .501, after: .502 };
+    expect(buildShareSnapshot(p).headline).not.toContain("started a");
+    p.totalMessages = 5;
+    expect(buildShareSnapshot(p).headline).toBe("A small sample of our conversation.");
+    p.headline!.comparison!.initiation = { before: NaN, after: Infinity };
+    expect(JSON.stringify(buildShareSnapshot(p))).not.toMatch(/NaN|Infinity/);
   });
 });
 
