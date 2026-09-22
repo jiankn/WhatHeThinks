@@ -28,6 +28,7 @@
   "vars": {
     "SITE_URL": "https://whathethinks.com",
     "GOOGLE_CLIENT_ID": "810001412993-r1qeqgt9klps7059ic6btirlnf4ql0u4.apps.googleusercontent.com",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFAGYxW9wYYM6md9",
     "DEEPSEEK_MODEL": "deepseek-flash"
   }
 }
