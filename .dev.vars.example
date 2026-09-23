@@ -13,6 +13,8 @@ TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 # Optional when using the managed Turnstile Spin verification Worker.
 TURNSTILE_VERIFY_URL=
 DEV_UNLOCK=1
+# 智谱 GLM 的 key：报告先用 DeepSeek 写，失败再用 GLM
+FALLBACK_API_KEY=
 DEEPSEEK_API_KEY=
 # Non-secret model setting is in wrangler.jsonc. Reports are always written in English.
 

@@ -9,7 +9,7 @@
 import { nanoid } from "nanoid";
 import { SKUS } from "@/lib/pricing";
 import { getDB, getEnv } from "@/lib/server/env";
-import { generateReport } from "@/lib/server/generate";
+import { generateReport, hasReportModel } from "@/lib/server/generate";
 import { error, json, TOKEN_HEADER } from "@/lib/server/http";
 import { getAuthorizedRow, markPaid } from "@/lib/server/reports";
 import { createCheckoutSession } from "@/lib/server/stripe";
@@ -36,7 +36,7 @@ export async function POST(req: Request): Promise<Response> {
 
   const env = await getEnv();
   // Do not accept new payments while the report provider is unconfigured.
-  if (!env.DEEPSEEK_API_KEY?.trim()) return error("report generation unavailable", 503);
+  if (!hasReportModel(env)) return error("report generation unavailable", 503);
   if (env.STRIPE_SECRET_KEY) {
     const sku = SKUS.full_report;
     const origin = new URL(req.url).origin;

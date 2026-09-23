@@ -19,7 +19,7 @@ Positive, stable and inconclusive findings are valid. Never manufacture concern 
 
 Browser parser → measurements and redacted excerpts → deterministic server data → DeepSeek narrative → schema/language/grounding checks → final content checks → save.
 
-- `src/lib/server/deepseek-writer.ts`: live prompt, provider transport and retries.
+- `src/lib/server/llm-writer.ts`: live prompt, provider transport, retries and model fallback (DeepSeek first, then GLM).
 - `src/lib/report/narrative.ts`: strict schema, measured fact catalog and validation.
 - `src/lib/report/mock-writer.ts`: deterministic data and legacy/sample compatibility, never a provider fallback.
 - `src/components/report/NarrativeSections.tsx`: paid report presentation.

@@ -4,13 +4,25 @@
  */
 
 import { checkReport } from "@/lib/report/claim-checker";
-import { DeepSeekReportWriter } from "./deepseek-writer";
+import { deepseekProvider, glmProvider, LlmReportWriter } from "./llm-writer";
 import type { ReportWriter } from "@/lib/report/writer";
 import { getAnalysis, getEvidence, getReportRow, recordEvent, saveReport, setStatus } from "./reports";
 
-/** Paid reports always use DeepSeek; missing configuration must never return a template. */
+/**
+ * 付费报告先用 DeepSeek，不合格再换智谱 GLM；未配置的模型自动跳过。
+ * 都没配置时直接失败，绝不返回模板报告。
+ */
 export function getWriter(env: CloudflareEnv): ReportWriter {
-  return new DeepSeekReportWriter(env.DEEPSEEK_API_KEY ?? "", env.DEEPSEEK_MODEL);
+  return new LlmReportWriter([
+    deepseekProvider(env.DEEPSEEK_API_KEY ?? "", env.DEEPSEEK_MODEL),
+    // FALLBACK_API_KEY 是智谱 GLM 的 key
+    glmProvider(env.FALLBACK_API_KEY ?? "", env.GLM_MODEL),
+  ]);
+}
+
+/** 至少配置了一家写报告的模型，才接受新付款。 */
+export function hasReportModel(env: CloudflareEnv): boolean {
+  return Boolean(env.FALLBACK_API_KEY?.trim() || env.DEEPSEEK_API_KEY?.trim());
 }
 
 export async function generateReport(db: D1Database, id: string, env: CloudflareEnv): Promise<boolean> {
@@ -18,7 +30,7 @@ export async function generateReport(db: D1Database, id: string, env: Cloudflare
   if (!row) return false;
   try {
     const evidence = await getEvidence(db, id);
-    const { report, allowed } = await getWriter(env).write({
+    const { report, allowed, failures } = await getWriter(env).write({
       reportId: id,
       question: row.question,
       customQuestion: row.custom_question,
@@ -39,6 +51,8 @@ export async function generateReport(db: D1Database, id: string, env: Cloudflare
       throw Object.assign(new Error("Report validation failed"), { reasons: violations.slice(0, 12).map((v) => `claim_check:${v.kind}:${v.path}`) });
     }
     await saveReport(db, id, report);
+    // 主模型失败、由备用模型写成的，也记下原因，便于观察各模型的失败率
+    if (failures?.length) await recordEvent(db, "generate_fallback", id, { model: report.meta.model, reasons: failures.slice(0, 30) });
     return true;
   } catch (err) {
     // 原因写进 events 表，线上无需实时日志也能排查；只有状态码与规则编号，没有消息文本

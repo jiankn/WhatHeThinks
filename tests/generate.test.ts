@@ -5,7 +5,7 @@ import { MockReportWriter } from "@/lib/report/mock-writer";
 import { genChat } from "./synth";
 
 const mocks = vi.hoisted(() => ({ write: vi.fn(), getReportRow: vi.fn(), getEvidence: vi.fn(), getAnalysis: vi.fn(), saveReport: vi.fn(), setStatus: vi.fn(), recordEvent: vi.fn() }));
-vi.mock("@/lib/server/deepseek-writer", () => ({ DeepSeekReportWriter: class { name = "llm"; write = mocks.write; } }));
+vi.mock("@/lib/server/llm-writer", () => ({ LlmReportWriter: class { name = "llm"; write = mocks.write; }, glmProvider: vi.fn(), deepseekProvider: vi.fn() }));
 vi.mock("@/lib/server/reports", () => mocks);
 import { generateReport } from "@/lib/server/generate";
 
