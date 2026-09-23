@@ -171,7 +171,6 @@ p, li { text-wrap: pretty; }
 .step-number { width: 28px; height: 28px; border-radius: 50%; background: var(--color-line); display: grid; place-items: center; }
 .is-complete .step-number { background: var(--color-rose); color: white; }
 .flow-stepper [aria-current="step"] { color: var(--color-ink); font-weight: 600; }
-.flow-back { position: absolute; bottom: 5px; left: 0; min-height: 36px; }
 .import-layout { display: grid; grid-template-columns: minmax(0, 1.66fr) minmax(0, 1fr); gap: 38px; }
 .import-form h1 { font-size: clamp(38px, 4vw, 52px); line-height: 1.16; font-weight: 700; margin: 12px 0 13px; }
 .import-question { font-size: 17px; line-height: 1.6; }

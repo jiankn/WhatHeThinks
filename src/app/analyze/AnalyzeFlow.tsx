@@ -78,6 +78,38 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
     window.scrollTo({ top: 0 });
   }, [step]);
 
+  // 前进一步就记一条浏览历史：浏览器返回键、手机返回手势和页面上的 Back 都退回上一步，
+  // 而不是直接离开流程、丢掉已选的问题和聊天。分析中不记，返回时取消揭晓回到确认页。
+  const stepRef = useRef<Step>(step);
+  stepRef.current = step;
+  const go = useCallback((next: Step) => {
+    if (next === stepRef.current) return;
+    window.history.pushState({ ...window.history.state, flowStep: next }, "");
+    setStep(next);
+  }, []);
+
+  useEffect(() => {
+    const onPop = (e: PopStateEvent) => {
+      runId.current++;
+      setError(null);
+      if (stepRef.current === "analyzing") {
+        // 分析本身不占历史记录：弹出的是上一步，把确认页补回来
+        window.history.pushState({ ...window.history.state, flowStep: "identify" }, "");
+        setStep("identify");
+        return;
+      }
+      setStep((e.state as { flowStep?: Step } | null)?.flowStep ?? "focus");
+    };
+    // 退回时也从新步骤的标题看起，不让浏览器恢复成离开时的滚动位置。
+    const restoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+    window.addEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      window.history.scrollRestoration = restoration;
+    };
+  }, []);
+
   const call = useCallback((msg: WorkerIn, transfer?: Transferable[]) => {
     return new Promise<WorkerOut>((resolve) => {
       if (!worker.current) {
@@ -111,7 +143,7 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
       setError("That file is over 50 MB. Export the chat “Without media” and try again.");
       return;
     }
-    setStep("input");
+    go("input");
     setIntake({ label: file.name, summary: null });
     setBusy(true);
     try {
@@ -139,7 +171,7 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
 
   const onPaste = async (text: string) => {
     setError(null);
-    setStep("input");
+    go("input");
     setIntake({ label: "Pasted text", summary: null });
     setBusy(true);
     try {
@@ -234,20 +266,15 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
     void finish(run, upload(lastAnalysis.current));
   };
 
-  const back = () => {
-    setError(null);
-    if (step === "identify") setStep("input");
-    if (step === "input") setStep("platform");
-    if (step === "platform") setStep("focus");
-  };
+  const back = () => window.history.back();
 
   return (
     <main className="v3-setup" aria-busy={busy || step === "analyzing"}>
       {step !== "analyzing" && (
         <div className="v3-setup-progress">
           {step !== "focus" ? (
-            <button onClick={back} disabled={busy} className="flow-back inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink">
-              <ArrowLeftIcon /> Back
+            <button type="button" onClick={back} disabled={busy} className="flow-back">
+              <ArrowLeftIcon className="" /> Back
             </button>
           ) : (
             <span />
@@ -271,8 +298,8 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
         </p>
       )}
 
-      {step === "focus" && <SetupChoice kind="focus" question={question} platform={platform} onQuestion={setQuestion} onPlatform={setPlatform} onContinue={() => { track("question_selected", { q: question }); setStep("platform"); }} />}
-      {step === "platform" && <SetupChoice kind="platform" question={question} platform={platform} onQuestion={setQuestion} onPlatform={setPlatform} onContinue={() => setStep("input")} />}
+      {step === "focus" && <SetupChoice kind="focus" question={question} platform={platform} onQuestion={setQuestion} onPlatform={setPlatform} onContinue={() => { track("question_selected", { q: question }); go("platform"); }} />}
+      {step === "platform" && <SetupChoice kind="platform" question={question} platform={platform} onQuestion={setQuestion} onPlatform={setPlatform} onContinue={() => go("input")} />}
       <div hidden={step !== "input"}>
         <InputStep
           key={platform}
@@ -281,7 +308,7 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
           onPaste={onPaste}
           initialPlatform={platform}
           intake={intake}
-          onContinue={() => setStep("identify")}
+          onContinue={() => go("identify")}
           onReset={() => {
             setIntake(null);
             setSummary(null);

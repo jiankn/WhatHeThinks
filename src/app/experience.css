@@ -126,8 +126,14 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 
 /* One-screen-at-a-time onboarding. */
 .v3-setup { max-width: 560px; width: calc(100% - 40px); margin: 42px auto 65px; }
-.v3-setup-progress { display: flex; align-items: center; justify-content: space-between; min-height: 44px; margin-bottom: 32px; gap: 20px; font-size: 12px; color: #626262; }
-.v3-setup-progress > :first-child { width: 62px; }
+/* Back · progress · count: equal side columns keep the dots centred on every step. */
+.v3-setup-progress { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-height: 44px; margin-bottom: 32px; gap: 16px; font-size: 12px; color: #626262; }
+.v3-setup-progress > :last-child { justify-self: end; }
+.flow-back { justify-self: start; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; margin-left: -12px; border-radius: 999px; font-size: 14px; color: #626262; transition: background-color .15s, color .15s; }
+.flow-back svg { width: 16px; height: 16px; }
+.flow-back:focus-visible { outline: 2px solid #171717; outline-offset: 2px; }
+.flow-back:disabled { opacity: .4; cursor: default; }
+@media (hover: hover) { .flow-back:not(:disabled):hover { background: #f2f2f2; color: #171717; } }
 .v3-step-dots { display: flex; align-items: center; gap: 6px; }
 .v3-step-dots li { width: 28px; height: 3px; border-radius: 2px; background: #e5e5e5; }
 .v3-step-dots li.is-complete { background: #171717; }
