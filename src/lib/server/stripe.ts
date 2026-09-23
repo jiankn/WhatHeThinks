@@ -49,12 +49,12 @@ export function createCheckoutSession(
   opts: { reportId: string; sku: string; cents: number; name: string; priceId?: string; successUrl: string; cancelUrl: string },
 ): Promise<CheckoutSession> {
   // 优先用 Stripe 后台的 Price（STRIPE_PRICE_ID）；未配置时按 SKUS 临时定价。
-  // 账户开了 Managed Payments，产品必须带税码：txcd_10000000 = 电子服务
+  // 账户开了 Managed Payments，产品必须带税码：txcd_10000000 = 电子服务；标价含税，顾客付的就是标价
   const item: Params = opts.priceId
     ? { quantity: 1, price: opts.priceId }
     : {
         quantity: 1,
-        price_data: { currency: "usd", unit_amount: opts.cents, product_data: { name: opts.name, tax_code: "txcd_10000000" } },
+        price_data: { currency: "usd", unit_amount: opts.cents, tax_behavior: "inclusive", product_data: { name: opts.name, tax_code: "txcd_10000000" } },
       };
   return call<CheckoutSession>(secret, "POST", "/checkout/sessions", {
     mode: "payment",

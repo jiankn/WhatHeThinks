@@ -8,9 +8,10 @@ const contentSecurityPolicy = [
   "frame-ancestors 'none'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
-  `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com${development ? " 'unsafe-eval'" : ""}`,
+  // static.cloudflareinsights.com / cloudflareinsights.com: Cloudflare Web Analytics 自动注入的统计脚本与上报
+  `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com${development ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  `connect-src 'self' https://challenges.cloudflare.com${development ? " ws: wss:" : ""}`,
+  `connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com${development ? " ws: wss:" : ""}`,
   "frame-src 'self' https://challenges.cloudflare.com",
 ].join("; ");
 
