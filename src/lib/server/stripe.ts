@@ -46,19 +46,22 @@ export interface CheckoutSession {
 
 export function createCheckoutSession(
   secret: string,
-  opts: { reportId: string; sku: string; cents: number; name: string; successUrl: string; cancelUrl: string },
+  opts: { reportId: string; sku: string; cents: number; name: string; priceId?: string; successUrl: string; cancelUrl: string },
 ): Promise<CheckoutSession> {
+  // 优先用 Stripe 后台的 Price（STRIPE_PRICE_ID）；未配置时按 SKUS 临时定价。
+  // 账户开了 Managed Payments，产品必须带税码：txcd_10000000 = 电子服务
+  const item: Params = opts.priceId
+    ? { quantity: 1, price: opts.priceId }
+    : {
+        quantity: 1,
+        price_data: { currency: "usd", unit_amount: opts.cents, product_data: { name: opts.name, tax_code: "txcd_10000000" } },
+      };
   return call<CheckoutSession>(secret, "POST", "/checkout/sessions", {
     mode: "payment",
     client_reference_id: opts.reportId,
     success_url: opts.successUrl,
     cancel_url: opts.cancelUrl,
-    line_items: {
-      0: {
-        quantity: 1,
-        price_data: { currency: "usd", unit_amount: opts.cents, product_data: { name: opts.name } },
-      },
-    },
+    line_items: { 0: item },
     metadata: { reportId: opts.reportId, sku: opts.sku },
     payment_intent_data: { metadata: { reportId: opts.reportId, sku: opts.sku } },
   });

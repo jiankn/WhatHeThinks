@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { formEncode, verifyStripeSignature } from "@/lib/server/stripe";
+import { afterEach, describe, it, expect, vi } from "vitest";
+import { createCheckoutSession, formEncode, verifyStripeSignature } from "@/lib/server/stripe";
 
 async function sign(secret: string, t: number, body: string): Promise<string> {
   const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
@@ -46,5 +46,28 @@ describe("verifyStripeSignature", () => {
     const old = t - 301;
     const header = `t=${old},v1=${await sign(secret, old, body)}`;
     expect(await verifyStripeSignature(body, header, secret, 300, now)).toBe(false);
+  });
+});
+
+describe("createCheckoutSession", () => {
+  afterEach(() => vi.unstubAllGlobals());
+  const opts = { reportId: "r1", sku: "full_report", cents: 1990, name: "Full Report", successUrl: "https://x.co/ok", cancelUrl: "https://x.co/no" };
+
+  async function sentBody(priceId?: string): Promise<URLSearchParams> {
+    const request = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({ id: "cs_1", url: "https://checkout" })));
+    vi.stubGlobal("fetch", request);
+    await createCheckoutSession("sk_test", { ...opts, priceId });
+    return new URLSearchParams(String(request.mock.calls[0][1]?.body));
+  }
+
+  it("配置了 Price ID 时用后台价格", async () => {
+    const body = await sentBody("price_123");
+    expect(body.get("line_items[0][price]")).toBe("price_123");
+    expect(body.has("line_items[0][price_data][unit_amount]")).toBe(false);
+  });
+  it("未配置时按 SKU 临时定价", async () => {
+    const body = await sentBody();
+    expect(body.has("line_items[0][price]")).toBe(false);
+    expect(body.get("line_items[0][price_data][unit_amount]")).toBe("1990");
   });
 });

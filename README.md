@@ -24,7 +24,9 @@ node --version                   # 需要 Node 20+
 - 报告需要 `.dev.vars` 中的 `DEEPSEEK_API_KEY`；未配置时阻止新结账，不再生成模板报告。
 - 生产登录、注册和密码重置由 Cloudflare Turnstile 保护；公开 Site Key 在 `wrangler.jsonc`，Secret 只存于 Cloudflare。
 - 测试 Stripe：填入 test mode 的 `sk_test_…`，用测试卡 `4242 4242 4242 4242` 付款。付款回跳时服务器会主动向 Stripe 确认，本地不配 webhook 也能完成。
-- 测试 webhook：`stripe listen --forward-to localhost:3000/api/stripe/webhook`，把输出的 `whsec_…` 填入 `STRIPE_WEBHOOK_SECRET`。
+- 测试 webhook：`stripe listen --project-name whathethinks --forward-to localhost:3000/api/stripe/webhook`，把输出的 `whsec_…` 填入 `STRIPE_WEBHOOK_SECRET`。
+- Stripe 用独立的 WhatHeThinks 账户，CLI 配置名 `whathethinks`（命令都加 `--project-name whathethinks`）。产品 "WhatHeThinks Full Report" 的价格 ID 填 `STRIPE_PRICE_ID`，lookup key `whathethinks_full_report_usd_1990`。
+- 账户开着 Managed Payments（Stripe 代收代缴销售税/VAT），产品必须带税码 `txcd_10000000`（电子服务），否则建结账会报错。
 - 手动测试用的聊天样例：`npx vite-node scripts/make-sample-chat.ts sample.txt`
 
 ## 部署（Cloudflare）
@@ -32,7 +34,7 @@ node --version                   # 需要 Node 20+
 ```bash
 npx wrangler d1 create whathethinks      # 把返回的 database_id 填进 wrangler.jsonc
 npm run db:migrate:remote
-npx wrangler secret put STRIPE_SECRET_KEY    # 以及 STRIPE_WEBHOOK_SECRET / RESEND_API_KEY
+npx wrangler secret put STRIPE_SECRET_KEY    # 以及 STRIPE_WEBHOOK_SECRET / STRIPE_PRICE_ID / RESEND_API_KEY
 npm run deploy
 ```
 

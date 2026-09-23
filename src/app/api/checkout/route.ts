@@ -46,6 +46,7 @@ export async function POST(req: Request): Promise<Response> {
         sku: sku.sku,
         cents: sku.cents,
         name: sku.name,
+        priceId: env.STRIPE_PRICE_ID?.trim() || undefined,
         // token 不经过 Stripe：回跳后报告页从 localStorage 读取
         successUrl: `${origin}/r/${row.id}?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${origin}/r/${row.id}`,
