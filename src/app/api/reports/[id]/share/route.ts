@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import type { Preview } from "@/lib/analysis/analysis-types";
 import { buildShareSnapshot } from "@/lib/report/share";
+import type { FullReport } from "@/lib/report/types";
 import { getRequestUser } from "@/lib/server/auth";
 import { getDB } from "@/lib/server/env";
 import { error, json, TOKEN_HEADER } from "@/lib/server/http";
@@ -25,14 +26,16 @@ export async function POST(req: Request, { params }: Ctx) {
   if (!validOrigin(req)) return error("invalid origin", 403);
   const raw = await req.text();
   if (raw.length > 256) return error("too large", 413);
-  let body: { showMetrics?: unknown };
+  let body: { showMetrics?: unknown; showHeadline?: unknown };
   try { body = JSON.parse(raw); } catch { return error("invalid json", 400); }
-  if (!body || typeof body.showMetrics !== "boolean") return error("choose visibility", 400);
+  if (!body || typeof body.showMetrics !== "boolean" || (body.showHeadline !== undefined && typeof body.showHeadline !== "boolean")) return error("choose visibility", 400);
   const { id } = await params;
   const db = await getDB();
   const row = await authorize(req, id, db);
   if (!row) return error("not found", 404);
-  const snapshot = buildShareSnapshot(JSON.parse(row.preview_json) as Preview, body.showMetrics);
+  // 标题从数据库里的报告读取，不接受浏览器传来的文字
+  const headline = body.showHeadline && row.report_json ? (JSON.parse(row.report_json) as FullReport).summary?.headline : null;
+  const snapshot = buildShareSnapshot(JSON.parse(row.preview_json) as Preview, body.showMetrics, headline);
   const now = Date.now();
   const expiresAt = now + 30 * 86400000;
   // One link per report. Explicitly publishing again updates its selected summary.

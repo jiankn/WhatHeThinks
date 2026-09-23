@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { questionLabel } from "@/lib/questions";
 import { MockReportWriter } from "@/lib/report/mock-writer";
-import { measuredFacts, narrativeSchema, ReportValidationError, validateNarrative } from "@/lib/report/narrative";
+import { measuredFacts, narrativeSchema, ReportValidationError, validateNarrativeWithRepairs } from "@/lib/report/narrative";
 import type { ReportInput, ReportWriter } from "@/lib/report/writer";
 
 export const DEEPSEEK_MODEL = "deepseek-flash";
@@ -168,7 +168,9 @@ export class LlmReportWriter implements ReportWriter {
           // 内容审核拦截（GLM 的 sensitive）重试同一家没有意义，直接换模型
           if (choice.finish_reason === "sensitive") throw new ProviderError(false, ["finish:sensitive"]);
           if (choice.finish_reason !== "stop" || !choice.message.content) throw new ProviderError(true, [`finish:${choice.finish_reason}${choice.message.content ? "" : ":empty"}`]);
-          const narrative = validateNarrative(parseJsonContent(choice.message.content), base, facts, evidenceIds, allowed);
+          const { narrative, repairs } = validateNarrativeWithRepairs(parseJsonContent(choice.message.content), base, facts, evidenceIds, allowed);
+          // 自动修复过的也记下来，便于观察每家模型的问题分布
+          reasons.push(...repairs.map(r => `${provider.id}:${attempt + 1}:${r}`));
           return { allowed, failures: reasons, report: {
             ...base, narrative,
             summary: { headline: narrative.headline, paragraphs: [narrative.answer], claims: narrative.supporting },
@@ -179,7 +181,7 @@ export class LlmReportWriter implements ReportWriter {
           reasons.push(...failureReason(err).map(r => `${provider.id}:${attempt + 1}:${r}`));
           if (err instanceof ProviderError && !err.retryable) break;
           correction = err instanceof ReportValidationError
-            ? `\nThe previous attempt failed validation. Generate a fresh complete object correcting these checks: ${err.issues.join(", ")}.`
+            ? `\nThe previous attempt failed validation. Generate a fresh complete object and fix each of these:\n- ${err.hints.join("\n- ")}`
             : "\nReturn a complete, valid JSON object in English.";
         } finally { clearTimeout(timer); }
       }

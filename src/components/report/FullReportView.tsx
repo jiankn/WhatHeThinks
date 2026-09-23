@@ -34,7 +34,7 @@ export function FullReportView({ view, report, token, onDelete, deleteBusy = fal
     <section className="reader-section" id="the-next-step"><h2>A way to talk about it</h2><NextStepAdvice nextStep={report.nextStep} /></section>
     </>}
     <aside className="reader-note"><strong>What the messages can't tell us</strong><p>Messages show behavior, not everything happening offline or exactly what someone feels. {report.meta.writer === "mock" ? "This report uses measured patterns and structured explanations." : "The explanations are generated from measured patterns and selected evidence."}</p></aside>
-    <ShareResult preview={view.preview} reportId={sample ? undefined : view.id} token={token} sample={sample} />
+    <ShareResult preview={view.preview} reportId={sample ? undefined : view.id} token={token} sample={sample} reportHeadline={report.narrative ? report.summary.headline : undefined} />
     <div className="reader-end"><Link href="/analyze" className="btn-primary">{sample ? "Get my free preview" : "Analyze another chat"} ↗</Link><Link href="/account">Manage saved reports</Link>{onDelete && <button className="v3-danger-link" onClick={onDelete} disabled={deleteBusy}>{deleteBusy ? "Deleting…" : "Delete this report and its data"}</button>}{deleteError && <p role="alert">{deleteError}</p>}</div>
     {drawer && <EvidenceDrawer title={drawer.title} messages={(view.evidence ?? []).filter(m => drawer.ids.includes(m.id)).sort((a,b) => a.ts - b.ts)} expired={!sample && Date.now() > view.createdAt + 30 * 86400000} splitAt={drawer.splitAt} onClose={close} />}
   </main>;

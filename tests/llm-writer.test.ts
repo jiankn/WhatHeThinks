@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { analyzeRoleMsgs } from "@/lib/analysis";
 import { buildUpload } from "@/lib/report/payload";
 import { MockReportWriter } from "@/lib/report/mock-writer";
-import { measuredFacts, validateNarrative } from "@/lib/report/narrative";
+import { explainIssues, measuredFacts, ReportValidationError, validateNarrative, validateNarrativeWithRepairs } from "@/lib/report/narrative";
 import { deepseekProvider, DeepSeekReportWriter, glmProvider, LlmReportWriter, REPORT_SYSTEM_PROMPT } from "@/lib/server/llm-writer";
 import { freeFinding, PURCHASE_FOCUS } from "@/lib/report/presentation";
 import { QUESTION_IDS } from "@/lib/questions";
@@ -35,8 +35,9 @@ describe("English grounded report contract", () => {
 
   it("rejects forged facts, unknown evidence, ungrounded observations and extra fields", async () => {
     const f = await setup();
+    // A forged number on a known measured fact is restored to the measured text, never kept.
+    expect(f.validate({ ...f.narrative, supporting: [{ ...f.narrative.supporting[0], fact: "He started 99% of conversations." }] }).supporting[0].fact).toBe(f.facts[0].text);
     for (const replacement of [
-      { fact: "He started 99% of conversations." },
       { factId: "missing-fact" },
       { evidenceIds: [999999999] },
       { factId: null, fact: "He seems distant in the conversation.", evidenceIds: [] },
@@ -50,6 +51,33 @@ describe("English grounded report contract", () => {
     const sentence = "The pattern in this chat is steady and gives you something concrete to talk about together. ";
     expect(() => f.validate({ ...f.narrative, answer: sentence.repeat(11).trim() })).not.toThrow();
     expect(() => f.validate({ ...f.narrative, answer: sentence.repeat(20).trim() })).toThrow(expect.objectContaining({ issues: ["schema:answer:too_big:1500"] }));
+  });
+
+  it("drops a single non-compliant observation instead of failing the whole report", async () => {
+    const f = await setup();
+    const good = f.narrative.supporting[0];
+    const second = { ...good, interpretation: "The same pattern shows up across the later part of this chat as well." };
+    const bad = { ...good, factId: null, fact: "He agreed to a call at 8.", evidenceIds: [] };
+    const { narrative, repairs } = validateNarrativeWithRepairs({ ...f.narrative, supporting: [good, second], counterEvidence: [bad] }, f.report, f.facts, new Set(f.input.evidence.map(e => e.id)), f.allowed);
+    expect(narrative.supporting).toEqual([good, second]);
+    expect(narrative.counterEvidence).toEqual([]);
+    expect(repairs).toEqual(["dropped:claim:2"]);
+  });
+
+  it("never repairs by dropping below the minimum support or around prose problems", async () => {
+    const f = await setup();
+    const good = f.narrative.supporting[0];
+    const bad = { ...good, factId: null, fact: "He agreed to a call at 8.", evidenceIds: [] };
+    expect(() => f.validate({ ...f.narrative, supporting: [good, bad] })).toThrow(ReportValidationError);
+    expect(() => f.validate({ ...f.narrative, counterEvidence: [bad], answer: `${f.narrative.answer} He replied within 5 minutes.` })).toThrow(ReportValidationError);
+  });
+
+  it("explains each failed rule in words the model can act on", () => {
+    const hints = explainIssues(["claim:4:cite_message_or_measured_fact", "number:summary.paragraphs[2]", "schema:answer:too_big:1500"], 3);
+    expect(hints[0]).toContain("counterEvidence[1]");
+    expect(hints[0]).toContain("must cite at least one evidenceId");
+    expect(hints[1]).toMatch(/^answer: contains a number/);
+    expect(hints[2]).toContain("at most 1500");
   });
 
   it("accepts valid references across ten synthetic chats and lite mode", async () => {
@@ -85,7 +113,7 @@ describe("DeepSeek report writer", () => {
     const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion({ ...f.narrative, answer: "这段聊天不能证明对方的感受，需要进一步沟通。" })).mockResolvedValueOnce(completion(f.narrative));
     const result = await new DeepSeekReportWriter("test-only", undefined, request).write(f.input);
     expect(request).toHaveBeenCalledTimes(2);
-    expect(String(request.mock.calls[1][1]?.body)).toContain("english_required");
+    expect(String(request.mock.calls[1][1]?.body)).toContain("Write every field in English only.");
     expect(result.report.meta.writer).toBe("llm");
   });
 
@@ -151,7 +179,7 @@ describe("Model fallback chain (order as configured)", () => {
     const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(bad)).mockResolvedValueOnce(completion(bad)).mockResolvedValueOnce(completion(f.narrative));
     const result = await writer(request).write(f.input);
     expect(request.mock.calls.map(c => c[0])).toEqual([GLM_URL, GLM_URL, DS_URL]);
-    expect(String(request.mock.calls[1][1]?.body)).toContain("english_required");
+    expect(String(request.mock.calls[1][1]?.body)).toContain("Write every field in English only.");
     expect(String(request.mock.calls[2][1]?.body)).not.toContain("previous attempt");
     expect(result.report.meta).toMatchObject({ model: "deepseek-flash", version: "deepseek-en-1" });
     expect(result.failures).toEqual(["glm:1:validation:language:english_required", "glm:2:validation:language:english_required"]);

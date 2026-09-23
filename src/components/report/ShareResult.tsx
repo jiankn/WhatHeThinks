@@ -5,9 +5,12 @@ import { buildShareSnapshot } from "@/lib/report/share";
 import { renderShareImage } from "@/lib/report/share-image";
 import { track } from "@/lib/events";
 
-export function ShareResult({ preview, reportId, token = "", sample = false }: { preview: Preview; reportId?: string; token?: string; sample?: boolean }) {
+/** reportHeadline：付费报告的标题；只有传入时才出现“显示报告标题”的选项。 */
+export function ShareResult({ preview, reportId, token = "", sample = false, reportHeadline }: { preview: Preview; reportId?: string; token?: string; sample?: boolean; reportHeadline?: string }) {
   const [open, setOpen] = useState(false);
   const [metrics, setMetrics] = useState(true);
+  const [headline, setHeadline] = useState(true);
+  const quote = headline && reportHeadline ? reportHeadline : null;
   const [portrait, setPortrait] = useState(false);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -17,7 +20,7 @@ export function ShareResult({ preview, reportId, token = "", sample = false }: {
   const [retry, setRetry] = useState(0);
   const [generationError, setGenerationError] = useState("");
   const [asset, setAsset] = useState<{ key: string; file: File; url: string; canShare: boolean } | null>(null);
-  const snapshot = useMemo(() => buildShareSnapshot(preview, metrics), [preview, metrics]);
+  const snapshot = useMemo(() => buildShareSnapshot(preview, metrics, quote), [preview, metrics, quote]);
   const imageKey = JSON.stringify([snapshot, portrait, sample]);
   const ready = asset?.key === imageKey ? asset : null;
   useEffect(() => {
@@ -74,7 +77,7 @@ export function ShareResult({ preview, reportId, token = "", sample = false }: {
     if (!reportId || sample) return;
     setBusy(true); setNotice("");
     try {
-      const r = await fetch(`/api/reports/${reportId}/share`, { method: "POST", headers: { "content-type": "application/json", "x-report-token": token }, body: JSON.stringify({ showMetrics: metrics }) });
+      const r = await fetch(`/api/reports/${reportId}/share`, { method: "POST", headers: { "content-type": "application/json", "x-report-token": token }, body: JSON.stringify({ showMetrics: metrics, showHeadline: Boolean(quote) }) });
       if (!r.ok) throw new Error();
       const data = await r.json() as { shareId: string };
       setShareId(data.shareId);
@@ -105,7 +108,7 @@ export function ShareResult({ preview, reportId, token = "", sample = false }: {
     {open && <div className="v3-share-editor">
       <figure className={portrait ? "v3-card-preview is-portrait" : "v3-card-preview"} aria-busy={!ready && !generationError}>
         {ready ? <img src={ready.url} width={1080} height={portrait ? 1920 : 1080}
-          alt={`${sample ? "Sample. " : ""}${snapshot.headline} ${snapshot.metrics.map(m => `${m.label}: ${m.value}.`).join(" ")} ${snapshot.note} WhatHeThinks.com`} />
+          alt={`${sample ? "Sample. " : ""}${snapshot.quote ? `What my report said: “${snapshot.quote}”` : snapshot.headline} ${snapshot.metrics.map(m => `${m.label}: ${m.value}.`).join(" ")} ${snapshot.note} WhatHeThinks.com`} />
           : <div className="v3-image-placeholder" role="status">{generationError || "Preparing your image…"}</div>}
         <figcaption>This is the exact image you’ll share or download.</figcaption>
       </figure>
@@ -118,6 +121,7 @@ export function ShareResult({ preview, reportId, token = "", sample = false }: {
             <span>{value ? "Story · 9:16" : "Square · 1:1"}</span>
           </label>)}</div>
         </fieldset>
+        {reportHeadline && <label className="v3-share-metrics"><input type="checkbox" checked={headline} onChange={e => { setHeadline(e.target.checked); setNotice(""); }} disabled={busy} /> Show my report’s headline</label>}
         <label className="v3-share-metrics"><input type="checkbox" checked={metrics} onChange={e => { setMetrics(e.target.checked); setNotice(""); }} disabled={busy} /> Show statistics</label>
         <p className="v3-fine">Only what you see in this image is shared. No names, messages or private report link.</p>
         <div className="v3-button-row">
@@ -128,7 +132,7 @@ export function ShareResult({ preview, reportId, token = "", sample = false }: {
         {!sample && reportId && <details className="v3-share-link" open={publicOpen} onToggle={e => setPublicOpen(e.currentTarget.open)}>
           <summary>{shareId ? "Manage public link" : "Create public link"}</summary>
           <div className="v3-share-link-content">
-            <p>Anyone with this link can view your summary for 30 days. You can revoke the link anytime. Saved images cannot be recalled. {shareId && "Update the link to apply your current statistics selection."}</p>
+            <p>Anyone with this link can view your summary for 30 days. You can revoke the link anytime. Saved images cannot be recalled. {shareId && "Update the link to apply your current headline and statistics selection."}</p>
             <button type="button" className="btn-secondary" disabled={busy || !existingLoaded || !ready} onClick={() => void publish()}>{shareId ? "Update published summary" : "Create public link"}</button>
             {shareId && <>
               <label>Public summary link<input readOnly value={link} onFocus={e => e.target.select()} /></label>

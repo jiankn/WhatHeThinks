@@ -308,6 +308,10 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .v3-share-card dl > div { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding-block: 12px; }
 .v3-share-card dt { font-size: 11px; color: #626262; }
 .v3-share-card dd { font-size: 21px; font-weight: 550; white-space: nowrap; }
+.v3-share-card .v3-share-kicker { margin-top: 45px; font-size: 11px; font-weight: 600; color: #6b6b6b; }
+.v3-share-card .v3-share-kicker + h3 { margin-top: 10px; }
+.v3-share-card h3.is-quote { font-size: 23px; }
+.v3-share-page .v3-share-card h3.is-quote { font-size: 30px; }
 .v3-share-card > p { font-size: 10px; line-height: 1.7; margin: 25px 0; color: #626262; }
 .v3-share-card > strong { font-size: 13px; font-weight: 550; }
 .v3-card-preview { margin: 0; min-width: 0; }

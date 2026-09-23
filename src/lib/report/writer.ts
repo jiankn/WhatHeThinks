@@ -19,6 +19,6 @@ export interface ReportInput {
 export interface ReportWriter {
   readonly name: "mock" | "llm";
   /** 返回报告与允许出现的数字/日期字符串（供 Claim Checker 使用）。 */
-  /** failures：最终成功前各次失败尝试的原因（状态码/规则编号，不含文本），用于监控。 */
+  /** failures：成功前的失败尝试与自动修复（状态码/规则编号，不含文本），用于监控。 */
   write(input: ReportInput): Promise<{ report: FullReport; allowed: string[]; failures?: string[] }>;
 }

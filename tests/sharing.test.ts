@@ -62,6 +62,42 @@ describe("public summary boundary", () => {
   });
 });
 
+describe("volume shifts on the share card", () => {
+  it("shows the measured comparison that changed most instead of flat overall averages", () => {
+    const p = structuredClone(sampleReport.preview);
+    p.headline!.metric = "volume";
+    p.headline!.comparison = { initiation: { before: .83, after: .17 }, reply: { before: 5, after: 78.25 } };
+    const snapshot = buildShareSnapshot(p);
+    expect(snapshot.headline).toBe("His replies got slower.");
+    expect(snapshot.metrics).toEqual([
+      { label: "His median reply · before", value: "5 min" },
+      { label: "His median reply · after", value: "1h 18m" },
+    ]);
+  });
+  it("falls back to initiation when reply times did not visibly change", () => {
+    const p = structuredClone(sampleReport.preview);
+    p.headline!.metric = "volume";
+    p.headline!.comparison = { initiation: { before: .6, after: .3 }, reply: { before: 10, after: 10 } };
+    expect(buildShareSnapshot(p).headline).toBe("He started a smaller share of our conversations.");
+  });
+});
+
+describe("optional report headline on the share card", () => {
+  it("adds the report headline only when provided, alongside the measured summary", () => {
+    expect(buildShareSnapshot(sampleReport.preview).quote).toBeUndefined();
+    const snapshot = buildShareSnapshot(sampleReport.preview, true, "  Early on he made real plans;\n lately he suggests no dates  ");
+    expect(snapshot.quote).toBe("Early on he made real plans; lately he suggests no dates");
+    expect(snapshot.metrics).toHaveLength(2);
+    expect(buildShareSnapshot(sampleReport.preview, false, "Short read").metrics).toEqual([]);
+  });
+  it("caps an overlong headline so it cannot overflow the image", () => {
+    const quote = buildShareSnapshot(sampleReport.preview, true, "word ".repeat(80)).quote!;
+    expect(quote.length).toBeLessThanOrEqual(180);
+    expect(quote.endsWith("…")).toBe(true);
+    expect(buildShareSnapshot(sampleReport.preview, true, "   ").quote).toBeUndefined();
+  });
+});
+
 describe("growth event privacy", () => {
   it("rejects arbitrary free text and URLs, but keeps constrained attribution", () => {
     expect(cleanEventProps({ source: "share", ref: "a".repeat(24), session: "abc-123", messages: 50, lite: true, token: "secret", question: "private words", url: "https://site/r/x#t=secret", campaign: "a@email.com", content: "hello world", n: Infinity })).toEqual({ source: "share", ref: "a".repeat(24), session: "abc-123", messages: 50, lite: true });

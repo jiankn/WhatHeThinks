@@ -1,4 +1,4 @@
-import type { ShareSnapshot } from "./share";
+import { QUOTE_LABEL, SHARE_CTA, type ShareSnapshot } from "./share";
 
 export async function renderShareImage(snapshot: ShareSnapshot, portrait: boolean, sample: boolean): Promise<Blob> {
   await document.fonts.ready;
@@ -43,15 +43,19 @@ export async function renderShareImage(snapshot: ShareSnapshot, portrait: boolea
   ctx.fillText(sample ? "WhatHeThinks · Sample" : "WhatHeThinks", padding, portrait ? 220 : 70);
 
   // Measure the content before centering it: hiding statistics must not leave holes.
-  let titleSize = 76;
+  // A report headline (opt-in) replaces the measured headline and is shown as a quote.
+  const title = snapshot.quote ? `“${snapshot.quote}”` : snapshot.headline;
+  const [maxTitleLines, minTitleSize] = snapshot.quote ? [portrait ? 7 : 5, 42] : [3, 52];
+  let titleSize = snapshot.quote ? 64 : 76;
   font(titleSize, 600);
-  let titleLines = lines(snapshot.headline, width);
-  while (titleLines.length > 3 && titleSize > 52) {
+  let titleLines = lines(title, width);
+  while (titleLines.length > maxTitleLines && titleSize > minTitleSize) {
     titleSize -= 2;
     font(titleSize, 600);
-    titleLines = lines(snapshot.headline, width);
+    titleLines = lines(title, width);
   }
-  const titleHeight = titleLines.length * titleSize * 1.16;
+  const kickerHeight = snapshot.quote ? 64 : 0;
+  const titleHeight = kickerHeight + titleLines.length * titleSize * 1.16;
   font(40);
   const noteLines = lines(snapshot.note, width);
   const metricsHeight = snapshot.metrics.length ? 48 + snapshot.metrics.length * 120 : 0;
@@ -59,6 +63,13 @@ export async function renderShareImage(snapshot: ShareSnapshot, portrait: boolea
   const contentTop = portrait ? 440 : 190;
   const contentBottom = portrait ? 1450 : 900;
   let y = contentTop + Math.max(0, (contentBottom - contentTop - contentHeight) / 2);
+  if (snapshot.quote) {
+    ctx.fillStyle = "#6b6b6b";
+    font(32, 600);
+    ctx.fillText(QUOTE_LABEL, padding, y);
+    ctx.fillStyle = "#171717";
+    y += kickerHeight;
+  }
   font(titleSize, 600);
   y = draw(titleLines, padding, y, titleSize * 1.16);
 
@@ -80,8 +91,14 @@ export async function renderShareImage(snapshot: ShareSnapshot, portrait: boolea
   ctx.fillStyle = "#4d4d4d";
   font(40);
   draw(noteLines, padding, y + 52, 48);
+  // Tell the person who sees the image what they can do next.
+  // Story: keep clear of the bottom ~250px that Instagram covers with its reply bar.
+  const footer = portrait ? 1560 : 930;
+  ctx.fillStyle = "#4d4d4d";
+  font(32);
+  ctx.fillText(SHARE_CTA, padding, footer);
   ctx.fillStyle = "#171717";
   font(36, 600);
-  ctx.fillText("WhatHeThinks.com", padding, portrait ? 1660 : 974);
+  ctx.fillText("Free preview at WhatHeThinks.com", padding, footer + 44);
   return new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Image export failed")), "image/png"));
 }
