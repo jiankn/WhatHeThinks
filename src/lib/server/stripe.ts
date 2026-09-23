@@ -46,7 +46,7 @@ export interface CheckoutSession {
 
 export function createCheckoutSession(
   secret: string,
-  opts: { reportId: string; sku: string; cents: number; name: string; priceId?: string; successUrl: string; cancelUrl: string },
+  opts: { reportId: string; sku: string; cents: number; name: string; priceId?: string; customerEmail?: string; successUrl: string; cancelUrl: string },
 ): Promise<CheckoutSession> {
   // 优先用 Stripe 后台的 Price（STRIPE_PRICE_ID）；未配置时按 SKUS 临时定价。
   // 账户开了 Managed Payments，产品必须带税码：txcd_10000000 = 电子服务；标价含税，顾客付的就是标价
@@ -62,6 +62,8 @@ export function createCheckoutSession(
     success_url: opts.successUrl,
     cancel_url: opts.cancelUrl,
     line_items: { 0: item },
+    // 已登录用户：结账页预填并锁定账户邮箱，收据、报告邮件与账户用同一个地址
+    ...(opts.customerEmail ? { customer_email: opts.customerEmail } : {}),
     metadata: { reportId: opts.reportId, sku: opts.sku },
     payment_intent_data: { metadata: { reportId: opts.reportId, sku: opts.sku } },
   });

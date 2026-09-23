@@ -65,6 +65,15 @@ describe("createCheckoutSession", () => {
     expect(body.get("line_items[0][price]")).toBe("price_123");
     expect(body.has("line_items[0][price_data][unit_amount]")).toBe(false);
   });
+  it("已登录时预填账户邮箱，未登录时不传", async () => {
+    const request = vi.fn<typeof fetch>().mockImplementation(async () => new Response(JSON.stringify({ id: "cs_1", url: "https://checkout" })));
+    vi.stubGlobal("fetch", request);
+    await createCheckoutSession("sk_test", { ...opts, customerEmail: "me@example.com" });
+    await createCheckoutSession("sk_test", opts);
+    const bodies = request.mock.calls.map(c => new URLSearchParams(String(c[1]?.body)));
+    expect(bodies[0].get("customer_email")).toBe("me@example.com");
+    expect(bodies[1].has("customer_email")).toBe(false);
+  });
   it("未配置时按 SKU 临时定价", async () => {
     const body = await sentBody();
     expect(body.has("line_items[0][price]")).toBe(false);

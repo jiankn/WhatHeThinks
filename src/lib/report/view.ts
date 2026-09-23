@@ -21,4 +21,6 @@ export interface ReportView {
   report?: FullReport;
   /** 仅当 paid 时存在；30 天后证据被清理则为空数组。 */
   evidence?: EvidenceMsg[];
+  /** 当前访问者是否已登录、这份报告是否已保存在其账户下（用于“保存到账户”提示）。 */
+  account?: { signedIn: boolean; saved: boolean };
 }

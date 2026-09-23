@@ -17,10 +17,12 @@ export async function GET(req: Request, { params }: Ctx): Promise<Response> {
   const { id } = await params;
   const db = await getDB();
   const rowByToken = await getAuthorizedRow(db, id, req.headers.get(TOKEN_HEADER));
-  const user = rowByToken ? null : await getRequestUser(req, db);
+  const user = await getRequestUser(req, db);
   const row = rowByToken ?? (user ? await db.prepare(`SELECT * FROM reports WHERE id = ? AND user_id = ?`).bind(id, user.id).first<import("@/lib/server/reports").ReportRow>() : null);
   if (!row) return error("not found", 404);
-  return json(await toView(db, row));
+  const view = await toView(db, row);
+  view.account = { signedIn: Boolean(user), saved: Boolean(user && row.user_id === user.id) };
+  return json(view);
 }
 
 export async function PATCH(req: Request, { params }: Ctx): Promise<Response> {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { FullReport } from "@/lib/report/types";
+import type { FullReport, MessageOption } from "@/lib/report/types";
 
 const guides = {
   plans: [
@@ -19,14 +19,16 @@ const guides = {
 } as const;
 
 /** Shared by the fictional sample and purchased reports, including older saved reports. */
-export function NextStepAdvice({ nextStep }: { nextStep: FullReport["nextStep"] & { watchFor?: string } }) {
+const TONE_LABEL: Record<MessageOption["tone"], string> = { warm: "Warm", direct: "Direct", light: "Light" };
+
+export function NextStepAdvice({ nextStep }: { nextStep: FullReport["nextStep"] & { watchFor?: string; messageOptions?: MessageOption[]; avoid?: string; plan?: string } }) {
   const [copyState, setCopyState] = useState("");
   const guide = guides[nextStep.responseGuide === "plans" ? "plans" : "conversation"];
 
-  async function copyQuestion() {
+  async function copy(text: string) {
     try {
-      await navigator.clipboard.writeText(nextStep.question);
-      setCopyState("Question copied.");
+      await navigator.clipboard.writeText(text);
+      setCopyState("Copied. Edit it to sound like you before sending.");
     } catch {
       setCopyState("Copy didn't work. You can select the question and copy it yourself.");
     }
@@ -36,10 +38,19 @@ export function NextStepAdvice({ nextStep }: { nextStep: FullReport["nextStep"] 
     <p>{nextStep.why}</p>
     <blockquote className="reader-question">
       <p>&quot;{nextStep.question}&quot;</p>
-      <button type="button" onClick={copyQuestion}>Copy question</button>
+      <button type="button" onClick={() => void copy(nextStep.question)}>Copy message</button>
     </blockquote>
     <p className="reader-copy-status" role="status">{copyState}</p>
     <p>{nextStep.howToAsk}</p>
+    {nextStep.messageOptions && nextStep.messageOptions.length > 0 && <>
+      <h3>Other ways to say it</h3>
+      <ul className="reader-options">{nextStep.messageOptions.map((m, i) => <li key={i}>
+        <span>{TONE_LABEL[m.tone]}</span><p>“{m.text}”</p>
+        <button type="button" onClick={() => void copy(m.text)}>Copy</button>
+      </li>)}</ul>
+    </>}
+    {nextStep.avoid && <><h3>What to avoid right now</h3><p>{nextStep.avoid}</p></>}
+    {nextStep.plan && <><h3>Your next two weeks</h3><p className="reader-plan">{nextStep.plan}</p></>}
     <h3>After you ask</h3>
     {nextStep.watchFor && <p className="reader-lead">{nextStep.watchFor}</p>}
     <p>These are possible responses to consider. Give the conversation some room; a single delayed reply won&apos;t settle it.</p>

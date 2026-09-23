@@ -97,6 +97,10 @@ export default function PrivacyPage() {
           payment details, account email or private report key. Avoid including identifying information in your custom question.
         </li>
         <li>
+          <strong>Zhipu AI (GLM)</strong> — a backup writer, used only when DeepSeek cannot produce a valid report. It
+          receives the same limited data described for DeepSeek, and nothing more.
+        </li>
+        <li>
           <strong>Stripe</strong> — payments. Your card details go directly to Stripe; we never see them.
         </li>
         <li>
@@ -110,7 +114,7 @@ export default function PrivacyPage() {
 
       <h2>International data transfers</h2>
       <p>
-        Cloudflare, DeepSeek, Stripe, Google and Resend may process data in countries other than the one where you live. Those
+        Cloudflare, DeepSeek, Zhipu AI, Stripe, Google and Resend may process data in countries other than the one where you live. Those
         countries may have different data-protection rules. Contact{" "}
         <a href="mailto:privacy@whathethinks.com">privacy@whathethinks.com</a> if you want more information about where
         your data is processed or the safeguards that apply.

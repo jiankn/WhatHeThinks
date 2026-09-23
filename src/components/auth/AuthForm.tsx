@@ -4,13 +4,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { TurnstileWidget } from "./TurnstileWidget";
 
-type Mode = "login" | "signup" | "forgot" | "reset";
+type Mode = "login" | "signup" | "forgot" | "reset" | "recover";
 
 const COPY: Record<Mode, { title: string; intro: string; button: string }> = {
   login: { title: "Welcome back", intro: "Your reports and privacy controls, in one calm place.", button: "Sign in" },
   signup: { title: "Create your account", intro: "Keep reports together and manage stored data whenever you want.", button: "Create account" },
   forgot: { title: "Reset your password", intro: "We will email a private reset link if an account exists.", button: "Send reset link" },
   reset: { title: "Choose a new password", intro: "Use 10–128 characters. This reset link works once.", button: "Save new password" },
+  recover: { title: "Find your reports", intro: "Enter the email you used at checkout. We will send fresh private links to your paid reports.", button: "Email my report links" },
 };
 
 export function AuthForm({
@@ -46,7 +47,7 @@ export function AuthForm({
     }
     setWorking(true);
     setError("");
-    const endpoint = mode === "forgot" ? "forgot-password" : mode === "reset" ? "reset-password" : mode;
+    const endpoint = mode === "forgot" ? "forgot-password" : mode === "reset" ? "reset-password" : mode === "recover" ? "recover-reports" : mode;
     const response = await fetch(`/api/auth/${endpoint}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -66,7 +67,7 @@ export function AuthForm({
       window.turnstile?.reset();
       return;
     }
-    if (mode === "forgot") {
+    if (mode === "forgot" || mode === "recover") {
       setSent(true);
       return;
     }
@@ -82,8 +83,10 @@ export function AuthForm({
       <section className="auth-card auth-success" aria-live="polite">
         <span className="auth-success-mark" aria-hidden="true">✓</span>
         <h1>Check your inbox</h1>
-        <p>If an account exists for that address, a one-hour reset link is on its way.</p>
-        <Link href="/login" className="btn-primary">Back to sign in</Link>
+        <p>{mode === "recover"
+          ? "If we find paid reports for that address, fresh private links are on their way. Links emailed earlier stop working."
+          : "If an account exists for that address, a one-hour reset link is on its way."}</p>
+        <Link href={mode === "recover" ? "/" : "/login"} className="btn-primary">{mode === "recover" ? "Back to home" : "Back to sign in"}</Link>
       </section>
     );
   }
@@ -95,7 +98,7 @@ export function AuthForm({
         <span aria-hidden="true">←</span> Home
       </Link>
       <div className="auth-card-heading">
-        <p className="eyebrow">Your private space</p>
+        <p className="eyebrow">{mode === "recover" ? "No account needed" : "Your private space"}</p>
         <h1>{copy.title}</h1>
         <p>{copy.intro}</p>
       </div>
@@ -148,7 +151,7 @@ export function AuthForm({
           </label>
         )}
         {mode === "login" && (
-          <Link href="/forgot-password" className="auth-forgot">Forgot password?</Link>
+          <><Link href="/forgot-password" className="auth-forgot">Forgot password?</Link> <Link href="/find-report" className="auth-forgot">Lost a report link?</Link></>
         )}
         <TurnstileWidget siteKey={siteKey} />
         <div className="auth-form-error" aria-live="polite">{error && <p>{error}</p>}</div>
@@ -161,6 +164,7 @@ export function AuthForm({
         {mode === "login" && <>New here? <Link href={`/signup?next=${encodeURIComponent(next)}`}>Create an account</Link></>}
         {mode === "signup" && <>Already have an account? <Link href={`/login?next=${encodeURIComponent(next)}`}>Sign in</Link></>}
         {(mode === "forgot" || mode === "reset") && <Link href="/login">Back to sign in</Link>}
+        {mode === "recover" && <>Have an account? <Link href="/login?next=%2Faccount">Sign in to see your reports</Link></>}
       </p>
     </section>
   );

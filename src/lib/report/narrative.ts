@@ -13,6 +13,8 @@ const claim = z.object({
   factId: z.string().max(60).nullable(),
 }).strict();
 
+const evidenceIdList = z.array(z.number().int().nonnegative()).max(6);
+
 export const narrativeSchema = z.object({
   language: z.literal("en"),
   question: text.max(250),
@@ -23,12 +25,25 @@ export const narrativeSchema = z.object({
   counterEvidenceNote: text,
   misread: text,
   limitation: text,
+  meaning: z.object({
+    patterns: z.array(z.object({
+      name: text.max(120),
+      fit: z.enum(["stronger", "possible", "weaker"]),
+      why: text,
+      evidenceIds: evidenceIdList,
+    }).strict()).min(2).max(3),
+    lean: text,
+  }).strict(),
+  yourSide: text,
   nextStep: z.object({
     question: text.max(300),
     why: text,
     howToAsk: text,
     watchFor: text,
     responseGuide: z.enum(["plans", "conversation"]),
+    messageOptions: z.array(z.object({ tone: z.enum(["warm", "direct", "light"]), text: text.max(400) }).strict()).min(2).max(3),
+    avoid: text,
+    plan: text,
   }).strict(),
 }).strict();
 
@@ -61,15 +76,30 @@ function schemaIssue(i: z.core.$ZodIssue): string {
   return `schema:${i.path.join(".")}:${i.code}${limit}`;
 }
 
-const PROSE_FIELDS = ["question", "headline", "answer", "counterEvidenceNote", "misread", "limitation",
+/** 所有自由文字字段，按固定顺序给出 [字段名, 文字]，检查结果与提示里的字段名一一对应。 */
+function proseEntries(n: ReportNarrative): Array<[string, string]> {
+  const entries: Array<[string, string]> = [
+    ["question", n.question], ["headline", n.headline], ["answer", n.answer],
+    ["counterEvidenceNote", n.counterEvidenceNote], ["misread", n.misread], ["limitation", n.limitation],
+    ["nextStep.question", n.nextStep.question], ["nextStep.why", n.nextStep.why],
+    ["nextStep.howToAsk", n.nextStep.howToAsk], ["nextStep.watchFor", n.nextStep.watchFor],
+  ];
+  n.meaning?.patterns.forEach((p, i) => entries.push([`meaning.patterns[${i}].name`, p.name], [`meaning.patterns[${i}].why`, p.why]));
+  if (n.meaning) entries.push(["meaning.lean", n.meaning.lean]);
+  if (n.yourSide) entries.push(["yourSide", n.yourSide]);
+  n.nextStep.messageOptions?.forEach((m, i) => entries.push([`nextStep.messageOptions[${i}].text`, m.text]));
+  if (n.nextStep.avoid) entries.push(["nextStep.avoid", n.nextStep.avoid]);
+  if (n.nextStep.plan) entries.push(["nextStep.plan", n.nextStep.plan]);
+  return entries;
+}
+const V1_LABELS = ["question", "headline", "answer", "counterEvidenceNote", "misread", "limitation",
   "nextStep.question", "nextStep.why", "nextStep.howToAsk", "nextStep.watchFor"];
 
 /** 所有规则检查。返回问题编号（只含字段位置与规则名，不含文本）。 */
 function collectIssues(n: ReportNarrative, base: FullReport, facts: MeasuredFact[], evidenceIds: Set<number>, allowed: string[]): string[] {
   const issues: string[] = [];
   const allClaims = [...n.supporting, ...n.counterEvidence];
-  const prose = [n.question, n.headline, n.answer, n.counterEvidenceNote, n.misread, n.limitation,
-    n.nextStep.question, n.nextStep.why, n.nextStep.howToAsk, n.nextStep.watchFor];
+  const prose = proseEntries(n).map(([, t]) => t);
   for (const [i, c] of allClaims.entries()) {
     const fact = facts.find(f => f.id === c.factId);
     if (c.factId !== null && (!fact || fact.text !== c.fact)) issues.push(`claim:${i}:copy_fact_verbatim`);
@@ -79,6 +109,7 @@ function collectIssues(n: ReportNarrative, base: FullReport, facts: MeasuredFact
     if (/\d/.test(c.interpretation ?? "")) issues.push(`claim:${i}:no_numbers_in_interpretation`);
   }
   if (prose.some(s => /\d/.test(s))) issues.push("prose:no_numbers_outside_measured_facts");
+  n.meaning?.patterns.forEach((p, i) => { if (p.evidenceIds.some(id => !evidenceIds.has(id))) issues.push(`pattern:${i}:unknown_evidence`); });
   const generatedTexts = [...prose, ...allClaims.flatMap(c => [c.fact, c.interpretation ?? ""])];
   const joined = generatedTexts.join(" ");
   if (/[^\p{Script=Latin}\p{Mark}\P{Letter}]/u.test(joined) || franc(joined, { minLength: 40 }) !== "eng") issues.push("language:english_required");
@@ -101,11 +132,11 @@ function claimIndex(issue: string): number | null {
 }
 
 /** 把规则编号翻译成模型能照着改的英文说明。 */
-export function explainIssues(issues: string[], supportingCount: number): string[] {
+export function explainIssues(issues: string[], supportingCount: number, labels: string[] = V1_LABELS): string[] {
   const claim = (i: number) => i < supportingCount ? `supporting[${i}]` : `counterEvidence[${i - supportingCount}]`;
   const field = (path: string) => {
     const p = /^summary\.paragraphs\[(\d+)\]/.exec(path);
-    if (p) return PROSE_FIELDS[Number(p[1])] ?? path;
+    if (p) return labels[Number(p[1])] ?? path;
     const c = /^summary\.claims\[(\d+)\](?:\.(\w+))?/.exec(path);
     if (c) return `${claim(Number(c[1]))}${c[2] ? `.${c[2]}` : ""}`;
     return path === "summary.headline" ? "headline" : path;
@@ -121,7 +152,8 @@ export function explainIssues(issues: string[], supportingCount: number): string
         case "no_numbers_in_interpretation": return `${who}.interpretation: remove every digit.`;
       }
     }
-    if (kind === "prose") return "question, headline, answer, notes and nextStep: remove every digit. Numbers belong only in copied measured facts.";
+    if (kind === "prose") return "All prose fields (headline, answer, meaning, yourSide, notes, nextStep and message options): remove every digit. Write times and amounts in words; numbers belong only in copied measured facts.";
+    if (kind === "pattern") return `meaning.patterns[${rest[0]}]: cite only evidence ids that appear in USER_DATA.`;
     if (kind === "language") return "Write every field in English only.";
     if (kind === "schema") {
       const [path, code, limit] = rest;
@@ -154,7 +186,7 @@ export function validateNarrativeWithRepairs(value: unknown, base: FullReport, f
   const n = parsed.data;
   const issues = collectIssues(n, base, facts, evidenceIds, allowed);
   if (!issues.length) return { narrative: n, repairs: [] };
-  const fail = (): never => { throw new ReportValidationError(issues, explainIssues(issues, n.supporting.length)); };
+  const fail = (): never => { throw new ReportValidationError(issues, explainIssues(issues, n.supporting.length, proseEntries(n).map(([label]) => label))); };
   if (issues.some(i => claimIndex(i) === null)) fail();
 
   const original = [...n.supporting, ...n.counterEvidence];

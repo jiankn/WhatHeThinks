@@ -170,7 +170,7 @@ describe("Model fallback chain (order as configured)", () => {
     expect(body.model).toBe("glm-4.7");
     expect(body.thinking).toEqual({ type: "disabled" });
     expect(body.response_format).toEqual({ type: "json_object" });
-    expect(result.report.meta).toMatchObject({ model: "glm-4.7", version: "glm-en-1" });
+    expect(result.report.meta).toMatchObject({ model: "glm-4.7", version: "glm-en-2" });
   });
 
   it("falls back to DeepSeek after GLM fails validation twice", async () => {
@@ -181,7 +181,7 @@ describe("Model fallback chain (order as configured)", () => {
     expect(request.mock.calls.map(c => c[0])).toEqual([GLM_URL, GLM_URL, DS_URL]);
     expect(String(request.mock.calls[1][1]?.body)).toContain("Write every field in English only.");
     expect(String(request.mock.calls[2][1]?.body)).not.toContain("previous attempt");
-    expect(result.report.meta).toMatchObject({ model: "deepseek-flash", version: "deepseek-en-1" });
+    expect(result.report.meta).toMatchObject({ model: "deepseek-flash", version: "deepseek-en-2" });
     expect(result.failures).toEqual(["glm:1:validation:language:english_required", "glm:2:validation:language:english_required"]);
   });
 

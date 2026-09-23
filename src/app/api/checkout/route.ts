@@ -11,7 +11,7 @@ import { SKUS } from "@/lib/pricing";
 import { getDB, getEnv } from "@/lib/server/env";
 import { generateReport, hasReportModel } from "@/lib/server/generate";
 import { error, json, TOKEN_HEADER } from "@/lib/server/http";
-import { getAuthorizedRow, markPaid } from "@/lib/server/reports";
+import { attachReportToUser, getAuthorizedRow, markPaid } from "@/lib/server/reports";
 import { createCheckoutSession } from "@/lib/server/stripe";
 import { getRequestUser } from "@/lib/server/auth";
 import type { ReportRow } from "@/lib/server/reports";
@@ -27,12 +27,14 @@ export async function POST(req: Request): Promise<Response> {
 
   const db = await getDB();
   const rowByToken = await getAuthorizedRow(db, body.reportId, req.headers.get(TOKEN_HEADER));
-  const user = rowByToken ? null : await getRequestUser(req, db);
+  // 已登录时总要知道是谁：结账页预填账户邮箱，报告也归到这个账户下
+  const user = await getRequestUser(req, db);
   const row = rowByToken ?? (user
     ? await db.prepare(`SELECT * FROM reports WHERE id = ? AND user_id = ?`).bind(body.reportId, user.id).first<ReportRow>()
     : null);
   if (!row) return error("not found", 404);
   if (row.paid_at !== null) return json({ unlocked: true });
+  if (user && row.user_id === null) await attachReportToUser(db, row.id, user.id);
 
   const env = await getEnv();
   // Do not accept new payments while the report provider is unconfigured.
@@ -47,6 +49,7 @@ export async function POST(req: Request): Promise<Response> {
         cents: sku.cents,
         name: sku.name,
         priceId: env.STRIPE_PRICE_ID?.trim() || undefined,
+        customerEmail: user?.email,
         // token 不经过 Stripe：回跳后报告页从 localStorage 读取
         successUrl: `${origin}/r/${row.id}?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${origin}/r/${row.id}`,

@@ -41,6 +41,13 @@ export class FactBook {
     return this.reg(`${x.toFixed(1)}${unit}`);
   }
 
+  /** 每周频率，用人话写："about 2 a week" / "less than one a week" / "none"。 */
+  weekly(x: number): string {
+    if (x < 0.05) return this.reg("none");
+    if (x < 0.95) return this.reg("less than one a week");
+    return this.reg(`about ${Math.round(x)} a week`);
+  }
+
   /** 倍数："2.6×" */
   times(x: number): string {
     return this.reg(`${x.toFixed(1)}×`);

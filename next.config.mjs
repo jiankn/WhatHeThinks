@@ -10,7 +10,8 @@ const contentSecurityPolicy = [
   "font-src 'self' data:",
   // static.cloudflareinsights.com / cloudflareinsights.com: Cloudflare Web Analytics 自动注入的统计脚本与上报
   `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com${development ? " 'unsafe-eval'" : ""}`,
-  "style-src 'self' 'unsafe-inline'",
+  // www.gstatic.com: Chrome 翻译注入的样式表，否则翻译后的界面样式会错乱
+  "style-src 'self' 'unsafe-inline' https://www.gstatic.com",
   `connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com${development ? " ws: wss:" : ""}`,
   "frame-src 'self' https://challenges.cloudflare.com",
 ].join("; ");

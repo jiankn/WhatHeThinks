@@ -85,6 +85,19 @@ export interface GroundedClaim extends Claim {
   factId: string | null;
 }
 
+/** 一种常见解释：放在“这种模式通常意味着什么”里，只描述行为，不读心。 */
+export interface PatternReading {
+  name: string;
+  fit: "stronger" | "possible" | "weaker";
+  why: string;
+  evidenceIds: number[];
+}
+
+export interface MessageOption {
+  tone: "warm" | "direct" | "light";
+  text: string;
+}
+
 export interface ReportNarrative {
   language: "en";
   question: string;
@@ -95,11 +108,17 @@ export interface ReportNarrative {
   counterEvidenceNote: string;
   misread: string;
   limitation: string;
+  /** v2（expert）起才有；旧报告没有这些字段，页面按有无渲染。 */
+  meaning?: { patterns: PatternReading[]; lean: string };
+  yourSide?: string;
   nextStep: {
     question: string;
     why: string;
     howToAsk: string;
     watchFor: string;
     responseGuide: "plans" | "conversation";
+    messageOptions?: MessageOption[];
+    avoid?: string;
+    plan?: string;
   };
 }

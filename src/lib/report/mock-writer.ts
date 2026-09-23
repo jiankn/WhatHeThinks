@@ -56,7 +56,7 @@ const DRIVER: Record<string, { row: string; phrase: string; kind: "pct" | "min" 
   replyP50Log: { row: "His typical reply time", phrase: "typical reply time", kind: "min" },
   questionRatio: { row: "His messages with a question", phrase: "rate of asking questions", kind: "pct" },
   msgShare: { row: "His share of all messages", phrase: "share of the messages", kind: "pct" },
-  plansPerWeek: { row: "Concrete plans per week", phrase: "concrete plans per week", kind: "rate" },
+  plansPerWeek: { row: "Concrete plans he suggested", phrase: "concrete plans", kind: "rate" },
   warmthRate: { row: "His messages that are affectionate", phrase: "rate of affectionate messages", kind: "pct" },
   dryRate: { row: "His replies that are one word", phrase: "rate of one-word replies", kind: "pct" },
 };
@@ -171,7 +171,7 @@ class Composer {
     const d = DRIVER[metric];
     if (!d) return this.fb.pct(v);
     if (d.kind === "min") return this.fb.minutes(v);
-    if (d.kind === "rate") return this.fb.rate(v, "/week");
+    if (d.kind === "rate") return this.fb.weekly(v);
     return this.fb.pct(v);
   }
 

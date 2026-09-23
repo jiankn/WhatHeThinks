@@ -88,6 +88,15 @@ export async function checkToken(row: ReportRow, token: string | null): Promise<
   return safeEqual(h, row.token_hash) || (row.alt_token_hash !== null && safeEqual(h, row.alt_token_hash));
 }
 
+/**
+ * 把报告归到账户下。调用方必须先证明有权访问这份报告（报告 token 或已归属该账户）；
+ * 已归属其他账户的报告不会被改。
+ */
+export async function attachReportToUser(db: D1Database, id: string, userId: string): Promise<boolean> {
+  const result = await db.prepare(`UPDATE reports SET user_id = ? WHERE id = ? AND user_id IS NULL`).bind(userId, id).run();
+  return (result.meta?.changes ?? 0) > 0;
+}
+
 /** 生成邮件链接用的第二个 token，只存哈希。 */
 export async function issueEmailToken(db: D1Database, id: string): Promise<string> {
   const token = newToken();

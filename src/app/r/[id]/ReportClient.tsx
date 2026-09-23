@@ -167,7 +167,8 @@ export function ReportClient({ id }: { id: string }) {
         <p className="mt-3 text-muted">{copy.body}</p>
         <div className="mt-6 flex flex-wrap gap-3">
           {state.kind === "error" && <button type="button" className="btn-primary" onClick={() => void load()}>Try again</button>}
-          <Link href={state.kind === "deleted" ? "/" : "/analyze"} className={state.kind === "error" ? "btn-secondary" : "btn-primary"}>
+          {state.kind === "missing" && <Link href="/find-report" className="btn-primary">Email me my report links</Link>}
+          <Link href={state.kind === "deleted" ? "/" : "/analyze"} className={state.kind === "deleted" ? "btn-primary" : "btn-secondary"}>
             {state.kind === "deleted" ? "Go home" : "Analyze a chat"}
           </Link>
         </div>

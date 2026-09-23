@@ -8,6 +8,7 @@ import { track } from "@/lib/events";
 import { EvidenceDrawer } from "./EvidenceDrawer";
 import { TrendChart } from "./TrendChart";
 import { ShareResult } from "./ShareResult";
+import { SaveToAccount } from "./SaveToAccount";
 import { NarrativeSections } from "./NarrativeSections";
 import { NextStepAdvice } from "./NextStepAdvice";
 
@@ -25,7 +26,7 @@ export function FullReportView({ view, report, token, onDelete, deleteBusy = fal
     <div className="reader-topline"><span className="v3-tag">{sample ? "Sample · fictional conversation" : "Your private report"}</span><span>{fmtInt(view.preview.totalMessages)} messages</span></div>
     {sample && <div className="reader-sample-banner">This is a demonstration using fictional messages.<Link href="/analyze">Try your own chat ↗</Link></div>}
     <header className="reader-intro"><span className="reader-emoji" aria-hidden="true">💌</span><h1>{report.summary.headline}</h1><p>{view.preview.liteMode ? "A first look at the messages you pasted" : fmtRange(view.preview.range)}</p></header>
-    {report.narrative ? <NarrativeSections narrative={report.narrative} report={report} liteMode={view.preview.liteMode} claims={claims} value={value} open={open} /> : <>
+    {report.narrative ? <NarrativeSections narrative={report.narrative} report={report} liteMode={view.preview.liteMode} evidence={view.evidence ?? []} claims={claims} value={value} open={open} /> : <>
     <nav className="reader-contents" aria-label="Report sections"><a href="#the-read">The read</a><a href="#the-effort">The effort</a><a href="#the-change">What changed</a><a href="#the-signals">Mixed signals</a><a href="#the-next-step">What next</a></nav>
     <section className="reader-section" id="the-read"><h2>Here’s the read.</h2>{report.summary.paragraphs.map((p,i) => <p key={i}>{p}</p>)}<aside className="reader-note">{report.interest.note}</aside>{claims(report.summary.claims)}<details className="reader-details"><summary>Look at the individual signals</summary><dl className="reader-dimensions">{report.interest.dimensions.map(d => <div key={d.key}><dt>{d.label}<span>{d.level === "insufficient" ? "Not enough data" : d.level}</span></dt><dd>{d.sentence}</dd></div>)}</dl>{claims(report.interest.claims)}</details></section>
     <section className="reader-section" id="the-effort"><h2>Who’s showing up?</h2><p className="reader-lead">{report.investment.takeaway}</p><div className="reader-comparison" role="table" aria-label="Conversation effort comparison"><div role="row"><span role="columnheader">Across the analyzed messages</span><strong role="columnheader">You</strong><strong role="columnheader">Him</strong></div>{report.investment.rows.map(row => <div role="row" key={row.key}><span role="rowheader">{row.label}</span><strong role="cell">{value(row,row.you)}</strong><strong role="cell">{value(row,row.him)}</strong></div>)}</div>{claims(report.investment.claims)}</section>
@@ -34,6 +35,7 @@ export function FullReportView({ view, report, token, onDelete, deleteBusy = fal
     <section className="reader-section" id="the-next-step"><h2>A way to talk about it</h2><NextStepAdvice nextStep={report.nextStep} /></section>
     </>}
     <aside className="reader-note"><strong>What the messages can't tell us</strong><p>Messages show behavior, not everything happening offline or exactly what someone feels. {report.meta.writer === "mock" ? "This report uses measured patterns and structured explanations." : "The explanations are generated from measured patterns and selected evidence."}</p></aside>
+    {!sample && view.account && <SaveToAccount reportId={view.id} token={token} signedIn={view.account.signedIn} saved={view.account.saved} />}
     <ShareResult preview={view.preview} reportId={sample ? undefined : view.id} token={token} sample={sample} reportHeadline={report.narrative ? report.summary.headline : undefined} />
     <div className="reader-end"><Link href="/analyze" className="btn-primary">{sample ? "Get my free preview" : "Analyze another chat"} ↗</Link><Link href="/account">Manage saved reports</Link>{onDelete && <button className="v3-danger-link" onClick={onDelete} disabled={deleteBusy}>{deleteBusy ? "Deleting…" : "Delete this report and its data"}</button>}{deleteError && <p role="alert">{deleteError}</p>}</div>
     {drawer && <EvidenceDrawer title={drawer.title} messages={(view.evidence ?? []).filter(m => drawer.ids.includes(m.id)).sort((a,b) => a.ts - b.ts)} expired={!sample && Date.now() > view.createdAt + 30 * 86400000} splitAt={drawer.splitAt} onClose={close} />}

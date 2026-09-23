@@ -33,6 +33,40 @@ export async function sendReportEmail(
   return res.ok;
 }
 
+/** 找回报告：把该邮箱名下已付费报告的新链接一次发出。 */
+export async function sendReportLinksEmail(
+  env: CloudflareEnv,
+  opts: { to: string; links: Array<{ url: string; paidAt: number }> },
+): Promise<boolean> {
+  if (!env.RESEND_API_KEY) {
+    console.warn(JSON.stringify({ evt: "recovery_email_skipped", reason: "no RESEND_API_KEY" }));
+    return false;
+  }
+  const date = (ms: number) => new Date(ms).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+  const items = opts.links.map(l => `
+  <p style="margin:0 0 12px"><a href="${l.url}" style="background:#b3305f;color:#fff;text-decoration:none;padding:11px 18px;border-radius:999px;font-weight:600;display:inline-block">Open report bought ${date(l.paidAt)}</a></p>`).join("");
+  const html = `
+<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#1f1a22">
+  <p style="font-size:20px;font-weight:600;margin:0 0 16px">Here are your WhatHeThinks reports.</p>
+  <p style="margin:0 0 20px;line-height:1.5">You asked for fresh links to the reports bought with this email address.</p>
+  ${items}
+  <p style="font-size:13px;color:#6b6270;line-height:1.5;margin:12px 0 8px">Each link is a private key to its report — don't share it unless you want someone to see it. Report links emailed earlier no longer work.</p>
+  <p style="font-size:13px;color:#6b6270;line-height:1.5;margin:0">If you didn't ask for this, you can ignore this email. Nobody else can see these links.</p>
+</div>`;
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json" },
+    body: JSON.stringify({
+      from: env.EMAIL_FROM || "WhatHeThinks <reports@whathethinks.com>",
+      to: [opts.to],
+      subject: "Your WhatHeThinks report links",
+      html,
+    }),
+  });
+  if (!res.ok) console.error(JSON.stringify({ evt: "recovery_email_failed", status: res.status }));
+  return res.ok;
+}
+
 export async function sendPasswordResetEmail(
   env: CloudflareEnv,
   opts: { to: string; link: string },
