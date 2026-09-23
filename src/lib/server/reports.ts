@@ -154,6 +154,15 @@ export async function setFocus(
   return (r.meta.changes ?? 0) > 0;
 }
 
+/** 记录内部事件（只放计数、状态码、规则编号，不放消息文本）；写失败不影响主流程。 */
+export async function recordEvent(db: D1Database, name: string, reportId: string, props: object): Promise<void> {
+  await db
+    .prepare(`INSERT INTO events (name, report_id, props, ts) VALUES (?, ?, ?, ?)`)
+    .bind(name, reportId, JSON.stringify(props), Date.now())
+    .run()
+    .catch(() => {});
+}
+
 export async function setStatus(db: D1Database, id: string, status: ReportStatus): Promise<void> {
   await db.prepare(`UPDATE reports SET status = ? WHERE id = ?`).bind(status, id).run();
 }

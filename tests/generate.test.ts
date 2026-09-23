@@ -4,7 +4,7 @@ import { buildUpload } from "@/lib/report/payload";
 import { MockReportWriter } from "@/lib/report/mock-writer";
 import { genChat } from "./synth";
 
-const mocks = vi.hoisted(() => ({ write: vi.fn(), getReportRow: vi.fn(), getEvidence: vi.fn(), getAnalysis: vi.fn(), saveReport: vi.fn(), setStatus: vi.fn() }));
+const mocks = vi.hoisted(() => ({ write: vi.fn(), getReportRow: vi.fn(), getEvidence: vi.fn(), getAnalysis: vi.fn(), saveReport: vi.fn(), setStatus: vi.fn(), recordEvent: vi.fn() }));
 vi.mock("@/lib/server/deepseek-writer", () => ({ DeepSeekReportWriter: class { name = "llm"; write = mocks.write; } }));
 vi.mock("@/lib/server/reports", () => mocks);
 import { generateReport } from "@/lib/server/generate";
@@ -23,6 +23,7 @@ describe("Report fulfillment fails closed", () => {
     try {
       expect(await generateReport(db, "test-id", env)).toBe(false);
       expect(mocks.setStatus).toHaveBeenCalledWith(db, "test-id", "failed");
+      expect(mocks.recordEvent).toHaveBeenCalledWith(db, "generate_failed", "test-id", { reasons: ["Error"] });
       expect(mocks.saveReport).not.toHaveBeenCalled();
       expect(log.mock.calls.flat().join(" ")).not.toContain("provider unavailable");
     } finally { log.mockRestore(); }

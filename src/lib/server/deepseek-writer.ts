@@ -39,14 +39,24 @@ GROUNDING:
 - Use no digits outside copied measured facts. Keep numerical detail in the evidence section.
 - In liteMode, never infer dates, delays, frequency over time, or a before/after trend.
 - Confidence describes support in the supplied sample, not certainty about the relationship.
-- Write about 450–650 words total. Avoid repetition between sections. Plain English prose.`;
+- Write about 450–650 words total. Avoid repetition between sections. Plain English prose.
+- Length per field: answer under 700 characters; every other prose field under 600 characters.`;
 
 const completionSchema = z.object({ choices: z.array(z.object({
   finish_reason: z.string(), message: z.object({ content: z.string().nullable() }),
 })).min(1) });
 
-class ProviderError extends Error {
-  constructor(readonly retryable: boolean) { super("DeepSeek request failed"); this.name = "DeepSeekProviderError"; }
+/** reasons 只含状态码与校验规则编号，不含任何消息文本，可安全记录。 */
+export class ProviderError extends Error {
+  constructor(readonly retryable: boolean, readonly reasons: string[] = []) { super("DeepSeek request failed"); this.name = "DeepSeekProviderError"; }
+}
+
+function failureReason(err: unknown): string[] {
+  if (err instanceof ReportValidationError) return err.issues.slice(0, 12).map(i => `validation:${i}`);
+  if (err instanceof ProviderError) return err.reasons.length ? err.reasons : ["provider"];
+  if (err instanceof SyntaxError) return ["json_parse"];
+  if (err instanceof Error && err.name === "AbortError") return ["timeout"];
+  return [err instanceof Error ? `error:${err.name}` : "error:unknown"];
 }
 
 /** Bound provider responses and latency; never log request text, keys or response bodies. */
@@ -75,7 +85,7 @@ export class DeepSeekReportWriter implements ReportWriter {
   constructor(private readonly apiKey: string, private readonly model: string = DEEPSEEK_MODEL, private readonly request: typeof fetch = fetch) {}
 
   async write(input: ReportInput) {
-    if (!this.apiKey.trim()) throw new ProviderError(false);
+    if (!this.apiKey.trim()) throw new ProviderError(false, ["missing_api_key"]);
     // Existing deterministic engine remains the source of tables, charts and measured facts.
     const { report: base, allowed } = await new MockReportWriter().write(input);
     const facts = measuredFacts(base);
@@ -87,6 +97,7 @@ export class DeepSeekReportWriter implements ReportWriter {
       evidence: input.evidence.map(e => ({ id: e.id, sender: e.sender, text: e.text })),
     });
     let correction = "";
+    const reasons: string[] = [];
     for (let attempt = 0; attempt < 2; attempt++) {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 45_000);
@@ -104,11 +115,13 @@ export class DeepSeekReportWriter implements ReportWriter {
         });
         if (!response.ok) {
           await response.body?.cancel();
-          throw new ProviderError(response.status === 429 || response.status >= 500);
+          throw new ProviderError(response.status === 429 || response.status >= 500, [`http:${response.status}`]);
         }
         const completion = completionSchema.safeParse(await readCompletion(response));
-        if (!completion.success || completion.data.choices[0].finish_reason !== "stop" || !completion.data.choices[0].message.content) throw new ProviderError(true);
-        const narrative = validateNarrative(JSON.parse(completion.data.choices[0].message.content), base, facts, evidenceIds, allowed);
+        if (!completion.success) throw new ProviderError(true, ["bad_completion"]);
+        const choice = completion.data.choices[0];
+        if (choice.finish_reason !== "stop" || !choice.message.content) throw new ProviderError(true, [`finish:${choice.finish_reason}${choice.message.content ? "" : ":empty"}`]);
+        const narrative = validateNarrative(JSON.parse(choice.message.content), base, facts, evidenceIds, allowed);
         return { allowed, report: {
           ...base, narrative,
           summary: { headline: narrative.headline, paragraphs: [narrative.answer], claims: narrative.supporting },
@@ -116,12 +129,13 @@ export class DeepSeekReportWriter implements ReportWriter {
           meta: { writer: "llm" as const, model: this.model, version: "deepseek-en-1", generatedAt: Date.now() },
         } };
       } catch (err) {
-        if (attempt === 1 || (err instanceof ProviderError && !err.retryable)) throw new ProviderError(false);
+        reasons.push(...failureReason(err).map(r => `${attempt + 1}:${r}`));
+        if (attempt === 1 || (err instanceof ProviderError && !err.retryable)) throw new ProviderError(false, reasons);
         correction = err instanceof ReportValidationError
           ? `\nThe previous attempt failed validation. Generate a fresh complete object correcting these checks: ${err.issues.join(", ")}.`
           : "\nReturn a complete, valid JSON object in English.";
       } finally { clearTimeout(timer); }
     }
-    throw new ProviderError(false);
+    throw new ProviderError(false, reasons);
   }
 }

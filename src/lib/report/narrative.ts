@@ -3,7 +3,8 @@ import { z } from "zod";
 import { checkReport } from "./claim-checker";
 import type { FullReport, ReportNarrative } from "./types";
 
-const text = z.string().trim().min(8).max(900);
+// 硬上限留足余量：提示词要求 answer ≤700、其他 ≤600 字符，模型偶尔超出不应让付费报告失败退款。
+const text = z.string().trim().min(8).max(1500);
 const claim = z.object({
   fact: text,
   interpretation: text,
@@ -53,9 +54,15 @@ export class ReportValidationError extends Error {
   }
 }
 
+/** 例如 schema:answer:too_big:900，既能记录，也能原样告诉模型如何修正。 */
+function schemaIssue(i: z.core.$ZodIssue): string {
+  const limit = i.code === "too_big" ? `:${String(i.maximum)}` : i.code === "too_small" ? `:${String(i.minimum)}` : "";
+  return `schema:${i.path.join(".")}:${i.code}${limit}`;
+}
+
 export function validateNarrative(value: unknown, base: FullReport, facts: MeasuredFact[], evidenceIds: Set<number>, allowed: string[]): ReportNarrative {
   const parsed = narrativeSchema.safeParse(value);
-  if (!parsed.success) throw new ReportValidationError(parsed.error.issues.map(i => `schema:${i.path.join(".")}`));
+  if (!parsed.success) throw new ReportValidationError(parsed.error.issues.map(schemaIssue));
   const n = parsed.data;
   const issues: string[] = [];
   const allClaims = [...n.supporting, ...n.counterEvidence];

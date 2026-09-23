@@ -45,6 +45,13 @@ describe("English grounded report contract", () => {
     expect(() => f.validate({ ...f.narrative, nextStep: { ...f.narrative.nextStep, watchFor: "He is definitely cheating. Leave him." } })).toThrow();
   });
 
+  it("tolerates a long opening answer but rejects runaway text with an actionable issue", async () => {
+    const f = await setup();
+    const sentence = "The pattern in this chat is steady and gives you something concrete to talk about together. ";
+    expect(() => f.validate({ ...f.narrative, answer: sentence.repeat(11).trim() })).not.toThrow();
+    expect(() => f.validate({ ...f.narrative, answer: sentence.repeat(20).trim() })).toThrow(expect.objectContaining({ issues: ["schema:answer:too_big:1500"] }));
+  });
+
   it("accepts valid references across ten synthetic chats and lite mode", async () => {
     for (let seed = 1; seed <= 10; seed++) {
       const f = await setup(seed % 2 === 0, seed);
@@ -94,7 +101,7 @@ describe("DeepSeek report writer", () => {
     const request = vi.fn<typeof fetch>().mockResolvedValue(new Response("unauthorized", { status: 401 }));
     await expect(new DeepSeekReportWriter("", undefined, request).write(f.input)).rejects.toThrow();
     expect(request).not.toHaveBeenCalled();
-    await expect(new DeepSeekReportWriter("bad-test-key", undefined, request).write(f.input)).rejects.toThrow();
+    await expect(new DeepSeekReportWriter("bad-test-key", undefined, request).write(f.input)).rejects.toMatchObject({ reasons: ["1:http:401"] });
     expect(request).toHaveBeenCalledTimes(1);
   });
 
