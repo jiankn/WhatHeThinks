@@ -117,6 +117,13 @@ describe("bannedHits：读心免责声明", () => {
     expect(bannedHits("I don't know much about him. He wants you to stay.")).not.toEqual([]);
   });
 
+  it("转述他说过的话、她想知道的事，不算读心", () => {
+    expect(bannedHits("He answered plainly that he feels that too.")).toEqual([]);
+    expect(bannedHits("You told him you feel comfortable, and he replied that he feels it too.")).toEqual([]);
+    expect(bannedHits("You can name it plainly: you want to know he wants the time too.")).toEqual([]);
+    expect(bannedHits("Leans toward: he wants the comfort of you without the effort.")).not.toEqual([]);
+  });
+
   it("if/whether/转述仍然放行（原有规则不受影响）", () => {
     expect(bannedHits("It gives him an easy opening if he wants to make a plan.")).toEqual([]);
     expect(bannedHits("He said he feels tired.")).toEqual([]);

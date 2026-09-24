@@ -2,7 +2,7 @@ import { z } from "zod";
 import { questionLabel } from "@/lib/questions";
 import { MockReportWriter } from "@/lib/report/mock-writer";
 import { measuredFacts, ReportValidationError } from "@/lib/report/narrative";
-import { buildStoryContext, stripMarkdown, storyUserData, validateStoryWithRepairs, validateTeaser } from "@/lib/report/story";
+import { buildStoryContext, storyAllowedNumbers, stripMarkdown, storyUserData, validateStoryWithRepairs, validateTeaser } from "@/lib/report/story";
 import type { StoryTeaser } from "@/lib/report/types";
 import type { ReportInput, ReportWriter } from "@/lib/report/writer";
 
@@ -33,8 +33,8 @@ const HONESTY_RULES = `HONESTY RULES (non-negotiable):
   otherwise paraphrase without quote marks. Never put a hypothetical or generic line in quotes ("some people would
   say 'I miss you' and mean it") — write it as your own sentence with no quotation marks instead.
 - Numbers: copy them exactly from measuredFacts, storyFacts or the evidence; never count occurrences yourself and
-  never write evidence ids in prose. Dates only from evidence.date, storyFacts or chapter spans. title,
-  nextStep.question, nextStep.why and nextStep.howToAsk contain no digits at all (write "this weekend", "an evening").
+  never write evidence ids in prose. Dates only from evidence.date, storyFacts or chapter spans. The title contains
+  no digits at all. Elsewhere a time already agreed in the messages ("Saturday at 2") may be repeated as written.
 - He is only "he"/"him": his name is withheld and appears as [him] in messages; [you] is her.
 - In liteMode there are no timestamps: never infer dates, delays, frequency over time or a before/after trend.`;
 
@@ -190,6 +190,8 @@ export function parseJsonContent(content: string): unknown {
   const fenced = /^\s*```(?:json)?\s*([\s\S]*?)\s*```\s*$/.exec(content);
   const text = fenced ? fenced[1] : content;
   try { return JSON.parse(text); } catch (err) {
+    // DeepSeek 偶尔在两个块之间漏掉 "}"：`"...",\n {"p": ...`。对象里逗号后只能是键名，这样补不会改坏合法 JSON。
+    try { return JSON.parse(text.replace(/"(\s*),(\s*)\{"(p|quote)"/g, '"$1},$2{"$3"')); } catch { /* 继续下面的兜底 */ }
     let best: { length: number; value: unknown } | null = null;
     for (const m of text.matchAll(/(?:^|\n)\s*\{/g)) {
       const start = m.index + m[0].length - 1;
@@ -230,7 +232,8 @@ export class LlmReportWriter implements ReportWriter {
     // 她付款前已经读过标题和开头：原样沿用，前后一致
     // 早于 Markdown 清理写好的开头也在这里清理一次
     const story = fixed ? { ...validated, title: stripMarkdown(fixed.title), opening: fixed.opening.map(stripMarkdown) } : validated;
-    return { allowed, failures: reasons, report: {
+    // 故事里合法出现的时间、日期（例如约好的 "Saturday at 2"）也要让最终的 Claim Checker 认得
+    return { allowed: [...allowed, ...storyAllowedNumbers(ctx, input.evidence)], failures: reasons, report: {
       ...base, story,
       // 故事正文由 story 校验把关；summary 只留标题，供页面标题与分享使用
       summary: { headline: story.title, paragraphs: [], claims: [] },

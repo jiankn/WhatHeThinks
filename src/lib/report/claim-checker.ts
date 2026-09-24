@@ -49,8 +49,13 @@ function stripHedgedMindReading(text: string): string {
   return text
     .split(/(?<=[.!?])\s+/)
     .map(sentence => HEDGE_WORD.test(sentence) ? sentence.replace(/\bhe (thinks|feels|wants)\b/gi, "he [withheld]") : sentence)
-    .join(" ");
+    .join(" ")
+    // 转述他自己说的话（"he answered that he feels it too"）或是在提问（"want to know whether he wants..."）
+    .replace(REPORTED_OR_OPEN, m => m.replace(/\bhe (thinks|feels|wants)\b/gi, "he [withheld]"));
 }
+
+/** 他说过/写过/回答过……，或她想知道/好奇……，后面紧跟（同一句、四十个字符内）的 he thinks/feels/wants。 */
+const REPORTED_OR_OPEN = /\b(?:said|says|told (?:you|her|me)|tells (?:you|her|me)|wrote|writes|answered|replied|texted|messaged|admitted|mentioned|want to know|wants to know|wonder|wondering|ask(?:ed)? (?:him )?whether|ask(?:ed)? (?:him )?if)\b[^.!?]{0,40}?\bhe (?:thinks|feels|wants)\b/gi;
 
 /** 命中的禁用说法（确定性、指控、诊断、读心、预测、指令）。 */
 export function bannedHits(text: string): string[] {

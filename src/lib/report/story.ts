@@ -155,8 +155,8 @@ function proseEntries(s: ReportStory): Array<[string, string]> {
   return out;
 }
 
-/** 标题会被分享；下一步的这三栏还会经过旧的 Claim Checker。这些地方不写数字。 */
-const NO_DIGITS = /^(title|nextStep\.(question|why|howToAsk))$/;
+/** 标题会被分享，不写数字。其余文字里的数字须出自实测数据、日期或原消息（例如约好的 "Saturday at 2"）。 */
+const NO_DIGITS = /^title$/;
 
 function allowedNumbers(ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): Set<string> {
   const sources = [
@@ -166,31 +166,103 @@ function allowedNumbers(ctx: StoryContext, facts: MeasuredFact[], evidence: Evid
   return new Set(sources.join(" ").match(NUMBER_RE) ?? []);
 }
 
+/** 故事里可以出现的数字字符串（原消息里的时间、证据日期、今天、章节日期），交给最终的 Claim Checker。 */
+export function storyAllowedNumbers(ctx: StoryContext, evidence: EvidenceMsg[]): string[] {
+  const text = [ctx.today ?? "", ctx.hisLastMessage?.date ?? "", ...ctx.chapters.map(c => c.span), ...evidence.flatMap(e => [e.text, ctx.liteMode ? "" : fmtDateLong(e.ts)])].join(" ");
+  return [...new Set(text.match(NUMBER_RE) ?? [])];
+}
+
 const QUOTED_RE = /["“]([^"”]+)["”]/g;
 /** 比较引用时忽略大小写、标点和空白差异。 */
 function normQuote(s: string): string {
   return s.toLowerCase().replace(/’/g, "'").replace(/[^\p{L}\p{N}\s']/gu, " ").replace(/\s+/g, " ").trim();
 }
 
+interface TextEnv { nums: Set<string>; corpus: string[] }
+
+function textEnv(ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): TextEnv {
+  return { nums: allowedNumbers(ctx, facts, evidence, allowed), corpus: evidence.map(e => normQuote(e.text)) };
+}
+
+/** 一段文字违反了哪些规则（不含位置）。path 决定适用哪些规则。 */
+function textIssueKinds(path: string, t: string, env: TextEnv): string[] {
+  const kinds: string[] = [];
+  const found = t.match(NUMBER_RE) ?? [];
+  if (NO_DIGITS.test(path) && found.length) kinds.push("digits");
+  else if (found.some(n => !env.nums.has(n))) kinds.push("number");
+  if (bannedHits(t).length || EXTRA_BANNED.some(([re]) => re.test(t))) kinds.push("banned");
+  if (CAPS_WORD.test(t)) kinds.push("tone");
+  // 正文里双引号内三个词以上的内容必须逐字出自证据；建议她发的话不算
+  if (!path.startsWith("nextStep.") && path !== "title" && path !== "question") {
+    for (const m of t.matchAll(QUOTED_RE)) {
+      const q = normQuote(m[1]);
+      if (q.split(" ").length >= 3 && !env.corpus.some(e => e.includes(q))) { kinds.push("misquote"); break; }
+    }
+  }
+  return kinds;
+}
+
+/** 可以靠删掉个别句子修好的问题。 */
+const SENTENCE_KINDS = new Set(["banned", "number", "misquote", "tone"]);
+
+/**
+ * 删掉违规的句子，保留其余内容。一整段都不合规时返回 null（由调用方决定删段或失败）。
+ * 一句话出问题不该让整份付费报告作废。
+ */
+function pruneText(path: string, t: string, env: TextEnv): string | null {
+  if (!textIssueKinds(path, t, env).some(k => SENTENCE_KINDS.has(k))) return t;
+  const kept = t.split(/(?<=[.!?])\s+/).filter(s => !textIssueKinds(path, s, env).some(k => SENTENCE_KINDS.has(k)));
+  return kept.length ? kept.join(" ") : null;
+}
+
+/** 按句修剪整份故事。删空的段落、正文块、备选消息会被去掉；删不掉的保持原样，交给最终校验。 */
+function pruneStory(s: ReportStory, env: TextEnv): { story: ReportStory; removed: string[] } {
+  const removed: string[] = [];
+  const prune = (path: string, t: string) => {
+    const out = pruneText(path, t, env);
+    if (out !== t) removed.push(`removed:sentence:${path}`);
+    return out;
+  };
+  const keepOr = (path: string, t: string) => prune(path, t) ?? t;
+  const opening = s.opening.map((p, i) => prune(`opening[${i}]`, p)).filter((p): p is string => p !== null);
+  const chapters = s.chapters.map((c, i) => ({
+    ...c,
+    blocks: c.blocks.flatMap((b, j): StoryBlock[] => {
+      if (!("p" in b)) return [b];
+      const p = prune(`chapters[${i}].blocks[${j}]`, b.p);
+      return p === null ? [] : [{ p }];
+    }),
+  }));
+  const options = s.nextStep.messageOptions.map((m, i) => ({ m, text: prune(`nextStep.messageOptions[${i}]`, m.text) }));
+  const keptOptions = options.filter(o => o.text !== null).map(o => ({ ...o.m, text: o.text! }));
+  const n = s.nextStep;
+  return {
+    removed,
+    story: {
+      ...s,
+      opening: opening.length ? opening : s.opening,
+      chapters,
+      turn: { ...s.turn, text: keepOr("turn", s.turn.text) },
+      otherReading: keepOr("otherReading", s.otherReading),
+      read: keepOr("read", s.read),
+      yourSide: keepOr("yourSide", s.yourSide),
+      signoff: keepOr("signoff", s.signoff),
+      nextStep: {
+        ...n,
+        question: keepOr("nextStep.question", n.question), why: keepOr("nextStep.why", n.why),
+        howToAsk: keepOr("nextStep.howToAsk", n.howToAsk), watchFor: keepOr("nextStep.watchFor", n.watchFor),
+        avoid: keepOr("nextStep.avoid", n.avoid), plan: keepOr("nextStep.plan", n.plan),
+        messageOptions: keptOptions.length >= 2 ? keptOptions : n.messageOptions,
+      },
+    },
+  };
+}
+
 /** 正文逐段检查（数字、禁用说法、大写、引号内原话）、标题不带名字、全文英文。报告与开头预览共用。 */
 function proseIssues(prose: Array<[string, string]>, title: string, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): string[] {
   const issues: string[] = [];
-  const nums = allowedNumbers(ctx, facts, evidence, allowed);
-  const corpus = evidence.map(e => normQuote(e.text));
-  for (const [path, t] of prose) {
-    const found = t.match(NUMBER_RE) ?? [];
-    if (NO_DIGITS.test(path) && found.length) issues.push(`digits:${path}`);
-    else if (found.some(n => !nums.has(n))) issues.push(`number:${path}`);
-    if (bannedHits(t).length || EXTRA_BANNED.some(([re]) => re.test(t))) issues.push(`banned:${path}`);
-    if (CAPS_WORD.test(t)) issues.push(`tone:${path}`);
-    // 正文里双引号内三个词以上的内容必须逐字出自证据；建议她发的话不算
-    if (!path.startsWith("nextStep.") && path !== "title" && path !== "question") {
-      for (const m of t.matchAll(QUOTED_RE)) {
-        const q = normQuote(m[1]);
-        if (q.split(" ").length >= 3 && !corpus.some(e => e.includes(q))) { issues.push(`misquote:${path}`); break; }
-      }
-    }
-  }
+  const env = textEnv(ctx, facts, evidence, allowed);
+  for (const [path, t] of prose) for (const kind of textIssueKinds(path, t, env)) issues.push(`${kind}:${path}`);
   // 标题可能被她选择公开分享，不能带名字
   if (ctx.youName && title.toLowerCase().split(/[^\p{L}'’-]+/u).includes(ctx.youName.toLowerCase())) issues.push("name:title");
   const joined = prose.map(([, t]) => t).join(" ");
@@ -320,7 +392,9 @@ export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, fact
   });
   const turnIds = raw.turn.evidenceIds.filter(id => byId.has(id)).slice(0, 8);
   if (turnIds.length !== raw.turn.evidenceIds.length) repairs.push("dropped:turn_evidence");
-  const story: ReportStory = { ...raw, chapters, turn: { ...raw.turn, evidenceIds: turnIds }, ...(ctx.youName ? { youName: ctx.youName } : {}) };
+  const assembled: ReportStory = { ...raw, chapters, turn: { ...raw.turn, evidenceIds: turnIds }, ...(ctx.youName ? { youName: ctx.youName } : {}) };
+  const { story, removed } = pruneStory(assembled, textEnv(ctx, facts, evidence, allowed));
+  repairs.push(...removed);
   const issues = collectIssues(story, ctx, facts, evidence, allowed);
   if (issues.length) throw new ReportValidationError(issues, explainStoryIssues(issues));
   return { story, repairs };
@@ -351,11 +425,17 @@ export function validateTeaser(value: unknown, ctx: StoryContext, facts: Measure
     const issues = parsed.error.issues.slice(0, 12).map(schemaIssue);
     throw new ReportValidationError(issues, explainStoryIssues(issues));
   }
-  const { title, opening } = parsed.data;
+  const { title } = parsed.data;
+  const env = textEnv(ctx, facts, evidence, allowed);
+  const pruned = parsed.data.opening.map((p, i) => pruneText(`opening[${i}]`, p, env));
+  const kept = pruned.filter((p): p is string => p !== null);
+  // 开头至少要两段才能在预览里截断；删不够就用原文，交给下面的校验
+  const opening = kept.length >= 2 ? kept : parsed.data.opening;
+  const removed = opening === kept ? pruned.flatMap((p, i) => p !== parsed.data.opening[i] ? [`removed:sentence:opening[${i}]`] : []) : [];
   const prose: Array<[string, string]> = [["title", title], ...opening.map((p, i): [string, string] => [`opening[${i}]`, p])];
   const issues = [...new Set(proseIssues(prose, title, ctx, facts, evidence, allowed))];
   if (issues.length) throw new ReportValidationError(issues, explainStoryIssues(issues));
-  return { teaser: { title, opening }, repairs: [...(changed ? ["coerced:shape"] : []), ...(plain.changed ? ["stripped:markdown"] : [])] };
+  return { teaser: { title, opening }, repairs: [...(changed ? ["coerced:shape"] : []), ...(plain.changed ? ["stripped:markdown"] : []), ...removed] };
 }
 
 export function buildTeaserFacts(analysis: SlimAnalysis, evidence: EvidenceMsg[], now: number): TeaserFacts {

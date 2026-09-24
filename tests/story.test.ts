@@ -110,16 +110,33 @@ describe("story contract", () => {
     ["probability", "I would put the odds of a comeback low, maybe forty percent.", "banned:chapters[0]"],
     ["an accusation", "Honestly, he is playing you.", "banned:chapters[0]"],
     ["a misquote", "He wrote \u201cI will always make time for you\u201d and then vanished.", "misquote:chapters[0]"],
-  ])("rejects %s", async (_label, text, issue) => {
+  ])("removes a sentence with %s and keeps the rest of the paragraph", async (_label, text, issue) => {
     const f = await setup();
-    expect(() => f.validate(withBlock(f.story, text))).toThrow(expect.objectContaining({ issues: [expect.stringContaining(issue)] }));
+    const kept = "This part of the paragraph is fine and should stay.";
+    const input = withBlock(f.story, `${kept} ${text}`);
+    const at = input.chapters[0].blocks.length - 1;
+    const { story, repairs } = f.validate(input);
+    expect(story.chapters[0].blocks[at]).toEqual({ p: kept });
+    expect(repairs).toContain(`removed:sentence:chapters[0].blocks[${at}]`);
+    // 同一句话放在删不掉的单句字段里，仍然让整份报告失败，并给出同样的规则编号
+    expect(() => f.validate({ ...f.story, turn: { ...f.story.turn, text } })).toThrow(expect.objectContaining({ issues: [expect.stringContaining(issue.replace("chapters[0]", "turn"))] }));
+  });
+
+  it("drops a paragraph block or message option that is entirely non-compliant", async () => {
+    const f = await setup();
+    const { story, repairs } = f.validate(withBlock(f.story, "He went quiet for 37 days in a row."));
+    expect(story.chapters[0].blocks).toEqual(f.story.chapters[0].blocks);
+    expect(repairs.some(r => r.startsWith("removed:sentence:chapters[0]"))).toBe(true);
+    const options = [...f.story.nextStep.messageOptions.slice(0, 2), { tone: "light" as const, text: "He definitely misses you, trust me." }];
+    const out = f.validate({ ...f.story, nextStep: { ...f.story.nextStep, messageOptions: options } });
+    expect(out.story.nextStep.messageOptions).toEqual(f.story.nextStep.messageOptions.slice(0, 2));
   });
 
   it("keeps digits, names and foreign language out of the shareable parts", async () => {
     const f = await setup();
     expect(() => f.validate({ ...f.story, title: "Emma and the Porch Light: A Summer Story" })).toThrow(expect.objectContaining({ issues: ["name:title"] }));
     expect(() => f.validate({ ...f.story, title: "The Friday at 7 Club: A Summer Story" })).toThrow(expect.objectContaining({ issues: ["digits:title"] }));
-    expect(() => f.validate({ ...f.story, nextStep: { ...f.story.nextStep, question: "Are you free Friday at 7?" } })).toThrow(ReportValidationError);
+    expect(() => f.validate({ ...f.story, nextStep: { ...f.story.nextStep, question: "Are you free at 11:45 tonight?" } })).toThrow(ReportValidationError);
     expect(f.validate({ ...f.story, turn: { ...f.story.turn, evidenceIds: f.upload.evidence.slice(0, 12).map(e => e.id) } }).story.turn.evidenceIds).toHaveLength(8);
     expect(() => f.validate({ ...f.story, read: "这段聊天不能证明对方的感受，需要进一步沟通，也不能说明他以后会怎么做。" })).toThrow(expect.objectContaining({ issues: ["language:english_required"] }));
   });
@@ -166,6 +183,7 @@ describe("messy model output", () => {
     expect(parseJsonContent("```json\n" + JSON.stringify(whole) + "\n```")).toEqual(whole);
     const pretty = JSON.stringify({ ...whole, options: [{ tone: "warm" }] }, null, 2);
     expect(parseJsonContent(`${pretty}\n${pretty}`)).toEqual(JSON.parse(pretty));
+    expect(parseJsonContent('{"blocks": [{"p": "one",\n  {"p": "two"}, {"quote": 3}]}')).toEqual({ blocks: [{ p: "one" }, { p: "two" }, { quote: 3 }] });
     expect(() => parseJsonContent("{\"language\":\"en\",")).toThrow(SyntaxError);
   });
 
@@ -272,5 +290,15 @@ describe("markdown emphasis", () => {
     const { story, repairs } = f.validate(withBlock(f.story, "It was *steady*, and that matters."));
     expect(JSON.stringify(story)).not.toContain("*");
     expect(repairs).toContain("stripped:markdown");
+  });
+});
+
+describe("paid report rule fixes from a live failure", () => {
+  it("allows a time already agreed in the messages in the suggested message", async () => {
+    const f = await setup();
+    const time = f.upload.evidence.map(e => e.text.match(/\b\d{1,2}(?::\d{2})?\s?(?:am|pm)\b/i)?.[0]).find(Boolean);
+    if (!time) return;
+    const { story } = f.validate({ ...f.story, nextStep: { ...f.story.nextStep, question: `Still on for ${time}? I have been looking forward to it.` } });
+    expect(story.nextStep.question).toContain(time);
   });
 });
