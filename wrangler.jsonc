@@ -31,7 +31,7 @@
     "TURNSTILE_SITE_KEY": "0x4AAAAAAFAGYxW9wYYM6md9",
     // 写报告：先 DEEPSEEK_MODEL，失败再用 GLM_MODEL（key 在 FALLBACK_API_KEY）
     "GLM_MODEL": "glm-5.3",
-    "DEEPSEEK_MODEL": "deepseek-v4-pro",
+    "DEEPSEEK_MODEL": "deepseek-flash",
     // Stripe 测试模式价格（WhatHeThinks 沙盒）；转正式收款时换成 live price
     "STRIPE_PRICE_ID": "price_1UIeNtInIVPJpCcmSfeOuIVg"
   }

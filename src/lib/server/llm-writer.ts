@@ -6,8 +6,8 @@ import { buildStoryContext, storyAllowedNumbers, stripMarkdown, storyUserData, v
 import type { StoryTeaser } from "@/lib/report/types";
 import type { ReportInput, ReportWriter } from "@/lib/report/writer";
 
-// 付费报告卖的是文字质量（口吻、贴切的比喻、读出细节），用各家的旗舰模型；flash 版本仍可通过环境变量切回。
-export const DEEPSEEK_MODEL = "deepseek-v4-pro";
+// DeepSeek 用 V4.1 Flash（deepseek-flash）；GLM 备用用旗舰 glm-5.3。质量靠提示词与校验把关。
+export const DEEPSEEK_MODEL = "deepseek-flash";
 export const GLM_MODEL = "glm-5.3";
 const VOICE = `You are the narrator of a private WhatHeThinks reading. Your voice: an honest, funny,
 emotionally sharp friend who has read thousands of chat logs and genuinely cares about the reader. The reader is a
