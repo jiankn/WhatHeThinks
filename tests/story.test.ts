@@ -4,7 +4,7 @@ import { analyze, analyzeRoleMsgs, parseAny } from "@/lib/analysis";
 import { buildUpload, firstName, validateUpload } from "@/lib/report/payload";
 import { MockReportWriter } from "@/lib/report/mock-writer";
 import { measuredFacts, ReportValidationError } from "@/lib/report/narrative";
-import { buildStoryContext, chapterOf, explainStoryIssues, numberWord, validateStoryWithRepairs } from "@/lib/report/story";
+import { buildStoryContext, buildTeaserFacts, chapterOf, explainStoryIssues, maskText, numberWord, publicTeaser, validateStoryWithRepairs, validateTeaser } from "@/lib/report/story";
 import type { ReportStory } from "@/lib/report/types";
 import { parseJsonContent } from "@/lib/server/llm-writer";
 import { storyFixture } from "./story-fixture";
@@ -196,5 +196,54 @@ describe("sample report", () => {
     expect(repairs).toEqual([]);
     expect(story).toEqual(report.story);
     expect(report.summary.headline).toBe(report.story!.title);
+  });
+});
+
+describe("free preview hook", () => {
+  const opening = ["Emma, I read your chat slowly, the way you read something that matters to a friend.", "What I found looks less like a mystery and more like a porch light: steady for a long time, then easier to miss. Let me show you where the light changed, and what it looked like from your side of the door."];
+
+  it("accepts an honest title and opening, and rejects the same failures as a report", async () => {
+    const f = await setup();
+    const ok = { language: "en", title: "The Long Porch Light: Steady Signals and Quiet Stretches", opening };
+    expect(validateTeaser(ok, f.ctx, f.facts, f.upload.evidence, f.allowed).teaser).toEqual({ title: ok.title, opening });
+    expect(validateTeaser({ ...ok, title_note: "x", opening: opening.map(p => ({ p })) }, f.ctx, f.facts, f.upload.evidence, f.allowed).repairs).toEqual(["coerced:shape"]);
+    expect(() => validateTeaser({ ...ok, title: "Emma and the Porch Light: A Story" }, f.ctx, f.facts, f.upload.evidence, f.allowed)).toThrow(expect.objectContaining({ issues: ["name:title"] }));
+    expect(() => validateTeaser({ ...ok, opening: [opening[0], "He went quiet for 37 days. Leans toward: he wants the comfort of you without the effort."] }, f.ctx, f.facts, f.upload.evidence, f.allowed)).toThrow(expect.objectContaining({ issues: ["number:opening[1]", "banned:opening[1]"] }));
+    expect(() => validateTeaser({ ...ok, opening: [opening[0]] }, f.ctx, f.facts, f.upload.evidence, f.allowed)).toThrow(ReportValidationError);
+  });
+
+  it("shows the first paragraph and only the start of the second", () => {
+    const t = publicTeaser({ title: "T", opening });
+    expect(t.first).toBe(opening[0]);
+    expect(t.next.split(" ").length).toBe(24);
+    expect(t.next.endsWith("…")).toBe(true);
+    expect(opening[1].startsWith(t.next.slice(0, -1))).toBe(true);
+  });
+
+  it("masks everything but the first word", () => {
+    expect(maskText("hey, miss you")).toBe("hey, •••• •••");
+    expect(maskText("yeah")).toBe("yeah");
+    expect(maskText("I'd rather talk 🙂")).toBe("I'd •••••• •••• 🙂");
+  });
+
+  it("builds real locked findings from the fictional export, with his words masked", () => {
+    const raw = readFileSync("reports/test-data/WhatsApp-Emily-Jake-fictional.txt", "utf8");
+    const up = buildUpload(analyze(parseAny(raw, { forceDateOrder: "MDY" }), "Emily", "Jake"), { question: "overview", youName: "Emily", himName: "Jake" });
+    const facts = buildTeaserFacts(up.analysis, up.evidence, NOW);
+    expect(facts).toMatchObject({ youName: "Emily", hisLast: { date: "September 12", daysAgo: "twelve days" }, chapters: 2, liteMode: false });
+    expect(facts.change?.date).toBe("August 2");
+    expect(facts.change?.before).toBeTruthy();
+    expect(facts.change?.afterMasked).toMatch(/•/);
+    expect(facts.repeated?.weeks).toMatch(/^(three|four|five|six|seven|eight|nine|ten)/);
+    expect(facts.repeated?.masked).toMatch(/^\S+ .*•/);
+    expect(facts.messages).toBe(up.evidence.length);
+  });
+
+  it("gives lite mode no dates or change", async () => {
+    const f = await setup(true);
+    const facts = buildTeaserFacts(f.upload.analysis, f.upload.evidence, NOW);
+    expect(facts.hisLast).toBeUndefined();
+    expect(facts.change).toBeUndefined();
+    expect(facts.chapters).toBe(1);
   });
 });

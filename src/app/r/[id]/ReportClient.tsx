@@ -12,6 +12,7 @@ import { FocusPicker } from "@/components/report/FocusPicker";
 import { FullReportView } from "@/components/report/FullReportView";
 import { Paywall } from "@/components/report/Paywall";
 import { PreviewHeading, PreviewSection } from "@/components/report/PreviewSection";
+import { PreviewTeaser } from "@/components/report/PreviewTeaser";
 import { ShareResult } from "@/components/report/ShareResult";
 import { track } from "@/lib/events";
 import { clearToken, tokenFromHash } from "@/lib/report/token-store";
@@ -187,6 +188,7 @@ export function ReportClient({ id }: { id: string }) {
           <Generating failed={view.status === "failed"} />
         ) : (
           <>
+            <PreviewTeaser reportId={id} token={token.current ?? ""} />
             <PreviewSection preview={view.preview} />
             <details className="reader-details"><summary>Change what your full report focuses on</summary><FocusPicker
               reportId={id}

@@ -13,6 +13,7 @@ import type {
   WeekBucket,
 } from "@/lib/analysis/analysis-types";
 import { CUSTOM_QUESTION_MAX, isQuestionId, type QuestionId } from "@/lib/questions";
+import type { StoryTeaser } from "./types";
 
 export const PAYLOAD_VERSION = 1;
 export const MAX_EVIDENCE = 120;
@@ -36,6 +37,8 @@ export type SlimAnalysis = Omit<Analysis, "totals" | "weeks" | "evidence"> & {
   weeks: SlimWeek[];
   /** 她的名字（聊天显示名的首个词），报告用来称呼她；取不到时不传。 */
   youName?: string;
+  /** 服务器写入的免费预览开头；上传时带的一律丢弃。 */
+  teaser?: StoryTeaser;
 };
 
 const FIRST_NAME_RE = /^\p{L}[\p{L}'’-]{1,23}$/u;

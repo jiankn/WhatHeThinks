@@ -12,7 +12,9 @@ import { bannedHits, CAPS_WORD } from "./claim-checker";
 import type { MeasuredFact } from "./narrative";
 import { ReportValidationError } from "./narrative";
 import type { SlimAnalysis } from "./payload";
-import type { ReportStory, StoryBlock } from "./types";
+import type { ReportStory, StoryBlock, StoryTeaser } from "./types";
+import { maskText, type TeaserFacts } from "./teaser";
+export { maskText, publicTeaser, type PublicTeaser, type TeaserFacts } from "./teaser";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_CHAPTERS = 4;
@@ -80,12 +82,12 @@ export function chapterOf(ctx: StoryContext, ts: number): string {
 }
 
 /** 给模型的数据：事实、章节与带日期/章节标注的证据。 */
-export function storyUserData(ctx: StoryContext, question: string, questionId: string, facts: MeasuredFact[], evidence: EvidenceMsg[]) {
+export function storyUserData(ctx: StoryContext, question: string, questionId: string, facts: MeasuredFact[], evidence: EvidenceMsg[], fixedOpening?: StoryTeaser) {
   const { chapters, ...rest } = ctx;
   return {
     question, questionId,
     measuredFacts: facts.map(f => ({ id: f.id, text: f.text })),
-    storyFacts: { ...rest, chapters: chapters.map(c => ({ id: c.id, span: c.span })) },
+    storyFacts: { ...rest, chapters: chapters.map(c => ({ id: c.id, span: c.span })), ...(fixedOpening ? { fixedOpening: { title: fixedOpening.title, opening: fixedOpening.opening } } : {}) },
     evidence: evidence.map(e => ({
       id: e.id,
       ...(ctx.liteMode ? {} : { date: fmtDateLong(e.ts), weekday: new Date(e.ts).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }) }),
@@ -170,11 +172,11 @@ function normQuote(s: string): string {
   return s.toLowerCase().replace(/’/g, "'").replace(/[^\p{L}\p{N}\s']/gu, " ").replace(/\s+/g, " ").trim();
 }
 
-function collectIssues(s: ReportStory, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): string[] {
+/** 正文逐段检查（数字、禁用说法、大写、引号内原话）、标题不带名字、全文英文。报告与开头预览共用。 */
+function proseIssues(prose: Array<[string, string]>, title: string, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): string[] {
   const issues: string[] = [];
   const nums = allowedNumbers(ctx, facts, evidence, allowed);
   const corpus = evidence.map(e => normQuote(e.text));
-  const prose = proseEntries(s);
   for (const [path, t] of prose) {
     const found = t.match(NUMBER_RE) ?? [];
     if (NO_DIGITS.test(path) && found.length) issues.push(`digits:${path}`);
@@ -190,13 +192,18 @@ function collectIssues(s: ReportStory, ctx: StoryContext, facts: MeasuredFact[],
     }
   }
   // 标题可能被她选择公开分享，不能带名字
-  if (ctx.youName && s.title.toLowerCase().split(/[^\p{L}'’-]+/u).includes(ctx.youName.toLowerCase())) issues.push("name:title");
+  if (ctx.youName && title.toLowerCase().split(/[^\p{L}'’-]+/u).includes(ctx.youName.toLowerCase())) issues.push("name:title");
+  const joined = prose.map(([, t]) => t).join(" ");
+  if (/[^\p{Script=Latin}\p{Mark}\P{Letter}]/u.test(joined) || franc(joined, { minLength: 40 }) !== "eng") issues.push("language:english_required");
+  return issues;
+}
+
+function collectIssues(s: ReportStory, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): string[] {
+  const issues = proseIssues(proseEntries(s), s.title, ctx, facts, evidence, allowed);
   if (s.chapters.length !== ctx.chapters.length) issues.push("chapters:count");
   s.chapters.forEach((c, i) => { if (!c.blocks.some(b => "p" in b)) issues.push(`chapters[${i}]:needs_prose`); });
   const quotes = s.chapters.flatMap(c => c.blocks.filter((b): b is { quote: number } => "quote" in b));
   if (quotes.length < Math.min(3, evidence.length)) issues.push("quotes:too_few");
-  const joined = prose.map(([, t]) => t).join(" ");
-  if (/[^\p{Script=Latin}\p{Mark}\P{Letter}]/u.test(joined) || franc(joined, { minLength: 40 }) !== "eng") issues.push("language:english_required");
   return [...new Set(issues)];
 }
 
@@ -207,7 +214,7 @@ export function explainStoryIssues(issues: string[]): string[] {
     switch (kind) {
       case "digits": return `${at}: write no digits here at all; use words ("this weekend", "an evening").`;
       case "number": return `${at}: contains a number that is not in measuredFacts, storyFacts or the evidence. Remove it, or copy the measured fact exactly. Never write evidence ids in prose, and never count occurrences yourself.`;
-      case "banned": return `${at}: remove certainty, accusations, diagnoses, probabilities or percent odds, predictions, directives, and any "he thinks/feels/wants" (even negated).`;
+      case "banned": return `${at}: remove certainty, accusations, diagnoses, probabilities or percent odds, predictions, directives, and any "he thinks/feels/wants" stated as a fact about him.`;
       case "tone": return `${at}: no all-caps words.`;
       case "chapters": return "chapters: write exactly one chapter per storyFacts.chapters entry, in order.";
       case "quotes": return "chapters: use quote blocks with evidence ids from the matching chapter; at least three across the story.";
@@ -304,4 +311,53 @@ export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, fact
   const issues = collectIssues(story, ctx, facts, evidence, allowed);
   if (issues.length) throw new ReportValidationError(issues, explainStoryIssues(issues));
   return { story, repairs };
+}
+
+// ── 免费预览：报告的开头（付款前） ─────────────────────────────
+
+export const teaserSchema = z.object({
+  language: z.literal("en"),
+  title: text.max(160),
+  opening: z.array(text).min(2).max(4),
+}).strict();
+
+/** 校验付款前写好的标题与开头。只做格式规整；付款后的完整报告会原样沿用它们。 */
+export function validateTeaser(value: unknown, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): { teaser: { title: string; opening: string[] }; repairs: string[] } {
+  let changed = false;
+  let v = value;
+  if (isRecord(v)) {
+    const kept = Object.fromEntries(Object.entries(v).filter(([k]) => k in teaserSchema.shape));
+    if (Object.keys(kept).length !== Object.keys(v).length) changed = true;
+    if (Array.isArray(kept.opening)) kept.opening = kept.opening.map(o => isRecord(o) && typeof (o.p ?? o.text) === "string" ? (changed = true, o.p ?? o.text) : o);
+    if (isRecord(kept.title) && typeof kept.title.text === "string") { changed = true; kept.title = kept.title.text; }
+    v = kept;
+  }
+  const parsed = teaserSchema.safeParse(v);
+  if (!parsed.success) {
+    const issues = parsed.error.issues.slice(0, 12).map(schemaIssue);
+    throw new ReportValidationError(issues, explainStoryIssues(issues));
+  }
+  const { title, opening } = parsed.data;
+  const prose: Array<[string, string]> = [["title", title], ...opening.map((p, i): [string, string] => [`opening[${i}]`, p])];
+  const issues = [...new Set(proseIssues(prose, title, ctx, facts, evidence, allowed))];
+  if (issues.length) throw new ReportValidationError(issues, explainStoryIssues(issues));
+  return { teaser: { title, opening }, repairs: changed ? ["coerced:shape"] : [] };
+}
+
+export function buildTeaserFacts(analysis: SlimAnalysis, evidence: EvidenceMsg[], now: number): TeaserFacts {
+  const ctx = buildStoryContext(analysis, evidence, now);
+  const his = evidence.filter(e => e.sender === "H").sort((a, b) => a.ts - b.ts);
+  const tp = ctx.liteMode ? undefined : [...analysis.turningPoints].sort((a, b) => a.date - b.date)[0];
+  const before = tp && his.filter(e => e.ts < tp.date).pop();
+  const after = tp && his.find(e => e.ts >= tp.date);
+  const line = (analysis.recurring ?? []).find(r => r.sender === "H" && r.weeks >= 3 && r.ids.some(id => evidence.some(e => e.id === id)));
+  const lineMsg = line && evidence.find(e => line.ids.includes(e.id));
+  return {
+    youName: ctx.youName, liteMode: ctx.liteMode,
+    hisLast: ctx.hisLastMessage && { date: ctx.hisLastMessage.date, daysAgo: ctx.hisLastMessage.daysAgo },
+    change: tp && { date: fmtDateLong(tp.date), before: before?.text, afterMasked: after && maskText(after.text) },
+    repeated: line && lineMsg && { weeks: numberWord(line.weeks), masked: maskText(lineMsg.text) },
+    chapters: ctx.chapters.length,
+    messages: evidence.length,
+  };
 }

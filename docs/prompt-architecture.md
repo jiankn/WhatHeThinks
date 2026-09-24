@@ -15,6 +15,14 @@ Since v3 a report is a story, not a form. A narrator writes to the reader in fir
 
 Positive, stable and inconclusive findings are valid. Never manufacture concern to sell a report. Free previews give one complete measured finding with actual figures.
 
+## Free preview hook
+
+Before paying, the preview shows the first page of her report and what else is waiting in it. Everything comes from her own chat; there are no countdowns or invented urgency.
+
+- The first page: `POST /api/reports/:id/teaser` writes the title and opening once per unpaid report (`TEASER_SYSTEM_PROMPT`, same voice, rules and validation as the report; 75 s budget, 2,500 output tokens). The page gets the title, the first paragraph and the first 24 words of the rest; the remainder never leaves the server. After payment the full report reuses the title and opening word for word (`storyFacts.fixedOpening`, then overwritten on the server).
+- Locked findings (`buildTeaserFacts`): the date things changed with one of his messages before it and a masked one after, a line he sent in several different weeks (masked), the chapter count and how many of her messages the report draws from. Masking keeps the first word and replaces the rest server-side.
+- Cost guard: at most 300 openings per hour across the site (counted from `teaser_generated` events); reports older than 14 days, failed attempts and paid reports are not retried. Uploaded analysis cannot carry a teaser; only the server writes one.
+
 ## Pipeline
 
 Browser parser → measurements, recurring lines, last messages and redacted excerpts → deterministic story facts on the server → model story → shape normalization, schema, grounding and language checks → final content checks → save.

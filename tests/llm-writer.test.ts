@@ -3,7 +3,7 @@ import { analyzeRoleMsgs } from "@/lib/analysis";
 import { buildUpload } from "@/lib/report/payload";
 import { MockReportWriter } from "@/lib/report/mock-writer";
 import { explainIssues, measuredFacts, ReportValidationError, validateNarrative, validateNarrativeWithRepairs } from "@/lib/report/narrative";
-import { deepseekProvider, DeepSeekReportWriter, glmProvider, LlmReportWriter, REPORT_SYSTEM_PROMPT } from "@/lib/server/llm-writer";
+import { deepseekProvider, DeepSeekReportWriter, glmProvider, LlmReportWriter, REPORT_SYSTEM_PROMPT, TEASER_SYSTEM_PROMPT } from "@/lib/server/llm-writer";
 import { freeFinding, PURCHASE_FOCUS } from "@/lib/report/presentation";
 import { QUESTION_IDS } from "@/lib/questions";
 import type { ReportInput } from "@/lib/report/writer";
@@ -232,5 +232,30 @@ describe("Free preview and question-specific purchase", () => {
     expect(freeFinding(preview).title).toContain("You");
     expect(freeFinding({ ...preview, liteMode: true }).context).toContain("Without timestamps");
     for (const question of QUESTION_IDS) expect(PURCHASE_FOCUS[question].length).toBeGreaterThan(40);
+  });
+});
+
+describe("Free preview opening", () => {
+  const teaserOut = { language: "en", title: "The Long Porch Light: Steady Signals and Quiet Stretches", opening: ["Emma, I read your chat slowly, the way you read something that matters to a friend.", "What I found looks less like a mystery and more like a porch light. Let me show you where it changed."] };
+
+  it("writes a short opening with its own prompt and a small output cap", async () => {
+    const f = await setup();
+    const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(teaserOut));
+    const { teaser } = await new DeepSeekReportWriter("test-only", undefined, request).writeTeaser(f.input);
+    expect(teaser).toMatchObject({ title: teaserOut.title, opening: teaserOut.opening, model: "deepseek-flash" });
+    const body = JSON.parse(String(request.mock.calls[0][1]?.body));
+    expect(body.messages[0].content).toBe(TEASER_SYSTEM_PROMPT);
+    expect(body.max_tokens).toBe(2500);
+  });
+
+  it("keeps the title and opening she already read in the paid report", async () => {
+    const f = await setup();
+    const fixed = { ...teaserOut, model: "deepseek-flash", generatedAt: 1 };
+    const input = { ...f.input, analysis: { ...f.input.analysis, teaser: fixed } };
+    const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(f.story));
+    const result = await new DeepSeekReportWriter("test-only", undefined, request).write(input);
+    expect(String(request.mock.calls[0][1]?.body)).toContain("fixedOpening");
+    expect(result.report.story).toMatchObject({ title: fixed.title, opening: fixed.opening });
+    expect(result.report.summary.headline).toBe(fixed.title);
   });
 });

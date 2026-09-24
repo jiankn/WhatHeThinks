@@ -13,6 +13,11 @@ import { getAnalysis, getEvidence, getReportRow, recordEvent, saveReport, setSta
  * 都没配置时直接失败，绝不返回模板报告。
  */
 export function getWriter(env: CloudflareEnv): ReportWriter {
+  return getLlmWriter(env);
+}
+
+/** 同一条模型链，也用于免费预览的开头。 */
+export function getLlmWriter(env: CloudflareEnv): LlmReportWriter {
   return new LlmReportWriter([
     deepseekProvider(env.DEEPSEEK_API_KEY ?? "", env.DEEPSEEK_MODEL),
     // FALLBACK_API_KEY 是智谱 GLM 的 key

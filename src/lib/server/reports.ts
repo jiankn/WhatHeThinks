@@ -5,7 +5,7 @@
 import { nanoid } from "nanoid";
 import type { EvidenceMsg, Preview } from "@/lib/analysis/analysis-types";
 import type { ReportUpload, SlimAnalysis } from "@/lib/report/payload";
-import type { FullReport } from "@/lib/report/types";
+import type { FullReport, StoryTeaser } from "@/lib/report/types";
 import type { ReportStatus, ReportView } from "@/lib/report/view";
 import type { QuestionId } from "@/lib/questions";
 import { newToken, safeEqual, sha256Hex } from "./crypto";
@@ -37,7 +37,8 @@ export async function createReport(
   const id = nanoid(12);
   const token = newToken();
   const now = Date.now();
-  const { preview, ...analysisRest } = upload.analysis;
+  // 预览开头只能由服务器写入，上传里带的丢弃
+  const { preview, teaser: _teaser, ...analysisRest } = upload.analysis;
 
   const stmts = [
     db
@@ -204,4 +205,37 @@ export async function deleteReport(db: D1Database, id: string): Promise<void> {
     db.prepare(`DELETE FROM events WHERE report_id = ?`).bind(id),
     db.prepare(`DELETE FROM reports WHERE id = ?`).bind(id),
   ]);
+}
+
+// ── 免费预览开头 ────────────────────────────────────────────
+
+/** 正在写开头的标记超过这么久视为失败，允许重试。 */
+const TEASER_CLAIM_MS = 120_000;
+
+/** 抢占写开头的资格，防止同一份报告被并发重复生成。成功返回 true。 */
+export async function claimTeaser(db: D1Database, id: string, now = Date.now()): Promise<boolean> {
+  const result = await db.prepare(
+    `UPDATE reports SET analysis_json = json_set(analysis_json, '$.teaserPending', ?)
+     WHERE id = ? AND paid_at IS NULL AND json_extract(analysis_json, '$.teaser') IS NULL
+       AND json_extract(analysis_json, '$.teaserFailed') IS NULL
+       AND COALESCE(json_extract(analysis_json, '$.teaserPending'), 0) < ?`,
+  ).bind(now, id, now - TEASER_CLAIM_MS).run();
+  return (result.meta?.changes ?? 0) > 0;
+}
+
+/** 保存写好的开头；传 null 表示失败，记下后不再自动重试（页面只显示锁住的发现）。 */
+export async function saveTeaser(db: D1Database, id: string, teaser: StoryTeaser | null): Promise<void> {
+  if (teaser) {
+    await db.prepare(`UPDATE reports SET analysis_json = json_remove(json_set(analysis_json, '$.teaser', json(?)), '$.teaserPending') WHERE id = ?`)
+      .bind(JSON.stringify(teaser), id).run();
+  } else {
+    await db.prepare(`UPDATE reports SET analysis_json = json_remove(json_set(analysis_json, '$.teaserFailed', 1), '$.teaserPending') WHERE id = ?`)
+      .bind(id).run();
+  }
+}
+
+/** 最近一段时间内某事件的次数（用于限制免费 AI 调用的总量）。 */
+export async function countRecentEvents(db: D1Database, name: string, sinceMs: number): Promise<number> {
+  const row = await db.prepare(`SELECT COUNT(*) AS n FROM events WHERE name = ? AND ts >= ?`).bind(name, Date.now() - sinceMs).first<{ n: number }>();
+  return row?.n ?? 0;
 }

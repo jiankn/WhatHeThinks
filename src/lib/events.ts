@@ -27,6 +27,8 @@ export const EVENT_NAMES = [
   "share_revoked",
   "share_landing_view",
   "report_saved_to_account",
+  "teaser_view",
+  "teaser_continue_click",
 ] as const;
 
 export type EventName = (typeof EVENT_NAMES)[number];

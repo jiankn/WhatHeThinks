@@ -152,3 +152,11 @@ export interface ReportStory {
   nextStep: ReportNarrative["nextStep"] & { messageOptions: MessageOption[]; avoid: string; plan: string };
   signoff: string;
 }
+
+/** 付款前写好的标题与开头（免费预览展示其前一部分）。付款后的完整报告原样沿用。 */
+export interface StoryTeaser {
+  title: string;
+  opening: string[];
+  model: string;
+  generatedAt: number;
+}

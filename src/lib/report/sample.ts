@@ -1,4 +1,5 @@
 import type { ReportView } from "./view";
+import { maskText, publicTeaser, type TeaserData } from "./teaser";
 import type { Claim, FullReport, ReportStory } from "./types";
 
 const date = (month: number, day: number, hour = 0, minute = 0) => Date.UTC(2026, month - 1, day, hour, minute);
@@ -148,4 +149,17 @@ export const sampleReport: ReportView = {
     { id: 15, ts: date(7, 2, 12, 30), sender: "Y", text: "Any luck with your schedule?" },
     { id: 16, ts: date(7, 5, 9, 12), sender: "H", text: "Sorry, crazy few weeks. Miss you though." },
   ],
+};
+
+/** 示例预览页的钩子：与真实预览同样的结构，取自上面的示例故事与消息。 */
+export const sampleTeaser: TeaserData = {
+  status: "ready",
+  opening: publicTeaser(story),
+  facts: {
+    youName: "Sophie", liteMode: false,
+    hisLast: { date: "July 5", daysAgo: "seven days" },
+    change: { date: "May 18", before: sampleReport.evidence![6].text, afterMasked: maskText(sampleReport.evidence![9].text) },
+    chapters: story.chapters.length,
+    messages: sampleReport.evidence!.length,
+  },
 };
