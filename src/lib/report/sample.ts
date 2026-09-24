@@ -1,3 +1,4 @@
+import { fmtDate } from "@/lib/format";
 import type { ReportView } from "./view";
 import { maskText, publicTeaser, type TeaserData } from "./teaser";
 import type { Claim, FullReport, ReportStory } from "./types";
@@ -154,7 +155,10 @@ export const sampleReport: ReportView = {
 /** 示例预览页的钩子：与真实预览同样的结构，取自上面的示例故事与消息。 */
 export const sampleTeaser: TeaserData = {
   status: "ready",
-  opening: publicTeaser(story),
+  opening: publicTeaser(
+    { ...story, outline: story.chapters.map(({ id, emoji, title }) => ({ id, emoji, title })), firstBlocks: story.chapters[0].blocks },
+    { evidence: sampleReport.evidence!, youName: story.youName, liteMode: false, firstSpan: story.chapters[0].span, fmtDate },
+  ),
   facts: {
     youName: "Sophie", liteMode: false,
     hisLast: { date: "July 5", daysAgo: "seven days" },

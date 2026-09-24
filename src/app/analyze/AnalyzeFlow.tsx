@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * /analyze 三步流程：上传/粘贴 → 确认 You/Him → 分析。
+ * /analyze 流程：上传/粘贴 → 确认 You/Him → 分析 → 聊天回顾幻灯片 → 报告。
  * 不再要求上传前选题：默认 overview，落地页可带 ?q= 预设侧重点，
  * 预览页再根据数据推荐侧重点（FocusPicker）。
  * 解析与分析在 Web Worker 里完成；只有派生数据 + 脱敏证据会上传。详见 docs/PRD.md §3。
@@ -21,12 +21,14 @@ import { IdentifyStep } from "./steps/IdentifyStep";
 import { InputStep } from "./steps/InputStep";
 import { ERROR_COPY, type ParseSummary, type WorkerIn, type WorkerOut } from "./worker-protocol";
 import { SetupChoice } from "./steps/SetupChoice";
+import { WrappedSlides } from "./steps/WrappedSlides";
+import type { Wrapped } from "@/lib/analysis/wrapped";
 import { buildFindings, type Findings } from "./findings";
 import { jitter, paced, sleep } from "./pacing";
 import "./analyze-flow.css";
 
-type Step = "focus" | "platform" | "input" | "identify" | "analyzing";
-const STEP_INDEX: Record<Step, number> = { focus: 0, platform: 1, input: 2, identify: 3, analyzing: 4 };
+type Step = "focus" | "platform" | "input" | "identify" | "analyzing" | "wrapped";
+const STEP_INDEX: Record<Step, number> = { focus: 0, platform: 1, input: 2, identify: 3, analyzing: 4, wrapped: 4 };
 const MAX_FILE_BYTES = 50 * 1024 * 1024;
 /**
  * 分析页每个阶段停留的基准时长（毫秒，实际带 ±20% 抖动）。
@@ -50,6 +52,10 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
   const [uploadFailed, setUploadFailed] = useState(false);
   const [intake, setIntake] = useState<Intake | null>(null);
   const [findings, setFindings] = useState<Findings | null>(null);
+  const [wrapped, setWrapped] = useState<Wrapped | null>(null);
+  const [slide, setSlide] = useState(0);
+  const createdRef = useRef<{ id: string; token: string } | null>(null);
+  const lastWrapped = useRef<Wrapped | null>(null);
   const pair = useRef<{ you: string; him: string } | null>(null);
   const lastAnalysis = useRef<Analysis | null>(null);
   const runId = useRef(0);
@@ -92,6 +98,12 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
     const onPop = (e: PopStateEvent) => {
       runId.current++;
       setError(null);
+      if (stepRef.current === "wrapped") {
+        // 报告已经保存：返回键只在回顾页之间后退，不回到上传流程
+        window.history.pushState({ ...window.history.state, flowStep: "wrapped" }, "");
+        setSlide((i) => Math.max(0, i - 1));
+        return;
+      }
       if (stepRef.current === "analyzing") {
         // 分析本身不占历史记录：弹出的是上一步，把确认页补回来
         window.history.pushState({ ...window.history.state, flowStep: "identify" }, "");
@@ -210,6 +222,10 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
     return (await res.json()) as { id: string; token: string };
   };
 
+  const openReport = (r: { id: string; token: string }) => {
+    router.push(`/r/${r.id}#t=${r.token}`);
+  };
+
   /** 等保存完成（且最后一段至少停留片刻）后跳到报告；失败则显示重试。 */
   const finish = async (run: number, saving: Promise<{ id: string; token: string }>) => {
     setStage("writing");
@@ -219,8 +235,15 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
       setStage("done");
       saveToken(created.id, created.token);
       track("report_created", { q: question }, created.id);
+      // 她翻看回顾时，服务器先写报告的开头，打开报告时通常已经写好
+      void fetch(`/api/reports/${created.id}/teaser`, { method: "POST", headers: { "x-report-token": created.token }, keepalive: true }).catch(() => {});
       await sleep(paced(500));
-      router.push(`/r/${created.id}#t=${created.token}`);
+      if (run !== runId.current) return;
+      if (!lastWrapped.current) return openReport(created);
+      createdRef.current = created;
+      setSlide(0);
+      window.history.pushState({ ...window.history.state, flowStep: "wrapped" }, "");
+      setStep("wrapped");
     } catch {
       if (run === runId.current) setUploadFailed(true);
     }
@@ -243,6 +266,8 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
       return;
     }
     lastAnalysis.current = res.analysis;
+    lastWrapped.current = res.wrapped;
+    setWrapped(res.wrapped);
     // 保存请求立刻发出，与揭晓动画并行。
     const saving = upload(res.analysis);
     saving.catch(() => {});
@@ -270,7 +295,7 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
 
   return (
     <main className="v3-setup" aria-busy={busy || step === "analyzing"}>
-      {step !== "analyzing" && (
+      {step !== "analyzing" && step !== "wrapped" && (
         <div className="v3-setup-progress">
           {step !== "focus" ? (
             <button type="button" onClick={back} disabled={busy} className="flow-back">
@@ -318,6 +343,20 @@ export function AnalyzeFlow({ initialQuestion, initialPlatform }: { initialQuest
 
       {step === "identify" && summary && (
         <IdentifyStep summary={summary} busy={busy} onDateOrder={onDateOrder} onConfirm={onAnalyze} />
+      )}
+
+      {step === "wrapped" && wrapped && pair.current && (
+        <WrappedSlides
+          wrapped={wrapped}
+          youName={pair.current.you}
+          himName={pair.current.him}
+          index={slide}
+          onIndex={setSlide}
+          onDone={() => {
+            track("wrapped_done", {}, createdRef.current?.id);
+            if (createdRef.current) openReport(createdRef.current);
+          }}
+        />
       )}
 
       {step === "analyzing" && (

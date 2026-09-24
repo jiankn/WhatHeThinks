@@ -1,5 +1,5 @@
 /**
- * GET  /api/reports/:id/teaser — 免费预览的钩子：锁住的发现（程序算出、原文打码）+ 已写好的报告开头（只露前一部分）。
+ * GET  /api/reports/:id/teaser — 免费预览：已写好的标题、开头全文、第一章的前一部分（其余在这里就截掉），以及报告里还有什么。
  * POST /api/reports/:id/teaser — 还没有开头时写一份（每份报告最多一次，付款前）。
  * 需 x-report-token 头，或已登录且报告属于该账户。不记录任何消息文本。
  */
@@ -11,7 +11,8 @@ import { error, json, TOKEN_HEADER } from "@/lib/server/http";
 import { claimTeaser, countRecentEvents, focusKey, getAnalysis, getAuthorizedRow, getEvidence, getPregen, getReportRow, recordEvent, saveTeaser, type ReportRow } from "@/lib/server/reports";
 import { teaserReady } from "@/lib/report/teaser";
 import type { FullReport } from "@/lib/report/types";
-import { buildTeaserFacts, publicTeaser } from "@/lib/report/story";
+import { buildStoryContext, buildTeaserFacts, publicTeaser } from "@/lib/report/story";
+import { fmtDate } from "@/lib/format";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -34,9 +35,15 @@ async function teaserView(db: D1Database, row: ReportRow) {
   // 完整报告已为当前问题写好：只露出章节标题、引用条数和打码的建议消息，正文不外发
   const pregen = getPregen(row);
   const story = pregen?.status === "ready" && pregen.for === focusKey(row) && row.report_json ? (JSON.parse(row.report_json) as FullReport).story : undefined;
+  const now = Date.now();
+  const ctx = buildStoryContext(analysis, evidence, now);
+  const opening = analysis.teaser ? publicTeaser(analysis.teaser, {
+    evidence, youName: ctx.youName, liteMode: ctx.liteMode, firstSpan: ctx.chapters[0]?.span,
+    fallbackTitles: story?.chapters.map(c => c.title), fmtDate,
+  }) : null;
   return {
-    facts: buildTeaserFacts(analysis, evidence, Date.now()),
-    opening: analysis.teaser ? publicTeaser(analysis.teaser) : null,
+    facts: buildTeaserFacts(analysis, evidence, now),
+    opening,
     status,
     ready: story ? teaserReady(story) : null,
   };

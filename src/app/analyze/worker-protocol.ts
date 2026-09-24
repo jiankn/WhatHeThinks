@@ -2,6 +2,7 @@
 
 import type { Analysis } from "@/lib/analysis/analysis-types";
 import type { DateOrder, Participant } from "@/lib/analysis/types";
+import type { Wrapped } from "@/lib/analysis/wrapped";
 
 export type WorkerIn =
   | { type: "parseFile"; name: string; buf: ArrayBuffer }
@@ -29,7 +30,7 @@ export type WorkerErrorCode =
 
 export type WorkerOut =
   | { type: "parsed"; summary: ParseSummary }
-  | { type: "analyzed"; analysis: Analysis }
+  | { type: "analyzed"; analysis: Analysis; wrapped: Wrapped }
   | { type: "error"; code: WorkerErrorCode; message?: string };
 
 export const ERROR_COPY: Record<WorkerErrorCode, string> = {
