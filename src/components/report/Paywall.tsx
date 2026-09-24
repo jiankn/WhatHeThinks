@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
 import { LockIcon } from "@/components/icons";
-import { SKUS } from "@/lib/pricing";
 
 /**
  * 付款入口：一个按钮，点了直接去 Stripe；价格写在按钮下方的小字里。立即交付的同意在 Stripe 付款页勾选（见 lib/server/stripe.ts），
@@ -11,7 +10,6 @@ import { SKUS } from "@/lib/pricing";
 export function CheckoutButton({ busy = false, error = null, onUnlock, sample = false, ready = false }: {
   busy?: boolean; error?: string | null; onUnlock?: () => void; sample?: boolean; ready?: boolean;
 }) {
-  const price = SKUS.full_report.label;
   return <div className="checkout">
     {sample
       ? <Link href="/sample-report" className="btn-primary checkout-button"><LockIcon /> Read the full example</Link>
@@ -22,8 +20,8 @@ export function CheckoutButton({ busy = false, error = null, onUnlock, sample = 
       {sample
         ? "Fictional example. You won't be charged."
         : ready
-          ? <>One-time payment of {price} · Full refund if anything goes wrong. <Link href="/terms">Terms</Link></>
-          : <>One-time payment of {price} · Opens right here after payment · Full refund if it can&apos;t be written. <Link href="/terms">Terms</Link></>}
+          ? <>One-time payment · Full refund if anything goes wrong. <Link href="/terms">Terms</Link></>
+          : <>One-time payment · Opens right here after payment · Full refund if it can&apos;t be written. <Link href="/terms">Terms</Link></>}
     </p>
     {error && <p role="alert" className="v3-error">{error}</p>}
   </div>;

@@ -94,6 +94,19 @@ describe("createCheckoutSession", () => {
     expect(retry.has("consent_collection[terms_of_service]")).toBe(false);
     expect(retry.get("custom_text[submit][message]")).toContain("Terms (https://x.co/terms)");
   });
+  it("开了 Managed Payments 时去掉自定义文字；条款链接也没填时开普通付款页", async () => {
+    const request = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ error: { message: "custom_text cannot be used with Managed Payments, which is enabled by default on your account." } }), { status: 400 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ error: { message: "You cannot collect consent to your terms of service unless a URL is set in the Stripe Dashboard." } }), { status: 400 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: "cs_1", url: "https://checkout" })));
+    vi.stubGlobal("fetch", request);
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect((await createCheckoutSession("sk_test", opts)).id).toBe("cs_1");
+    const bodies = request.mock.calls.map(c => new URLSearchParams(String(c[1]?.body)));
+    expect(bodies[1].get("consent_collection[terms_of_service]")).toBe("required");
+    expect([...bodies[1].keys()].some(k => k.startsWith("custom_text"))).toBe(false);
+    expect([...bodies[2].keys()].some(k => k.startsWith("custom_text") || k.startsWith("consent_collection"))).toBe(false);
+  });
   it("其他错误照常抛出，不重试", async () => {
     const request = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({ error: { message: "Invalid API key" } }), { status: 401 }));
     vi.stubGlobal("fetch", request);

@@ -52,9 +52,15 @@ export function consentText(termsUrl: string): string {
   return `I want my report written right away. I understand that once it is ready I can't cancel it just because I changed my mind, and I agree to the [Terms](${termsUrl}). If it can't be written, I get a full refund.`;
 }
 
-/** 账户没在 Stripe 后台填服务条款链接时，consent_collection 会被拒绝：退一步把同一句话放在付款按钮上方。 */
-function isConsentUnavailable(err: unknown): boolean {
-  return err instanceof Error && /terms of service|consent_collection|terms_of_service/i.test(err.message);
+/**
+ * Stripe 拒绝的是哪一项：账户没在后台填服务条款链接时不能要求勾选条款（consent_collection），
+ * 开了 Managed Payments 时不能放自定义文字（custom_text）。其他错误返回 null。
+ */
+function rejectedOption(err: unknown): "consent_collection" | "custom_text" | null {
+  if (!(err instanceof Error)) return null;
+  if (/custom_text|managed payments/i.test(err.message)) return "custom_text";
+  if (/terms of service|consent_collection|terms_of_service/i.test(err.message)) return "consent_collection";
+  return null;
 }
 
 export async function createCheckoutSession(
@@ -81,16 +87,24 @@ export async function createCheckoutSession(
     payment_intent_data: { metadata: { reportId: opts.reportId, sku: opts.sku } },
   };
   const text = consentText(opts.termsUrl);
-  try {
-    return await call<CheckoutSession>(secret, "POST", "/checkout/sessions", {
-      ...base,
-      consent_collection: { terms_of_service: "required" },
-      custom_text: { terms_of_service_acceptance: { message: text } },
-    });
-  } catch (err) {
-    if (!isConsentUnavailable(err)) throw err;
-    console.warn(JSON.stringify({ evt: "checkout_consent_fallback", error: err instanceof Error ? err.message : "unknown" }));
-    return call<CheckoutSession>(secret, "POST", "/checkout/sessions", { ...base, custom_text: { submit: { message: text.replace(/\[Terms\]\(([^)]+)\)/, "Terms ($1)") } } });
+  // 依次尝试：勾选条款并写明立即交付 → 只勾选条款 → 按钮上方写明 → 什么都不加。
+  // 某一项被拒绝后，后面带这一项的写法都跳过。
+  let attempts: Params[] = [
+    { consent_collection: { terms_of_service: "required" }, custom_text: { terms_of_service_acceptance: { message: text } } },
+    { consent_collection: { terms_of_service: "required" } },
+    { custom_text: { submit: { message: text.replace(/\[Terms\]\(([^)]+)\)/, "Terms ($1)") } } },
+    {},
+  ];
+  for (;;) {
+    const [extra, ...rest] = attempts;
+    try {
+      return await call<CheckoutSession>(secret, "POST", "/checkout/sessions", { ...base, ...extra });
+    } catch (err) {
+      const option = rejectedOption(err);
+      if (!option || rest.length === 0) throw err;
+      console.warn(JSON.stringify({ evt: "checkout_consent_fallback", rejected: option, error: err instanceof Error ? err.message : "unknown" }));
+      attempts = rest.filter(a => !(option in a));
+    }
   }
 }
 
