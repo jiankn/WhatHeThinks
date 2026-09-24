@@ -296,6 +296,8 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .teaser-writing > p { font-size: 13px; color: #626262; }
 @keyframes teaser-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 @media (prefers-reduced-motion: reduce) { .teaser-writing > span { animation: none; } }
+.teaser-chapters { margin: 8px 0 0 23px; padding: 0; font-size: 14px; line-height: 1.7; color: #444; font-style: italic; }
+.teaser-ready { font-size: 14px; color: #33724a; margin: 6px 0 2px; }
 .teaser-subhead { font-size: 18px; font-weight: 550; margin: 30px 0 6px; }
 .teaser-locked { list-style: none; padding: 0; margin: 0 0 18px; }
 .teaser-locked li { padding: 16px 0; border-bottom: 1px solid #eee; }

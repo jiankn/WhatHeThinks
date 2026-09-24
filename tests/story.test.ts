@@ -302,3 +302,18 @@ describe("paid report rule fixes from a live failure", () => {
     expect(story.nextStep.question).toContain(time);
   });
 });
+
+describe("pre-written report on the free preview", () => {
+  it("exposes only chapter titles, the quote count and a masked suggested message", async () => {
+    const { teaserReady } = await import("@/lib/report/teaser");
+    const f = await setup();
+    const ready = teaserReady(f.story);
+    expect(ready.chapterTitles).toEqual(f.story.chapters.map(c => c.title));
+    expect(ready.quotes).toBe(f.story.chapters.flatMap(c => c.blocks).filter(b => "quote" in b).length);
+    expect(ready.nextMasked.split(" ")[0]).toBe(f.story.nextStep.question.split(" ")[0]);
+    expect(ready.nextMasked.replace(/^\S+/, "")).not.toMatch(/[A-Za-z]/);
+    const exposed = JSON.stringify(ready);
+    for (const b of f.story.chapters.flatMap(c => c.blocks)) if ("p" in b) expect(exposed).not.toContain(b.p);
+    expect(exposed).not.toContain(f.story.read);
+  });
+});

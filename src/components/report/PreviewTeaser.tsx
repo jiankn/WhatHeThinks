@@ -26,10 +26,13 @@ function goToCheckout(reportId?: string, placement = "letter") {
   window.setTimeout(() => document.querySelector<HTMLInputElement>(".reader-refund-consent input")?.focus({ preventScroll: true }), 500);
 }
 
-export function PreviewTeaser({ reportId, token, data: fixed }: { reportId?: string; token?: string; data?: TeaserData }) {
+/** focus：当前问题（侧重点）。变了之后服务器清掉旧报告，这里重新请求预写。 */
+export function PreviewTeaser({ reportId, token, focus, data: fixed }: { reportId?: string; token?: string; focus?: string; data?: TeaserData }) {
   const [data, setData] = useState<TeaserData | null>(fixed ?? null);
   // 只请求写一次；重复挂载（开发模式下的 StrictMode）只重新读取状态
   const posted = useRef(false);
+  // 每个问题只请求预写一次
+  const prepared = useRef<string | null>(null);
 
   useEffect(() => {
     if (fixed || !reportId) return;
@@ -53,12 +56,20 @@ export function PreviewTeaser({ reportId, token, data: fixed }: { reportId?: str
           next = await get();
           if (!cancelled) setData(next);
         }
+        // 开头定下来后，在后台把完整报告写好：付款后即可直接打开。不等待、不影响页面；
+        // keepalive 让用户离开页面时请求仍能送达。
+        if ((next.status === "ready" || next.status === "failed") && !next.ready && prepared.current !== (focus ?? "")) {
+          prepared.current = focus ?? "";
+          const res = await fetch(`/api/reports/${reportId}/prepare`, { method: "POST", headers, keepalive: true });
+          const { status } = await res.json() as { status: string };
+          if (status === "ready" && !cancelled) setData(await get());
+        }
       } catch {
         // 钩子是锦上添花：失败时页面照常显示其余预览
       }
     })();
     return () => { cancelled = true; };
-  }, [fixed, reportId, token]);
+  }, [fixed, reportId, token, focus]);
 
   const shown = useRef(false);
   useEffect(() => {
@@ -67,6 +78,7 @@ export function PreviewTeaser({ reportId, token, data: fixed }: { reportId?: str
 
   if (!data) return null;
   const { facts, opening } = data;
+  const ready = data.ready ?? null;
   const writing = !opening && (data.status === "pending" || data.status === "none");
   const name = facts.youName;
 
@@ -99,11 +111,15 @@ export function PreviewTeaser({ reportId, token, data: fixed }: { reportId?: str
       </li>}
       <li>
         <p><LockIcon /> <strong>The one message I&apos;d send him next</strong>, and what to watch for in his reply</p>
-        <Bubble text="I •••• ••••• •• ••• •••• ••••••• •••• ••••?" mine masked />
+        <Bubble text={ready?.nextMasked ?? "I •••• ••••• •• ••• •••• ••••••• •••• ••••?"} mine masked />
       </li>
-      <li><p><LockIcon /> <strong>{facts.chapters > 1 ? `Your story in ${facts.chapters} chapters` : "Your story"}, drawn from {facts.messages} of your real messages</strong></p></li>
+      {ready ? <li>
+        <p><LockIcon /> <strong>{ready.chapterTitles.length > 1 ? `Your story in ${ready.chapterTitles.length} chapters` : "Your story"}, with {ready.quotes} of your real messages as evidence</strong></p>
+        <ol className="teaser-chapters">{ready.chapterTitles.map((t, i) => <li key={i}>{t}</li>)}</ol>
+      </li> : <li><p><LockIcon /> <strong>{facts.chapters > 1 ? `Your story in ${facts.chapters} chapters` : "Your story"}, drawn from {facts.messages} of your real messages</strong></p></li>}
       <li><p><LockIcon /> <strong>The other honest explanation</strong>, and what your side of the chat shows</p></li>
     </ul>
+    {ready && <p className="teaser-ready" role="status">Your full report is already written. It opens the moment you unlock it.</p>}
     <button type="button" className="btn-primary teaser-unlock" onClick={() => goToCheckout(reportId, "list")}>Unlock my full report</button>
   </section>;
 }

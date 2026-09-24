@@ -158,7 +158,9 @@ export async function setFocus(
   customQuestion: string | null,
 ): Promise<boolean> {
   const r = await db
-    .prepare(`UPDATE reports SET question = ?, custom_question = ? WHERE id = ? AND paid_at IS NULL`)
+    // 侧重点变了，付款前写好的报告就不再对题：清掉，由预览页重新写
+    .prepare(`UPDATE reports SET question = ?, custom_question = ?, report_json = NULL, analysis_json = json_remove(analysis_json, '$.pregen')
+              WHERE id = ? AND paid_at IS NULL`)
     .bind(question, customQuestion, id)
     .run();
   return (r.meta.changes ?? 0) > 0;
@@ -238,4 +240,54 @@ export async function saveTeaser(db: D1Database, id: string, teaser: StoryTeaser
 export async function countRecentEvents(db: D1Database, name: string, sinceMs: number): Promise<number> {
   const row = await db.prepare(`SELECT COUNT(*) AS n FROM events WHERE name = ? AND ts >= ?`).bind(name, Date.now() - sinceMs).first<{ n: number }>();
   return row?.n ?? 0;
+}
+
+// ── 付款前预先写好的完整报告 ─────────────────────────────────
+// 报告存在 report_json，状态仍是 preview；toView 只在付款且 ready 后返回内容，付款前绝不外发。
+// analysis_json.pregen 记录它为哪个问题写的（for）、状态与时间。
+
+export interface PregenState { status: "pending" | "ready" | "failed"; for: string; at: number }
+
+/** 报告对应的问题（含自定义问题）。侧重点变了，预先写好的报告就不能用。 */
+export function focusKey(row: Pick<ReportRow, "question" | "custom_question">): string {
+  return `${row.question}|${row.custom_question ?? ""}`;
+}
+
+export function getPregen(row: ReportRow): PregenState | null {
+  return (JSON.parse(row.analysis_json) as { pregen?: PregenState }).pregen ?? null;
+}
+
+/** 超过这么久仍是 pending，视为中断，允许重新开始。 */
+const PREGEN_STALE_MS = 300_000;
+
+/** 抢占预写资格：没写过、侧重点变了、或上一次中断。失败过的不自动重试（付款后照常生成）。 */
+export async function claimPregen(db: D1Database, id: string, key: string, now = Date.now()): Promise<boolean> {
+  const r = await db.prepare(
+    `UPDATE reports SET analysis_json = json_set(analysis_json, '$.pregen', json_object('status', 'pending', 'for', ?, 'at', ?))
+     WHERE id = ? AND paid_at IS NULL AND (
+       json_extract(analysis_json, '$.pregen') IS NULL
+       OR json_extract(analysis_json, '$.pregen.for') != ?
+       OR (json_extract(analysis_json, '$.pregen.status') = 'pending' AND json_extract(analysis_json, '$.pregen.at') < ?))`,
+  ).bind(key, now, id, key, now - PREGEN_STALE_MS).run();
+  return (r.meta?.changes ?? 0) > 0;
+}
+
+/**
+ * 保存预写结果：仍是同一个问题，且还没付款、或刚付款正在等它（尚未生成别的报告）。
+ * 不会覆盖付款后生成的报告，也不会写入旧问题的结果。
+ */
+export async function savePregen(db: D1Database, id: string, key: string, report: FullReport | null, now = Date.now()): Promise<boolean> {
+  const status = report ? "ready" : "failed";
+  const r = await db.prepare(
+    `UPDATE reports SET report_json = ?, analysis_json = json_set(analysis_json, '$.pregen', json_object('status', ?, 'for', ?, 'at', ?))
+     WHERE id = ? AND json_extract(analysis_json, '$.pregen.for') = ?
+       AND (paid_at IS NULL OR (status = 'generating' AND report_json IS NULL))`,
+  ).bind(report ? JSON.stringify(report) : null, status, key, now, id, key).run();
+  return (r.meta?.changes ?? 0) > 0;
+}
+
+/** 付款后直接启用预写好的报告。 */
+export async function publishPregen(db: D1Database, id: string): Promise<boolean> {
+  const r = await db.prepare(`UPDATE reports SET status = 'ready' WHERE id = ? AND paid_at IS NOT NULL AND report_json IS NOT NULL`).bind(id).run();
+  return (r.meta?.changes ?? 0) > 0;
 }

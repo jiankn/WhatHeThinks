@@ -99,7 +99,9 @@ export default function PrivacyPage() {
         </li>
         <li>
           <strong>DeepSeek</strong> — writing your English-language report. We send your selected or custom question,
-          measured patterns, your first name and up to 120 redacted message excerpts to its API. We do not send your full export,
+          measured patterns, your first name and up to 120 redacted message excerpts to its API. This happens when your free
+          preview opens, so the first page can be shown and the full report is ready the moment you unlock it; the full
+          report is only shown after payment. We do not send your full export,
           payment details, account email or private report key. Avoid including identifying information in your custom question.
         </li>
         <li>

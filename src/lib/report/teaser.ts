@@ -43,5 +43,17 @@ export interface TeaserFacts {
 
 export type TeaserStatus = "ready" | "pending" | "none" | "failed" | "unavailable";
 
+/** 完整报告已预先写好时，预览可以露出的部分：章节标题、引用条数、建议消息（只露第一个词）。 */
+export interface TeaserReady { chapterTitles: string[]; quotes: number; nextMasked: string }
+
 /** GET/POST /api/reports/:id/teaser 的响应。 */
-export interface TeaserData { facts: TeaserFacts; opening: PublicTeaser | null; status: TeaserStatus }
+export interface TeaserData { facts: TeaserFacts; opening: PublicTeaser | null; status: TeaserStatus; ready?: TeaserReady | null }
+
+/** 从写好的故事里取出可露出的部分。 */
+export function teaserReady(story: { chapters: { title: string; blocks: Array<{ p: string } | { quote: number }> }[]; nextStep: { question: string } }): TeaserReady {
+  return {
+    chapterTitles: story.chapters.map(c => stripMarkdown(c.title)),
+    quotes: story.chapters.reduce((n, c) => n + c.blocks.filter(b => "quote" in b).length, 0),
+    nextMasked: maskText(stripMarkdown(story.nextStep.question)),
+  };
+}

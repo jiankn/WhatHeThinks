@@ -8,7 +8,9 @@ import { getRequestUser } from "@/lib/server/auth";
 import { getDB, getEnv } from "@/lib/server/env";
 import { getLlmWriter, hasReportModel } from "@/lib/server/generate";
 import { error, json, TOKEN_HEADER } from "@/lib/server/http";
-import { claimTeaser, countRecentEvents, getAnalysis, getAuthorizedRow, getEvidence, getReportRow, recordEvent, saveTeaser, type ReportRow } from "@/lib/server/reports";
+import { claimTeaser, countRecentEvents, focusKey, getAnalysis, getAuthorizedRow, getEvidence, getPregen, getReportRow, recordEvent, saveTeaser, type ReportRow } from "@/lib/server/reports";
+import { teaserReady } from "@/lib/report/teaser";
+import type { FullReport } from "@/lib/report/types";
 import { buildTeaserFacts, publicTeaser } from "@/lib/report/story";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -29,10 +31,14 @@ async function teaserView(db: D1Database, row: ReportRow) {
   const analysis = getAnalysis(row) as ReturnType<typeof getAnalysis> & { teaserPending?: number; teaserFailed?: number };
   const evidence = await getEvidence(db, row.id);
   const status = analysis.teaser ? "ready" : analysis.teaserFailed ? "failed" : (analysis.teaserPending ?? 0) > Date.now() - 120_000 ? "pending" : "none";
+  // 完整报告已为当前问题写好：只露出章节标题、引用条数和打码的建议消息，正文不外发
+  const pregen = getPregen(row);
+  const story = pregen?.status === "ready" && pregen.for === focusKey(row) && row.report_json ? (JSON.parse(row.report_json) as FullReport).story : undefined;
   return {
     facts: buildTeaserFacts(analysis, evidence, Date.now()),
     opening: analysis.teaser ? publicTeaser(analysis.teaser) : null,
     status,
+    ready: story ? teaserReady(story) : null,
   };
 }
 

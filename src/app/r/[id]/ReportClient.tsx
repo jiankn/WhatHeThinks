@@ -188,7 +188,7 @@ export function ReportClient({ id }: { id: string }) {
           <Generating failed={view.status === "failed"} />
         ) : (
           <>
-            <PreviewTeaser reportId={id} token={token.current ?? ""} />
+            <PreviewTeaser reportId={id} token={token.current ?? ""} focus={`${view.question}|${view.customQuestion ?? ""}`} />
             <PreviewSection preview={view.preview} />
             <details className="reader-details"><summary>Change what your full report focuses on</summary><FocusPicker
               reportId={id}
