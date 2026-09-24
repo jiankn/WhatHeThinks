@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { analyzeRoleMsgs } from "@/lib/analysis";
 import { buildUpload } from "@/lib/report/payload";
 import { MockReportWriter } from "@/lib/report/mock-writer";
-import { checkReport, dropFailingClaims, unregisteredNumbers } from "@/lib/report/claim-checker";
+import { bannedHits, checkReport, dropFailingClaims, unregisteredNumbers } from "@/lib/report/claim-checker";
 import type { ReportInput } from "@/lib/report/writer";
 import { QUESTION_IDS, type QuestionId } from "@/lib/questions";
 import { genChat, type GenOpts } from "./synth";
@@ -98,6 +98,28 @@ describe("报告内容", () => {
     const a = await new MockReportWriter().write(inp);
     const b = await new MockReportWriter().write(inp);
     expect(a.report.summary.paragraphs).toEqual(b.report.summary.paragraphs);
+  });
+});
+
+describe("bannedHits：读心免责声明", () => {
+  it("整句都是否定式免责声明时放行，哪怕否定词与 he thinks/feels/wants 隔了别的词", () => {
+    expect(bannedHits("I can't tell you what he feels.")).toEqual([]);
+    expect(bannedHits("What I cannot tell from a chat log — and won't pretend to — is what any of this means for where he wants it to go.")).toEqual([]);
+    expect(bannedHits("There is no way to know what he thinks about this.")).toEqual([]);
+  });
+
+  it("同一句没有否定词时仍然拦截，即使是比喻用法", () => {
+    expect(bannedHits("He wants the second act of your story, not just the headline.")).not.toEqual([]);
+    expect(bannedHits("He feels this is the right time.")).not.toEqual([]);
+  });
+
+  it("否定词在另一句时不放行本句的读心", () => {
+    expect(bannedHits("I don't know much about him. He wants you to stay.")).not.toEqual([]);
+  });
+
+  it("if/whether/转述仍然放行（原有规则不受影响）", () => {
+    expect(bannedHits("It gives him an easy opening if he wants to make a plan.")).toEqual([]);
+    expect(bannedHits("He said he feels tired.")).toEqual([]);
   });
 });
 

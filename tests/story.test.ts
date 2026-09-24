@@ -247,3 +247,11 @@ describe("free preview hook", () => {
     expect(facts.chapters).toBe(1);
   });
 });
+
+describe("single-chapter chats", () => {
+  it("rejects a story that splits storyFacts' one chapter into two", async () => {
+    const f = await setup(true); // lite mode: always exactly one chapter
+    const split = { ...f.story, chapters: [f.story.chapters[0], { ...f.story.chapters[0], title: "Later on" }] };
+    expect(() => f.validate(split)).toThrow(expect.objectContaining({ issues: expect.arrayContaining(["chapters:count"]) }));
+  });
+});

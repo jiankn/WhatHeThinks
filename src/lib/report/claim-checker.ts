@@ -38,12 +38,23 @@ const BANNED: [RegExp, string][] = [
   [/(?<!\b(?:said|says|say|if|whether) )\bhe (thinks|feels|wants) /i, "mind reading"],
 ];
 
-/** "I can't tell you what he thinks or feels" 这类否定式免责声明恰恰是在拒绝读心，检查前先去掉。 */
-const DISCLAIMER = /\b(?:can't|cannot|can not|won't|will not|don't|do not|not going to|not)\s+(?:tell you|know|say|claim to know|pretend to know|guess|see)\s+(?:what|how|whether|why)\s+he\s+(?:thinks|feels|wants)(?:\s+(?:or|and)\s+(?:how he\s+)?(?:thinks|feels|wants))?/gi;
+/** 句子里出现过否定/不确定的说法（"I can't tell you...", "there's no way to know..."）。 */
+const HEDGE_WORD = /\b(?:can't|cannot|can not|won't|will not|don't|do not|didn't|isn't|is not|impossible to know|no way to know|not knowable)\b/i;
+
+/**
+ * "What I cannot tell you is what he wants" 这类整句都在否认自己会读心的说法，
+ * 按句拆开：一句话里出现过否定说法，这句里的“he thinks/feels/wants”就不算读心。
+ */
+function stripHedgedMindReading(text: string): string {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .map(sentence => HEDGE_WORD.test(sentence) ? sentence.replace(/\bhe (thinks|feels|wants)\b/gi, "he [withheld]") : sentence)
+    .join(" ");
+}
 
 /** 命中的禁用说法（确定性、指控、诊断、读心、预测、指令）。 */
 export function bannedHits(text: string): string[] {
-  const t = text.replace(DISCLAIMER, "§");
+  const t = stripHedgedMindReading(text);
   return BANNED.flatMap(([re, why]) => { const m = re.exec(t); return m ? [`${why}: "${m[0]}"`] : []; });
 }
 
