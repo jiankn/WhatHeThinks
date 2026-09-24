@@ -30,6 +30,11 @@ export interface StoryContext {
   today?: string;
   hisLastMessage?: { date: string; daysAgo: string; evidenceId: number | null };
   chapters: StoryChapterSpec[];
+  /**
+   * 没有转折点（稳定的聊天，或没有时间戳）时，章节按主题而不是按时间分：
+   * 每章讲一种规律，可以引用任何日期的消息。只有一个时间段时，一章写不出一份值得付费的报告。
+   */
+  thematic: boolean;
   recurring: { from: "you" | "him"; weeks: string; evidenceIds: number[] }[];
 }
 
@@ -58,7 +63,7 @@ export function buildStoryContext(analysis: SlimAnalysis, evidence: EvidenceMsg[
     weeks: `${numberWord(r.weeks)} different weeks`,
     evidenceIds: r.ids.filter(id => ids.has(id)),
   })).filter(r => r.evidenceIds.length);
-  if (liteMode) return { youName: analysis.youName, liteMode, chapters: [{ id: "c1", span: "The messages you pasted", from: -Infinity, to: Infinity }], recurring };
+  if (liteMode) return { youName: analysis.youName, liteMode, recurring, ...themes(evidence.length, "Across the messages you pasted", "The messages you pasted") };
 
   const [start, end] = analysis.range;
   const cuts = [...new Set(analysis.turningPoints.map(t => t.date))].filter(d => d > start && d <= end).sort((a, b) => a - b).slice(0, MAX_CHAPTERS - 1);
@@ -71,10 +76,23 @@ export function buildStoryContext(analysis: SlimAnalysis, evidence: EvidenceMsg[
   });
   const his = analysis.last?.H;
   const days = his ? Math.floor(now / DAY_MS) - Math.floor(his.ts / DAY_MS) : NaN;
+  const timed = chapters.length > 1 ? { chapters, thematic: false } : themes(evidence.length, "Across the whole chat", chapters[0].span);
   return {
-    youName: analysis.youName, liteMode, today: fmtDateLong(now), chapters, recurring,
+    youName: analysis.youName, liteMode, today: fmtDateLong(now), ...timed, recurring,
     hisLastMessage: his && days >= 0 ? { date: fmtDateLong(his.ts), daysAgo: daysAgoText(days), evidenceId: ids.has(his.id) ? his.id : null } : undefined,
   };
+}
+
+/** 主题章节数：证据够多时三章，少一些两章，太少就只写一章。 */
+function themes(evidenceCount: number, span: string, singleSpan: string): { chapters: StoryChapterSpec[]; thematic: boolean } {
+  const n = evidenceCount >= 30 ? 3 : evidenceCount >= 12 ? 2 : 1;
+  if (n === 1) return { chapters: [{ id: "c1", span: singleSpan, from: -Infinity, to: Infinity }], thematic: false };
+  return { chapters: Array.from({ length: n }, (_, i) => ({ id: `c${i + 1}`, span, from: -Infinity, to: Infinity })), thematic: true };
+}
+
+/** 这条消息能否在这一章引用：按时间分章时只能引用本章时间段内的；按主题分章时都可以。 */
+export function fitsChapter(ctx: StoryContext, ts: number, chapterId: string): boolean {
+  return ctx.thematic || chapterOf(ctx, ts) === chapterId;
 }
 
 export function chapterOf(ctx: StoryContext, ts: number): string {
@@ -101,7 +119,7 @@ export function storyUserData(ctx: StoryContext, question: string, questionId: s
     evidence: evidence.map(e => ({
       id: e.id,
       ...(ctx.liteMode ? {} : { date: fmtDateLong(e.ts), weekday: new Date(e.ts).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }) }),
-      chapter: chapterOf(ctx, e.ts), from: e.sender === "Y" ? "you" : "him", text: e.text,
+      ...(ctx.thematic ? {} : { chapter: chapterOf(ctx, e.ts) }), from: e.sender === "Y" ? "you" : "him", text: e.text,
     })),
   };
 }
@@ -148,6 +166,8 @@ const EXTRA_BANNED: [RegExp, string][] = [
   [/\bper ?cent (chance|likely)\b|\bprobability\b|\bodds (are|of)\b|\b(likelihood|chances) (is|are|of)\b/i, "prediction"],
   // "fake" 常出现在否定式安慰里（"not that it was fake"），不拦；只拦直接指控
   [/\b(he is|he's) (a liar|lying to you|playing you|using you)\b/i, "accusation"],
+  // 给某种解释打分（"maybe forty percent"、"forty percent of the weight"）：即使数字碰巧和实测相同，也是估计的胜算
+  [/\b(?:maybe|perhaps|say)\s+(?:a\s+)?[a-z]+(?:[- ][a-z]+)?[- ]?(?:per ?cent|percent)\b(?![^.!?]*\b(?:of (?:the )?(?:conversations|messages|chats|replies|questions|plans)|started|initiat))|\b(?:weight|odds|chance|confident|confidence|sure|certain)\b[^.!?]{0,50}\b(?:per ?cent|percent)\b|\b(?:per ?cent|percent)\b[^.!?]{0,30}\b(?:weight|odds|chance|sure|certain)\b/i, "odds"],
 ];
 
 /** 自由文字的位置与内容；quote 块不算。 */
@@ -194,13 +214,33 @@ function textEnv(ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg
   return { nums: allowedNumbers(ctx, facts, evidence, allowed), corpus: evidence.map(e => normQuote(e.text)) };
 }
 
+const WORD_VALUE: Record<string, number> = Object.fromEntries([
+  ...SMALL.map((w, i) => [w, i] as const), ...TENS.flatMap((w, i) => w ? [[w, i * 10] as const] : []), ["hundred", 100] as const,
+]);
+const SPELLED_PERCENT = /\b([a-z]+)(?:[- ]([a-z]+))?[- ]?(?:per ?cent|percent)\b/gi;
+
+/**
+ * 用单词写的百分数：与实测数据相符（"seventeen percent" 对应 17%）可以；
+ * 对不上的只会是估计的胜算或权重（"maybe forty percent"），不允许。
+ */
+function spelledOdds(t: string, nums: Set<string>): boolean {
+  for (const m of t.matchAll(SPELLED_PERCENT)) {
+    const a = WORD_VALUE[m[1].toLowerCase()];
+    if (a === undefined) continue;
+    const b = m[2] ? WORD_VALUE[m[2].toLowerCase()] : 0;
+    const n = a + (b !== undefined && b < 10 ? b : 0);
+    if (!nums.has(`${n}%`)) return true;
+  }
+  return false;
+}
+
 /** 一段文字违反了哪些规则（不含位置）。path 决定适用哪些规则。 */
 function textIssueKinds(path: string, t: string, env: TextEnv): string[] {
   const kinds: string[] = [];
   const found = t.match(NUMBER_RE) ?? [];
   if (NO_DIGITS.test(path) && found.length) kinds.push("digits");
   else if (found.some(n => !env.nums.has(n))) kinds.push("number");
-  if (bannedHits(t).length || EXTRA_BANNED.some(([re]) => re.test(t))) kinds.push("banned");
+  if (bannedHits(t).length || EXTRA_BANNED.some(([re]) => re.test(t)) || spelledOdds(t, env.nums)) kinds.push("banned");
   if (CAPS_WORD.test(t)) kinds.push("tone");
   // 正文里双引号内三个词以上的内容必须逐字出自证据；建议她发的话不算
   if (!path.startsWith("nextStep.") && path !== "title" && path !== "question") {
@@ -280,12 +320,24 @@ function proseIssues(prose: Array<[string, string]>, title: string, ctx: StoryCo
   return issues;
 }
 
+/** 全篇至少引用这么多条原消息（证据不够时按证据数）。 */
+const MIN_QUOTES = 8;
+
 function collectIssues(s: ReportStory, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): string[] {
   const issues = proseIssues(proseEntries(s), s.title, ctx, facts, evidence, allowed);
   if (s.chapters.length !== ctx.chapters.length) issues.push("chapters:count");
-  s.chapters.forEach((c, i) => { if (!c.blocks.some(b => "p" in b)) issues.push(`chapters[${i}]:needs_prose`); });
-  const quotes = s.chapters.flatMap(c => c.blocks.filter((b): b is { quote: number } => "quote" in b));
-  if (quotes.length < Math.min(3, evidence.length)) issues.push("quotes:too_few");
+  s.chapters.forEach((c, i) => {
+    if (!c.blocks.some(b => "p" in b)) issues.push(`chapters[${i}]:needs_prose`);
+    // 主题章节各讲一种规律，每章都要有原话撑着
+    if (ctx.thematic && c.blocks.filter(b => "quote" in b).length < Math.min(2, evidence.length)) issues.push(`chapters[${i}]:needs_quotes`);
+  });
+  const quoted = new Set(s.chapters.flatMap(c => c.blocks.flatMap(b => "quote" in b ? [b.quote] : [])));
+  if (quoted.size < Math.min(MIN_QUOTES, evidence.length)) issues.push("quotes:too_few");
+  // 反复出现的原话是这类聊天最有说服力的证据：至少引用一条
+  const recurringIds = ctx.recurring.flatMap(r => r.evidenceIds);
+  if (recurringIds.length && !recurringIds.some(id => quoted.has(id))) issues.push(`recurring:unused:${recurringIds.slice(0, 8).join(",")}`);
+  const n = s.nextStep;
+  if (n.messageOptions.some(m => normQuote(m.text) === normQuote(n.question))) issues.push("nextStep:duplicate");
   return [...new Set(issues)];
 }
 
@@ -296,10 +348,12 @@ export function explainStoryIssues(issues: string[]): string[] {
     switch (kind) {
       case "digits": return `${at}: write no digits here at all; use words ("this weekend", "an evening").`;
       case "number": return `${at}: contains a number that is not in measuredFacts, storyFacts or the evidence. Remove it, or copy the measured fact exactly. Never write evidence ids in prose, and never count occurrences yourself.`;
-      case "banned": return `${at}: remove certainty, accusations, diagnoses, probabilities or percent odds, predictions, directives, and any "he thinks/feels/wants" stated as a fact about him.`;
+      case "banned": return `${at}: remove certainty, accusations, diagnoses, probabilities or percent odds (including spelled-out ones like "forty percent"), predictions ("likely to", "will never", "won't change", "is going to"), directives, and any "he thinks/feels/wants" stated as a fact about him.`;
       case "tone": return `${at}: no all-caps words.`;
       case "chapters": return "chapters: write exactly one chapter per storyFacts.chapters entry, in order.";
-      case "quotes": return "chapters: use quote blocks with evidence ids from the matching chapter; at least three across the story.";
+      case "quotes": return `chapters: quote at least ${MIN_QUOTES} different messages across the story with quote blocks (evidence ids from the matching chapter, or any date when storyFacts.thematic is true).`;
+      case "recurring": return `chapters: quote at least one of the lines in storyFacts.recurring with a quote block (evidence ids ${rest.slice(1).join(":")}) and say what the repetition shows.`;
+      case "nextStep": return "nextStep.messageOptions: each option must be worded differently from nextStep.question.";
       case "language": return "Write every field in English only.";
       case "name": return "title: do not include her name; the title may be shared publicly.";
       case "misquote": return `${at}: text inside double quotes must match a message in the evidence word for word. Copy it exactly, or paraphrase without quote marks.`;
@@ -310,7 +364,7 @@ export function explainStoryIssues(issues: string[]): string[] {
         return `${path}: must match the JSON shape (${code}).`;
       }
     }
-    if (/^chapters\[\d+\]$/.test(kind)) return `${kind}: add at least one prose block.`;
+    if (/^chapters\[\d+\]$/.test(kind)) return at === "needs_quotes" ? `${kind}: quote at least two messages in this chapter.` : `${kind}: add at least one prose block.`;
     return issue;
   });
 }
@@ -387,6 +441,8 @@ export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, fact
   const repairs: string[] = [...(normalized.changed ? ["coerced:shape"] : []), ...(plain.changed ? ["stripped:markdown"] : [])];
   const byId = new Map(evidence.map(e => [e.id, e]));
   const raw = parsed.data;
+  // 同一条消息只引用一次
+  const quoted = new Set<number>();
   const chapters = raw.chapters.map((c, i) => {
     const spec = ctx.chapters[i];
     if (spec && (c.id !== spec.id || c.span !== spec.span)) repairs.push(`restored:chapter:${i}`);
@@ -394,8 +450,9 @@ export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, fact
     const blocks = c.blocks.filter((b): boolean => {
       if (!("quote" in b)) return true;
       const e = byId.get(b.quote);
-      const ok = Boolean(e && chapterOf(ctx, e.ts) === id);
+      const ok = Boolean(e && fitsChapter(ctx, e.ts, id)) && !quoted.has(b.quote);
       if (!ok) repairs.push(`dropped:quote:${b.quote}`);
+      quoted.add(b.quote);
       return ok;
     }) as StoryBlock[];
     return { ...c, id, span: spec?.span ?? c.span, blocks };
@@ -403,8 +460,16 @@ export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, fact
   const turnIds = raw.turn.evidenceIds.filter(id => byId.has(id)).slice(0, 8);
   if (turnIds.length !== raw.turn.evidenceIds.length) repairs.push("dropped:turn_evidence");
   const assembled: ReportStory = { ...raw, chapters, turn: { ...raw.turn, evidenceIds: turnIds }, ...(ctx.youName ? { youName: ctx.youName } : {}) };
-  const { story, removed } = pruneStory(assembled, textEnv(ctx, facts, evidence, allowed));
-  repairs.push(...removed);
+  const pruned = pruneStory(assembled, textEnv(ctx, facts, evidence, allowed));
+  repairs.push(...pruned.removed);
+  // 备选说法与主推消息一字不差时去掉这一条（至少留两条）
+  let story = pruned.story;
+  const next = story.nextStep;
+  const distinct = next.messageOptions.filter(m => normQuote(m.text) !== normQuote(next.question));
+  if (distinct.length >= 2 && distinct.length !== next.messageOptions.length) {
+    story = { ...story, nextStep: { ...next, messageOptions: distinct } };
+    repairs.push("dropped:duplicate_option");
+  }
   const issues = collectIssues(story, ctx, facts, evidence, allowed);
   if (issues.length) throw new ReportValidationError(issues, explainStoryIssues(issues));
   return { story, repairs };
@@ -483,7 +548,7 @@ export function validateTeaser(value: unknown, ctx: StoryContext, facts: Measure
   const firstBlocks = parsed.data.firstChapter.blocks.flatMap((b, j): StoryBlock[] => {
     if ("quote" in b) {
       const e = byId.get(b.quote);
-      if (e && chapterOf(ctx, e.ts) === firstId) return [b];
+      if (e && fitsChapter(ctx, e.ts, firstId)) return [b];
       repairs.push(`dropped:quote:${b.quote}`);
       return [];
     }
@@ -500,7 +565,7 @@ export function validateTeaser(value: unknown, ctx: StoryContext, facts: Measure
   const issues = proseIssues(prose, title, ctx, facts, evidence, allowed);
   if (outline.length !== ctx.chapters.length) issues.push("chapters:count");
   if (!firstBlocks.some(b => "p" in b)) issues.push("chapters[0]:needs_prose");
-  const firstEvidence = evidence.filter(e => chapterOf(ctx, e.ts) === firstId).length;
+  const firstEvidence = evidence.filter(e => fitsChapter(ctx, e.ts, firstId)).length;
   if (firstBlocks.filter(b => "quote" in b).length < Math.min(2, firstEvidence)) issues.push("quotes:too_few");
   const unique = [...new Set(issues)];
   if (unique.length) throw new ReportValidationError(unique, explainStoryIssues(unique));

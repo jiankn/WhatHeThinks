@@ -17,7 +17,7 @@ beforeEach(() => { vi.clearAllMocks(); mocks.getPregen.mockReturnValue(null); })
 
 describe("Report fulfillment fails closed", () => {
   const db = {} as D1Database;
-  const env = { DEEPSEEK_API_KEY: "test-key", DEEPSEEK_MODEL: "deepseek-v4-pro" } as CloudflareEnv;
+  const env = { DEEPSEEK_API_KEY: "test-key", DEEPSEEK_MODEL: "deepseek-flash" } as CloudflareEnv;
 
   it("does not save a template or mark ready after provider failure", async () => {
     mocks.getReportRow.mockResolvedValue({ question: "overview", custom_question: null });
@@ -52,7 +52,7 @@ describe("Report fulfillment fails closed", () => {
 
 describe("Report written before payment", () => {
   const db = {} as D1Database;
-  const env = { DEEPSEEK_API_KEY: "test-key", DEEPSEEK_MODEL: "deepseek-v4-pro" } as CloudflareEnv;
+  const env = { DEEPSEEK_API_KEY: "test-key", DEEPSEEK_MODEL: "deepseek-flash" } as CloudflareEnv;
   const row = { id: "test-id", question: "overview", custom_question: null, paid_at: null, report_json: "{}" };
 
   it("opens the pre-written report on payment without calling a model", async () => {

@@ -9,7 +9,7 @@ Cloudflare Worker 通过 HTTPS 调用 DeepSeek 官方 API，固定地址 `https:
 | 配置项 | 类型 | 值 / 来源 |
 |---|---|---|
 | `DEEPSEEK_API_KEY` | Secret | 在 DeepSeek 平台创建的 API Key |
-| `DEEPSEEK_MODEL` | 普通变量 | `deepseek-v4-pro`（旗舰），已写入 `wrangler.jsonc`；想省钱可改回 `deepseek-flash` |
+| `DEEPSEEK_MODEL` | 普通变量 | `deepseek-flash`（V4.1 Flash），已写入 `wrangler.jsonc`；需要更强文笔可改为 `deepseek-v4-pro` |
 
 模型名称按照本次核对的 [DeepSeek 官方模型文档](https://api-docs.deepseek.com/quick_start/pricing)配置。以后更换模型，请修改 `wrangler.jsonc` 并重新生成类型、测试、部署。项目已设置 `keep_vars: true`，保留未在配置文件声明的控制台普通变量；同名变量仍以仓库配置为准。
 
