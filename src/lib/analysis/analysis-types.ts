@@ -150,6 +150,13 @@ export interface Preview {
 
 /** analyze() 的完整输出。 */
 /** 同一人在多个不同周几乎逐字重复的一句话。ids：首次与最近两次出现。 */
+/** 一条证据消息在整段聊天里出现的次数与周数（无时间戳时 weeks 为 0）。 */
+export interface RepeatInfo {
+  id: number;
+  times: number;
+  weeks: number;
+}
+
 export interface RecurringLine {
   sender: Role;
   count: number;
@@ -172,6 +179,8 @@ export interface Analysis {
   enoughForTurningPoints: boolean;
   /** 较新的分析才有；旧报告没有。 */
   recurring?: RecurringLine[];
+  /** 较新的分析才有：证据消息各自重复了几次、几周。 */
+  repeats?: RepeatInfo[];
   /** 双方最后一条消息（任意类型）。 */
   last?: { Y?: { id: number; ts: number }; H?: { id: number; ts: number } };
 }

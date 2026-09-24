@@ -407,3 +407,60 @@ describe("fixes from the first live flagship report", () => {
     expect(repairs).toContain("dropped:duplicate_option");
   });
 });
+
+describe("fixes from the second live report", () => {
+  const raw = readFileSync("reports/test-data/WhatsApp-Nora-Theo-fictional.txt", "utf8");
+  const up = buildUpload(analyze(parseAny(raw), "Nora", "Theo"), { question: "overview", youName: "Nora", himName: "Theo" });
+  const ctx = buildStoryContext(up.analysis, up.evidence, NOW);
+  const find = (text: string) => up.evidence.find(e => e.text.startsWith(text));
+
+  it("tells the model how often each quoted message repeats in the whole chat", () => {
+    const allergies = find("Any food allergies")!;
+    expect(ctx.repeats[allergies.id]).toEqual({ times: 12, weeks: 12 });
+    const data = storyUserData(ctx, "overview", "overview", [], up.evidence);
+    expect(data.evidence.find(e => e.id === allergies.id)).toMatchObject({ repeats: "sent twelve times, in twelve different weeks" });
+    const once = up.evidence.find(e => !ctx.repeats[e.id])!;
+    expect(data.evidence.find(e => e.id === once.id)).not.toHaveProperty("repeats");
+  });
+
+  it("rejects calling a weekly routine the one time the pattern broke", async () => {
+    const f = await setup();
+    const routine = up.evidence.filter(e => (ctx.repeats[e.id]?.weeks ?? 0) >= 3).slice(0, 2);
+    const story = {
+      ...f.story,
+      chapters: [{ id: "c1", span: ctx.chapters[0].span, emoji: "🌿", title: "Off Script: The Sunday That Broke the Pattern", blocks: [{ p: "This is the one time the loop went quiet and something else came through." }, { quote: routine[0].id }, { quote: routine[1].id }] }],
+      turn: { text: "It is the one exchange where the two of you step out of the template.", evidenceIds: [routine[0].id] },
+    };
+    const issues = (() => { try { validateStoryWithRepairs(story, ctx, [], up.evidence, []); return []; } catch (e) { return (e as ReportValidationError).issues; } })();
+    expect(issues).toEqual(expect.arrayContaining(["unique:chapters[0].title", "unique:chapters[0].blocks[0]", "unique:turn"]));
+    expect(explainStoryIssues(["unique:turn"])[0]).toContain("repeat in several different weeks");
+  });
+
+  it("removes a sentence that repeats one said earlier", async () => {
+    const f = await setup();
+    const said = "Read those side by side and you see two people pulling on the same rope.";
+    const withOpening = { ...f.story, opening: [...f.story.opening, said] };
+    const { story, repairs } = f.validate(withBlock(withOpening, `${said} And that balance holds.`));
+    expect(story.opening.at(-1)).toBe(said);
+    expect(story.chapters[0].blocks.at(-1)).toEqual({ p: "And that balance holds." });
+    expect(repairs.some(r => r.startsWith("removed:repeat:"))).toBe(true);
+  });
+
+  it("rejects a weekday that does not match the date", async () => {
+    const f = await setup();
+    const e = f.upload.evidence[0];
+    const date = new Date(e.ts).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" });
+    const actual = new Date(e.ts).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
+    const wrong = actual === "Monday" ? "Tuesday" : "Monday";
+    expect(() => f.validate(withBlock(f.story, `On ${wrong}, ${date}, the plan was set.`))).toThrow(expect.objectContaining({ issues: expect.arrayContaining([`weekday:chapters[0].blocks[${f.story.chapters[0].blocks.length}]:${date} was a ${actual}`]) }));
+    expect(() => f.validate(withBlock(f.story, `On ${actual}, ${date}, the plan was set.`))).not.toThrow();
+  });
+
+  it("keeps a later chapter heading in the preview from promising a break in the pattern", async () => {
+    const f = await setup();
+    const heads = f.story.chapters.map(({ id, emoji, title }, i) => ({ id, emoji, title: i === 1 ? "Off Script: The Night It Broke the Pattern" : title }));
+    if (heads.length < 2) return;
+    const teaser = { language: "en", title: "The Long Porch Light: Steady Signals", opening: ["Emma, I read your chat slowly and carefully.", "Let me show you what I found in it."], chapters: heads, firstChapter: { blocks: f.story.chapters[0].blocks } };
+    expect(() => validateTeaser(teaser, f.ctx, f.facts, f.upload.evidence, f.allowed)).toThrow(expect.objectContaining({ issues: expect.arrayContaining(["unique:chapters[1].title:heading"]) }));
+  });
+});

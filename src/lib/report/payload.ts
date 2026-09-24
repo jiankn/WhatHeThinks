@@ -129,6 +129,7 @@ export function buildUpload(
     analysis: {
       ...rest,
       recurring: rest.recurring?.map((r) => ({ ...r, ids: r.ids.filter((id) => keep.has(id)) })).filter((r) => r.ids.length),
+      repeats: rest.repeats?.filter((r) => keep.has(r.id)),
       ...(firstName(opts.youName) ? { youName: firstName(opts.youName) } : {}),
       totals: { Y: slimPerson(totals.Y, keep), H: slimPerson(totals.H, keep) },
       weeks: weeks.map((w) => ({ ...w, Y: slimPerson(w.Y), H: slimPerson(w.H) })),
@@ -168,6 +169,10 @@ export function validateUpload(body: unknown): string | null {
       if (!isObj(r) || (r.sender !== "Y" && r.sender !== "H") || !isNum(r.count) || !isNum(r.weeks)) return "invalid recurring";
       if (!Array.isArray(r.ids) || r.ids.length > 3 || !r.ids.every(isNum)) return "invalid recurring";
     }
+  }
+  if (a.repeats !== undefined) {
+    if (!Array.isArray(a.repeats) || a.repeats.length > MAX_EVIDENCE) return "invalid repeats";
+    for (const r of a.repeats) if (!isObj(r) || !isNum(r.id) || !isNum(r.times) || !isNum(r.weeks)) return "invalid repeats";
   }
   if (a.last !== undefined) {
     if (!isObj(a.last)) return "invalid last";

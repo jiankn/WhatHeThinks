@@ -3,7 +3,7 @@ import { analyzeRoleMsgs } from "@/lib/analysis";
 import { buildUpload } from "@/lib/report/payload";
 import { MockReportWriter } from "@/lib/report/mock-writer";
 import { explainIssues, measuredFacts, ReportValidationError, validateNarrative, validateNarrativeWithRepairs } from "@/lib/report/narrative";
-import { deepseekProvider, DeepSeekReportWriter, glmProvider, LlmReportWriter, REPORT_SYSTEM_PROMPT, TEASER_SYSTEM_PROMPT } from "@/lib/server/llm-writer";
+import { deepseekProvider, DeepSeekReportWriter, glmProvider, LlmReportWriter, reportPrompt, teaserPrompt } from "@/lib/server/llm-writer";
 import { freeFinding, PURCHASE_FOCUS } from "@/lib/report/presentation";
 import { QUESTION_IDS } from "@/lib/questions";
 import type { ReportInput } from "@/lib/report/writer";
@@ -153,10 +153,28 @@ describe("DeepSeek report writer", () => {
   });
 
   it("keeps instructions for counterevidence, positive outcomes and lite-mode limitations", () => {
-    expect(REPORT_SYSTEM_PROMPT).toContain("strongest honest non-dramatic explanation");
-    expect(REPORT_SYSTEM_PROMPT).toContain("stable, positive chat gets a warm, stable story");
-    expect(REPORT_SYSTEM_PROMPT).toContain("In liteMode there are no timestamps");
-    expect(REPORT_SYSTEM_PROMPT).toContain("never put her name in it");
+    const base = { thematic: false, lite: false, routine: false };
+    const p = reportPrompt(base);
+    expect(p).toContain("strongest honest non-dramatic explanation");
+    expect(p).toContain("stable, positive chat gets a warm, stable story");
+    expect(p).toContain("never her name");
+    expect(p).not.toContain("liteMode");
+    expect(reportPrompt({ ...base, lite: true })).toContain("liteMode: there are no timestamps");
+  });
+
+  it("only includes the rules that apply to this chat", () => {
+    const base = { thematic: false, lite: false, routine: false };
+    expect(reportPrompt(base)).not.toContain("THEMES");
+    expect(reportPrompt({ ...base, thematic: true })).toContain("THEMES");
+    expect(reportPrompt(base)).not.toContain("storyFacts.recurring");
+    expect(reportPrompt({ ...base, routine: true })).toContain("a script in which little new gets said");
+    expect(reportPrompt(base)).not.toContain("fixedOpening");
+    expect(reportPrompt({ ...base, fixed: "firstChapter" })).toContain("chapterHeads");
+    // 最容易被忽略的判断类要求放在最前面
+    const p = reportPrompt({ ...base, routine: true });
+    expect(p.indexOf("WHAT MATTERS MOST")).toBeLessThan(p.indexOf("THE SHAPE"));
+    expect(p).toContain("never\n   call it a first");
+    expect(teaserPrompt(base)).toContain("Do not state or\n  paraphrase her question");
   });
 });
 
@@ -251,7 +269,7 @@ describe("Free preview opening", () => {
     const { teaser } = await new DeepSeekReportWriter("test-only", undefined, request).writeTeaser(f.input);
     expect(teaser).toMatchObject({ title: out.title, opening: out.opening, outline: out.chapters, firstBlocks: out.firstChapter.blocks, model: "deepseek-flash" });
     const body = JSON.parse(String(request.mock.calls[0][1]?.body));
-    expect(body.messages[0].content).toBe(TEASER_SYSTEM_PROMPT);
+    expect(body.messages[0].content).toContain("THE SHAPE (the first part of her report");
     expect(body.max_tokens).toBe(4000);
   });
 

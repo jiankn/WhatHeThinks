@@ -28,7 +28,11 @@ export interface StoryContext {
   liteMode: boolean;
   /** 生成当天，例如 "September 24"。无时间戳时不给。 */
   today?: string;
-  hisLastMessage?: { date: string; daysAgo: string; evidenceId: number | null };
+  /** 今天是星期几，例如 "Thursday"。 */
+  todayWeekday?: string;
+  hisLastMessage?: { date: string; weekday?: string; daysAgo: string; evidenceId: number | null };
+  /** 证据消息在整段聊天里重复的次数与周数（只含重复过的），按消息 id。 */
+  repeats: Record<number, { times: number; weeks: number }>;
   chapters: StoryChapterSpec[];
   /**
    * 没有转折点（稳定的聊天，或没有时间戳）时，章节按主题而不是按时间分：
@@ -55,15 +59,18 @@ function daysAgoText(days: number): string {
   return `${numberWord(days)} days`;
 }
 
+const weekdayOf = (ts: number) => new Date(ts).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" });
+
 export function buildStoryContext(analysis: SlimAnalysis, evidence: EvidenceMsg[], now: number): StoryContext {
   const liteMode = analysis.preview.liteMode;
   const ids = new Set(evidence.map(e => e.id));
+  const repeats = Object.fromEntries((analysis.repeats ?? []).filter(r => ids.has(r.id)).map(r => [r.id, { times: r.times, weeks: r.weeks }]));
   const recurring = (analysis.recurring ?? []).map(r => ({
     from: r.sender === "Y" ? "you" as const : "him" as const,
     weeks: `${numberWord(r.weeks)} different weeks`,
     evidenceIds: r.ids.filter(id => ids.has(id)),
   })).filter(r => r.evidenceIds.length);
-  if (liteMode) return { youName: analysis.youName, liteMode, recurring, ...themes(evidence.length, "Across the messages you pasted", "The messages you pasted") };
+  if (liteMode) return { youName: analysis.youName, liteMode, recurring, repeats, ...themes(evidence.length, "Across the messages you pasted", "The messages you pasted") };
 
   const [start, end] = analysis.range;
   const cuts = [...new Set(analysis.turningPoints.map(t => t.date))].filter(d => d > start && d <= end).sort((a, b) => a - b).slice(0, MAX_CHAPTERS - 1);
@@ -78,8 +85,8 @@ export function buildStoryContext(analysis: SlimAnalysis, evidence: EvidenceMsg[
   const days = his ? Math.floor(now / DAY_MS) - Math.floor(his.ts / DAY_MS) : NaN;
   const timed = chapters.length > 1 ? { chapters, thematic: false } : themes(evidence.length, "Across the whole chat", chapters[0].span);
   return {
-    youName: analysis.youName, liteMode, today: fmtDateLong(now), ...timed, recurring,
-    hisLastMessage: his && days >= 0 ? { date: fmtDateLong(his.ts), daysAgo: daysAgoText(days), evidenceId: ids.has(his.id) ? his.id : null } : undefined,
+    youName: analysis.youName, liteMode, today: fmtDateLong(now), todayWeekday: weekdayOf(now), ...timed, recurring, repeats,
+    hisLastMessage: his && days >= 0 ? { date: fmtDateLong(his.ts), weekday: weekdayOf(his.ts), daysAgo: daysAgoText(days), evidenceId: ids.has(his.id) ? his.id : null } : undefined,
   };
 }
 
@@ -99,6 +106,12 @@ export function chapterOf(ctx: StoryContext, ts: number): string {
   return (ctx.chapters.find(c => ts >= c.from && ts < c.to) ?? ctx.chapters[ctx.chapters.length - 1]).id;
 }
 
+/** "sent twelve times, in twelve different weeks"：给模型看的重复标注。 */
+function repeatText(r: { times: number; weeks: number }, liteMode: boolean): string {
+  const times = `sent ${numberWord(r.times)} times`;
+  return liteMode || r.weeks < 2 ? `${times} in this chat` : `${times}, in ${numberWord(r.weeks)} different weeks`;
+}
+
 /** 她付款前已经读过的部分。开头与第一章正文由服务器原样填回，模型只需知道写过什么，接着往下写。 */
 function fixedFacts(t: StoryTeaser) {
   return {
@@ -111,7 +124,7 @@ function fixedFacts(t: StoryTeaser) {
 
 /** 给模型的数据：事实、章节与带日期/章节标注的证据。 */
 export function storyUserData(ctx: StoryContext, question: string, questionId: string, facts: MeasuredFact[], evidence: EvidenceMsg[], fixedOpening?: StoryTeaser) {
-  const { chapters, ...rest } = ctx;
+  const { chapters, repeats, ...rest } = ctx;
   return {
     question, questionId,
     measuredFacts: facts.map(f => ({ id: f.id, text: f.text })),
@@ -120,6 +133,7 @@ export function storyUserData(ctx: StoryContext, question: string, questionId: s
       id: e.id,
       ...(ctx.liteMode ? {} : { date: fmtDateLong(e.ts), weekday: new Date(e.ts).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }) }),
       ...(ctx.thematic ? {} : { chapter: chapterOf(ctx, e.ts) }), from: e.sender === "Y" ? "you" : "him", text: e.text,
+      ...(repeats[e.id] ? { repeats: repeatText(repeats[e.id], ctx.liteMode) } : {}),
     })),
   };
 }
@@ -191,6 +205,7 @@ const NO_DIGITS = /^title$/;
 function allowedNumbers(ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): Set<string> {
   const sources = [
     ...facts.map(f => f.text), ...allowed, ctx.today ?? "", ctx.hisLastMessage?.date ?? "",
+    ...Object.values(ctx.repeats).map(r => `${r.times} ${r.weeks}`),
     ...ctx.chapters.map(c => c.span), ...evidence.flatMap(e => [e.text, ctx.liteMode ? "" : fmtDateLong(e.ts)]),
   ];
   return new Set(sources.join(" ").match(NUMBER_RE) ?? []);
@@ -265,13 +280,32 @@ function pruneText(path: string, t: string, env: TextEnv): string | null {
   return kept.length ? kept.join(" ") : null;
 }
 
-/** 按句修剪整份故事。删空的段落、正文块、备选消息会被去掉；删不掉的保持原样，交给最终校验。 */
+/** 这么长的句子在前文出现过，就是在复述（模型凑字数时常把整段数字或同一组引用再讲一遍）。 */
+const REPEAT_MIN_WORDS = 8;
+
+/**
+ * 按句修剪整份故事：删掉违规的句子，以及前文已经出现过的长句。
+ * 删空的段落、正文块、备选消息会被去掉；删不掉的保持原样，交给最终校验。
+ */
 function pruneStory(s: ReportStory, env: TextEnv): { story: ReportStory; removed: string[] } {
   const removed: string[] = [];
+  const seen = new Set<string>();
+  const dedupe = (path: string, t: string | null): string | null => {
+    if (t === null || path.startsWith("nextStep.messageOptions") || path === "nextStep.question") return t;
+    const kept = t.split(/(?<=[.!?])\s+/).filter(sentence => {
+      const key = normQuote(sentence);
+      if (key.split(" ").length < REPEAT_MIN_WORDS) return true;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    if (kept.length !== t.split(/(?<=[.!?])\s+/).length) removed.push(`removed:repeat:${path}`);
+    return kept.length ? kept.join(" ") : null;
+  };
   const prune = (path: string, t: string) => {
     const out = pruneText(path, t, env);
     if (out !== t) removed.push(`removed:sentence:${path}`);
-    return out;
+    return dedupe(path, out);
   };
   const keepOr = (path: string, t: string) => prune(path, t) ?? t;
   const opening = s.opening.map((p, i) => prune(`opening[${i}]`, p)).filter((p): p is string => p !== null);
@@ -320,10 +354,60 @@ function proseIssues(prose: Array<[string, string]>, title: string, ctx: StoryCo
   return issues;
 }
 
+/** 把某个时刻说成独一无二、打破规律的说法。 */
+const UNIQUE_RE = /\b(?:the only (?:time|moment|exchange|day|night)|the one (?:time|moment|exchange|day|night) (?:where|when|that)|only once|for the first time|broke (?:the|this) (?:pattern|loop|routine)|breaks (?:the|this) (?:pattern|loop|routine)|breaking (?:the|this) (?:pattern|loop|routine)|off[- ]script|out of the (?:template|script|loop|routine)|step(?:s|ped)? out of (?:the|that|this)|not (?:a line )?from the (?:template|script)|something else came through)\b/i;
+
+/** 这条消息属于固定套路：在三个以上不同的周（没有时间戳时，三次以上）出现过。 */
+function routineWeeks(ctx: StoryContext, id: number): number {
+  const r = ctx.repeats[id];
+  if (!r) return 0;
+  const n = ctx.liteMode ? r.times : r.weeks;
+  return n >= 3 ? n : 0;
+}
+
+/**
+ * 被说成“唯一一次”“打破了规律”的地方，旁边引用的却是每周都有的话：这是事实错误，必须重写。
+ * 章节标题看整章的引用，正文段落看前后两块内的引用，turn 看它的证据。
+ */
+function uniqueClaimIssues(s: Pick<ReportStory, "chapters"> & { turn?: ReportStory["turn"] }, ctx: StoryContext, checkTitles = true): string[] {
+  const issues: string[] = [];
+  const worst = (ids: number[]) => Math.max(0, ...ids.map(id => routineWeeks(ctx, id)));
+  s.chapters.forEach((c, i) => {
+    const quotes = (blocks: StoryBlock[]) => blocks.flatMap(b => "quote" in b ? [b.quote] : []);
+    if (checkTitles && UNIQUE_RE.test(c.title) && worst(quotes(c.blocks))) issues.push(`unique:chapters[${i}].title`);
+    c.blocks.forEach((b, j) => {
+      if ("p" in b && UNIQUE_RE.test(b.p) && worst(quotes(c.blocks.slice(Math.max(0, j - 2), j + 3)))) issues.push(`unique:chapters[${i}].blocks[${j}]`);
+    });
+  });
+  if (s.turn && UNIQUE_RE.test(s.turn.text) && worst(s.turn.evidenceIds)) issues.push("unique:turn");
+  return issues;
+}
+
+const WEEKDAYS = "Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday";
+const MONTHS = "January|February|March|April|May|June|July|August|September|October|November|December";
+const WEEKDAY_DATE = new RegExp(`\\b(${WEEKDAYS}),? (${MONTHS}) (\\d{1,2})\\b|\\b(${MONTHS}) (\\d{1,2})(?:st|nd|rd|th)?,? (?:was |is |on )?an? (${WEEKDAYS})\\b`, "g");
+
+/** 星期几和日期写在一起时必须对得上（按证据日期、今天、他最后一条消息的日期核对）。 */
+function weekdayIssues(prose: Array<[string, string]>, ctx: StoryContext, evidence: EvidenceMsg[]): string[] {
+  if (ctx.liteMode) return [];
+  const known = new Map<string, string>(evidence.map(e => [fmtDateLong(e.ts), weekdayOf(e.ts)]));
+  if (ctx.today && ctx.todayWeekday) known.set(ctx.today, ctx.todayWeekday);
+  if (ctx.hisLastMessage?.weekday) known.set(ctx.hisLastMessage.date, ctx.hisLastMessage.weekday);
+  const issues: string[] = [];
+  for (const [path, t] of prose) {
+    for (const m of t.matchAll(WEEKDAY_DATE)) {
+      const [weekday, date] = m[1] ? [m[1], `${m[2]} ${Number(m[3])}`] : [m[6], `${m[4]} ${Number(m[5])}`];
+      const actual = known.get(date);
+      if (actual && actual !== weekday) { issues.push(`weekday:${path}:${date} was a ${actual}`); break; }
+    }
+  }
+  return issues;
+}
+
 /** 全篇至少引用这么多条原消息（证据不够时按证据数）。 */
 const MIN_QUOTES = 8;
 
-function collectIssues(s: ReportStory, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): string[] {
+function collectIssues(s: ReportStory, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[], fixedHeads = false): string[] {
   const issues = proseIssues(proseEntries(s), s.title, ctx, facts, evidence, allowed);
   if (s.chapters.length !== ctx.chapters.length) issues.push("chapters:count");
   s.chapters.forEach((c, i) => {
@@ -338,6 +422,8 @@ function collectIssues(s: ReportStory, ctx: StoryContext, facts: MeasuredFact[],
   if (recurringIds.length && !recurringIds.some(id => quoted.has(id))) issues.push(`recurring:unused:${recurringIds.slice(0, 8).join(",")}`);
   const n = s.nextStep;
   if (n.messageOptions.some(m => normQuote(m.text) === normQuote(n.question))) issues.push("nextStep:duplicate");
+  // 付款前定下的章节标题已在预览时检查过，这里不能改，也就不再查
+  issues.push(...uniqueClaimIssues(s, ctx, !fixedHeads), ...weekdayIssues(proseEntries(s), ctx, evidence));
   return [...new Set(issues)];
 }
 
@@ -354,6 +440,10 @@ export function explainStoryIssues(issues: string[]): string[] {
       case "quotes": return `chapters: quote at least ${MIN_QUOTES} different messages across the story with quote blocks (evidence ids from the matching chapter, or any date when storyFacts.thematic is true).`;
       case "recurring": return `chapters: quote at least one of the lines in storyFacts.recurring with a quote block (evidence ids ${rest.slice(1).join(":")}) and say what the repetition shows.`;
       case "nextStep": return "nextStep.messageOptions: each option must be worded differently from nextStep.question.";
+      case "unique": return rest[1] === "heading"
+        ? `${rest[0]}: a later chapter's title cannot promise a unique moment or a break from the pattern before that chapter is written. Name the theme instead.`
+        : `${at}: this calls a moment unique, a first, or a break from the pattern, but the messages quoted there repeat in several different weeks (see their evidence.repeats). Describe them as part of the routine, or choose messages that have no repeats.`;
+      case "weekday": return `${rest[0]}: wrong weekday; ${rest.slice(1).join(":")}. Use the weekday given in the evidence, or leave the weekday out.`;
       case "language": return "Write every field in English only.";
       case "name": return "title: do not include her name; the title may be shared publicly.";
       case "misquote": return `${at}: text inside double quotes must match a message in the evidence word for word. Copy it exactly, or paraphrase without quote marks.`;
@@ -430,7 +520,7 @@ function stripMarkdownDeep(value: unknown): { value: unknown; changed: boolean }
   return { value: walk(value), changed };
 }
 
-export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): { story: ReportStory; repairs: string[] } {
+export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[], opts: { fixedHeads?: boolean } = {}): { story: ReportStory; repairs: string[] } {
   const plain = stripMarkdownDeep(value);
   const normalized = normalizeShape(plain.value);
   const parsed = storySchema.safeParse(normalized.value);
@@ -470,7 +560,7 @@ export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, fact
     story = { ...story, nextStep: { ...next, messageOptions: distinct } };
     repairs.push("dropped:duplicate_option");
   }
-  const issues = collectIssues(story, ctx, facts, evidence, allowed);
+  const issues = collectIssues(story, ctx, facts, evidence, allowed, opts.fixedHeads);
   if (issues.length) throw new ReportValidationError(issues, explainStoryIssues(issues));
   return { story, repairs };
 }
@@ -565,6 +655,10 @@ export function validateTeaser(value: unknown, ctx: StoryContext, facts: Measure
   const issues = proseIssues(prose, title, ctx, facts, evidence, allowed);
   if (outline.length !== ctx.chapters.length) issues.push("chapters:count");
   if (!firstBlocks.some(b => "p" in b)) issues.push("chapters[0]:needs_prose");
+  // 第一章已经写好，按引用核对；后面几章还没写，标题不能先许诺“打破规律”的时刻
+  issues.push(...uniqueClaimIssues({ chapters: [{ id: firstId, span: "", emoji: "", title: outline[0]?.title ?? "", blocks: firstBlocks }] }, ctx));
+  outline.slice(1).forEach((c, i) => { if (UNIQUE_RE.test(c.title)) issues.push(`unique:chapters[${i + 1}].title:heading`); });
+  issues.push(...weekdayIssues(prose, ctx, evidence));
   const firstEvidence = evidence.filter(e => fitsChapter(ctx, e.ts, firstId)).length;
   if (firstBlocks.filter(b => "quote" in b).length < Math.min(2, firstEvidence)) issues.push("quotes:too_few");
   const unique = [...new Set(issues)];

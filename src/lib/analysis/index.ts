@@ -14,7 +14,7 @@ import { findTurningPoints } from "./turningPoints";
 import { computeInterest } from "./interest";
 import { computeMixedSignals } from "./mixedSignals";
 import { selectEvidence } from "./evidence";
-import { findRecurring } from "./recurring";
+import { evidenceRepeats, findRecurring } from "./recurring";
 import { buildPreview } from "./preview";
 
 export * from "./analysis-types";
@@ -86,6 +86,7 @@ export function analyzeRoleMsgs(
     evidence,
     enoughForTurningPoints,
     recurring,
+    repeats: evidenceRepeats(msgs, new Set(evidence.map(e => e.id)), liteMode),
     last: { Y: lastOf("Y"), H: lastOf("H") },
   };
   return { ...partial, preview: buildPreview(partial, liteMode) };

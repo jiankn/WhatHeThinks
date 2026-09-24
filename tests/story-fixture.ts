@@ -2,18 +2,20 @@ import type { EvidenceMsg } from "@/lib/analysis/analysis-types";
 import { fitsChapter, type StoryContext } from "@/lib/report/story";
 import type { ReportStory, StoryBlock } from "@/lib/report/types";
 
+const ORDINALS = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth"];
+
 /** Fictional model output for contract and rendering tests; not evidence of live model quality. youName is added by the server. */
 export function storyFixture(ctx: StoryContext, evidence: EvidenceMsg[]): ReportStory {
   // 每章引用本章可用、全篇尚未引用过的消息，凑够全篇至少 8 条；反复出现的原话放在最前面
   const used = new Set<number>();
   const recurring = new Set(ctx.recurring.flatMap(r => r.evidenceIds));
   const perChapter = Math.max(3, Math.ceil(8 / ctx.chapters.length));
-  const chapters = ctx.chapters.map(c => {
+  const chapters = ctx.chapters.map((c, i) => {
     const fits = evidence.filter(e => fitsChapter(ctx, e.ts, c.id) && !used.has(e.id)).sort((a, b) => Number(recurring.has(b.id)) - Number(recurring.has(a.id)));
     const quotes = fits.slice(0, perChapter);
     for (const q of quotes) used.add(q.id);
-    const blocks: StoryBlock[] = [{ p: "This stretch of the chat has its own rhythm, and it is worth looking at closely before deciding what it means." }];
-    for (const q of quotes) blocks.push({ quote: q.id }, { p: "Notice how this message sits next to the ones around it rather than on its own." });
+    const blocks: StoryBlock[] = [{ p: `This ${ORDINALS[i]} part of the chat has its own rhythm, and it is worth looking at closely before deciding what it means.` }];
+    quotes.forEach((q, j) => blocks.push({ quote: q.id }, { p: `Notice how the ${ORDINALS[j]} message of this ${ORDINALS[i]} part sits next to the ones around it.` }));
     return { id: c.id, span: c.span, emoji: "🌿", title: "A rhythm worth reading slowly", blocks };
   });
   return {
