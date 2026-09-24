@@ -8,6 +8,7 @@ import "./account.css";
 import "./experience.css";
 import "./guides.css";
 import { VisitTracker } from "@/components/VisitTracker";
+import { DialogHost } from "@/components/DialogHost";
 
 const inter = Geist({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono-face", display: "swap" });
@@ -66,6 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <VisitTracker />
         <div id="main-content" className="flex-1" tabIndex={-1}>{children}</div>
         <SiteFooter />
+        <DialogHost />
       </body>
     </html>
   );

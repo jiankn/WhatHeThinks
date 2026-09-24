@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { confirmDialog } from "@/components/DialogHost";
 import { track } from "@/lib/events";
 import { clearToken, loadToken } from "@/lib/report/token-store";
 
@@ -21,7 +22,13 @@ export function DeleteForm() {
     e.preventDefault();
     const parsed = parseLink(link.trim());
     if (!parsed || !parsed.token) return setState("invalid");
-    if (!confirm("Permanently delete this report and all of its data?")) return;
+    const ok = await confirmDialog({
+      title: "Delete this report?",
+      message: "The report and all of its data will be permanently deleted. This can't be undone.",
+      confirmLabel: "Delete report",
+      tone: "danger",
+    });
+    if (!ok) return;
     setState("working");
     const res = await fetch(`/api/reports/${parsed.id}`, {
       method: "DELETE",

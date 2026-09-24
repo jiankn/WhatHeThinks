@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { alertDialog, confirmDialog } from "@/components/DialogHost";
 
 export function SignOutButton() {
   const [working, setWorking] = useState(false);
@@ -30,13 +31,19 @@ export function DeleteReportButton({ id }: { id: string }) {
       className="account-row-delete"
       disabled={working}
       onClick={async () => {
-        if (!window.confirm("Permanently delete this report and all stored example messages?")) return;
+        const ok = await confirmDialog({
+          title: "Delete this report?",
+          message: "The report and all of its stored example messages will be permanently deleted. This can't be undone.",
+          confirmLabel: "Delete report",
+          tone: "danger",
+        });
+        if (!ok) return;
         setWorking(true);
         const response = await fetch(`/api/reports/${id}`, { method: "DELETE" });
         if (response.ok) router.refresh();
         else {
           setWorking(false);
-          window.alert("The report could not be deleted. Please try again.");
+          await alertDialog({ title: "Couldn't delete the report", message: "Something went wrong. Please try again." });
         }
       }}
     >
@@ -53,13 +60,19 @@ export function DeleteAccountButton() {
       className="account-danger-button"
       disabled={working}
       onClick={async () => {
-        if (!window.confirm("Delete your account, reports, and stored example messages permanently? Payment records required for accounting will remain.")) return;
+        const ok = await confirmDialog({
+          title: "Delete your account?",
+          message: "Your account, reports, and stored example messages will be permanently deleted. Payment records required for accounting will remain.",
+          confirmLabel: "Delete account",
+          tone: "danger",
+        });
+        if (!ok) return;
         setWorking(true);
         const response = await fetch("/api/account", { method: "DELETE" });
         if (response.ok) window.location.assign("/?account=deleted");
         else {
           setWorking(false);
-          window.alert("Your account could not be deleted. Please try again.");
+          await alertDialog({ title: "Couldn't delete your account", message: "Something went wrong. Please try again." });
         }
       }}
     >

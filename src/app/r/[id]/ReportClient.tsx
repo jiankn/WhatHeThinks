@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { confirmDialog } from "@/components/DialogHost";
 import { TrashIcon } from "@/components/icons";
 import { FocusPicker } from "@/components/report/FocusPicker";
 import { FullReportView } from "@/components/report/FullReportView";
@@ -110,7 +111,13 @@ export function ReportClient({ id }: { id: string }) {
   };
 
   const remove = async () => {
-    if (!confirm("Delete this report and all of its data? This can't be undone.")) return;
+    const ok = await confirmDialog({
+      title: "Delete this report?",
+      message: "The report and all of its data will be permanently deleted. This can't be undone.",
+      confirmLabel: "Delete report",
+      tone: "danger",
+    });
+    if (!ok) return;
     setDeleteBusy(true);
     setDeleteError(null);
     try {
