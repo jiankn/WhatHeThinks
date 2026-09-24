@@ -55,3 +55,8 @@ export function fmtRange([a, b]: [number, number]): string {
   const sameYear = new Date(a).getUTCFullYear() === new Date(b).getUTCFullYear();
   return `${fmtDate(a, { year: !sameYear })} – ${fmtDate(b, { year: true })}`;
 }
+
+/** "July 17, 2026" */
+export function fmtDateFull(ts: number): string {
+  return new Date(ts).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+}

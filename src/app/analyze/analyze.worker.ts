@@ -5,9 +5,10 @@
  * 详见 docs/PRD.md §5.1–5.2。
  */
 
-import { analyze } from "@/lib/analysis";
+import { analyze, mapRoles } from "@/lib/analysis";
 import { CONFIG } from "@/lib/analysis/config";
 import { parseAny } from "@/lib/analysis/parser";
+import { buildWrapped } from "@/lib/analysis/wrapped";
 import type { ParseResult } from "@/lib/analysis/types";
 import { extractChatText } from "@/lib/analysis/zip";
 import type { WorkerIn, WorkerOut, ParseSummary } from "./worker-protocol";
@@ -88,7 +89,9 @@ self.onmessage = (e: MessageEvent<WorkerIn>) => {
         if (!you || !him) return fail("unknown", "Participant not found");
         if (you.count + him.count < CONFIG.MIN_MESSAGES) return fail("too_few");
         const analysis = analyze(parsed, msg.youName, msg.himName);
-        return post({ type: "analyzed", analysis });
+        // 回顾幻灯片只在本地展示，不随报告上传
+        const wrapped = buildWrapped(mapRoles(parsed.messages, msg.youName, msg.himName), !parsed.hadTimestamps, [msg.youName, msg.himName]);
+        return post({ type: "analyzed", analysis, wrapped });
       }
     }
   } catch (err) {

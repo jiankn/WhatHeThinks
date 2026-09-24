@@ -76,3 +76,85 @@
   .chat-reveal-count { font-size: 38px; }
   .analyzing-title { margin-top: 26px; font-size: 24px; }
 }
+
+/* Wrapped: a few local-only slides about the chat before the report opens. */
+.wr { padding-top: 4px; }
+.wr-top { display: flex; align-items: center; gap: 14px; }
+.wr-back { display: grid; place-items: center; width: 44px; height: 44px; margin-left: -12px; border-radius: 50%; color: #171717; }
+.wr-back:disabled { color: #c4c4c4; }
+.wr-back:hover:not(:disabled) { background: #f3f3f3; }
+.wr-progress { flex: 1; height: 4px; border-radius: 2px; background: #eeeeee; overflow: hidden; }
+.wr-progress span { display: block; height: 100%; border-radius: 2px; background: #171717; transition: width .5s cubic-bezier(.16, 1, .3, 1); }
+.wr-count { font-size: 13px; color: #626262; white-space: nowrap; }
+.wr-slide { animation: analyzing-in .45s cubic-bezier(.16, 1, .3, 1) both; }
+.wr-slide h1 { margin-top: 34px; font-size: 26px; font-weight: 600; letter-spacing: -.025em; line-height: 1.25; outline: none; }
+.wr-sub { margin-top: 8px; font-size: 14px; color: #626262; }
+.wr-cards { display: grid; gap: 12px; margin-top: 22px; }
+.wr-card { padding: 20px 20px 22px; border-radius: 18px; animation: analyzing-in .5s cubic-bezier(.16, 1, .3, 1) both; }
+.wr-cards > :nth-child(2) { animation-delay: .08s; }
+.wr-cards > :nth-child(3) { animation-delay: .16s; }
+.wr-cards > :nth-child(4) { animation-delay: .24s; }
+.wr-card h2 { font-size: 16px; font-weight: 600; letter-spacing: -.01em; }
+.wr-mint { background: #c8f1e2; color: #0f3d33; }
+.wr-lilac { background: #e0d9fb; color: #35206b; }
+.wr-pink { background: #fcd3dd; color: #7a1636; }
+.wr-peach { background: #fdd9c2; color: #6a2e0c; }
+.wr-butter { background: #fbeab5; color: #4d3b05; }
+.wr-beige { background: #f0e8df; color: #1f1a15; }
+.wr-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px; }
+.wr-who { font-size: 14px; font-weight: 550; }
+.wr-who.is-you, .wr small.is-you { color: var(--color-you); }
+.wr-who.is-him, .wr small.is-him { color: var(--color-him); }
+.wr-big { margin-top: 6px; font-family: var(--font-mono); font-size: 40px; font-weight: 700; line-height: 1.1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.wr-big small { font-family: var(--font-sans); font-size: 13px; font-weight: 500; letter-spacing: 0; opacity: .75; }
+.wr-big small.is-you, .wr-big small.is-him { opacity: 1; }
+.wr-date { margin-top: 4px; font-size: 12px; font-weight: 550; opacity: .6; }
+.wr-note { margin-top: 10px; font-size: 12px; opacity: .75; }
+.wr-voice { display: flex; align-items: center; gap: 22px; margin-top: 12px; }
+.wr-donut { width: 84px; height: 84px; flex-shrink: 0; }
+.wr-donut circle { fill: none; stroke-width: 14; }
+.wr-donut .is-you { stroke: var(--color-you); transition: stroke-dasharray .9s cubic-bezier(.16, 1, .3, 1); }
+.wr-donut .is-him { stroke: var(--color-him); }
+.wr-voice .wr-big { font-size: 34px; margin-top: 0; }
+.wr-bar-row { display: grid; grid-template-columns: minmax(48px, 90px) minmax(0, 1fr) 44px; align-items: center; gap: 12px; margin-top: 14px; font-size: 13px; font-weight: 550; }
+.wr-bar-row > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wr-bar-row > span:last-child { text-align: right; }
+.wr-bar { height: 14px; border-radius: 7px; background: rgb(255 255 255 / .55); overflow: hidden; }
+.wr-bar i { display: block; height: 100%; border-radius: 7px; animation: wr-grow .9s cubic-bezier(.16, 1, .3, 1) both; transform-origin: left; }
+.wr-bar i.is-you { background: var(--color-you); }
+.wr-bar i.is-him { background: var(--color-him); }
+@keyframes wr-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.wr-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.wr-split .wr-big { font-size: 34px; }
+.wr-hours { display: flex; align-items: flex-end; gap: 3px; height: 90px; margin-top: 16px; }
+.wr-hours i { flex: 1; border-radius: 3px 3px 1px 1px; background: rgb(77 59 5 / .28); transform-origin: bottom; animation: analyzing-grow .7s cubic-bezier(.16, 1, .3, 1) both; }
+.wr-hours i.is-peak { background: rgb(77 59 5 / .75); }
+.wr-hours-axis { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 6px; font-size: 11px; opacity: .7; font-variant-numeric: tabular-nums; }
+.wr-list { display: grid; gap: 4px; margin-top: 8px; font-size: 16px; font-weight: 600; }
+.wr-list li { overflow-wrap: anywhere; }
+.wr-emojis { font-size: 28px; gap: 6px; }
+.wr-chat { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.wr-bubble { max-width: 85%; padding: 8px 13px; border-radius: 14px; font-size: 14px; line-height: 1.5; white-space: pre-line; overflow-wrap: anywhere; box-shadow: 0 1px 0 rgb(0 0 0 / .06); }
+.wr-bubble.is-him { align-self: flex-start; background: #fff; border-top-left-radius: 4px; }
+.wr-bubble.is-you { align-self: flex-end; background: var(--color-you-soft); border-top-right-radius: 4px; }
+.wr-bubble > span { display: block; font-size: 11px; font-weight: 600; color: var(--color-him); }
+.wr-calendar { background: #171b33; color: #f4f1ff; }
+.wr-calendar h2 { color: #fbe19a; }
+.wr-cal-grid { margin-top: 14px; }
+.wr-cal-year { margin: 8px 0 6px; font-size: 12px; font-weight: 650; color: #9da3c4; }
+.wr-cal-row { display: grid; grid-template-columns: 14px minmax(0, 1fr); align-items: center; gap: 6px; margin-top: 3px; }
+.wr-cal-label { font-size: 11px; font-weight: 650; color: #9da3c4; }
+.wr-cal-days { display: grid; grid-template-columns: repeat(31, minmax(0, 1fr)); gap: 3px; }
+.wr-cal-days i { aspect-ratio: 1; border-radius: 3px; background: #2a3052; }
+.wr-cal-days i.is-on { background: #fbcf5f; }
+.wr-next { margin-top: 24px; }
+.wr-next.is-final { box-shadow: 0 10px 30px -12px rgb(108 99 168 / .7); }
+.wr-private { margin-top: 14px; font-size: 12px; color: #626262; }
+
+@media (max-width: 640px) {
+  .wr-slide h1 { margin-top: 26px; font-size: 23px; }
+  .wr-big { font-size: 34px; }
+  .wr-split .wr-big, .wr-voice .wr-big { font-size: 28px; }
+  .wr-cal-days { gap: 2px; }
+  .wr-cal-days i { border-radius: 2px; }
+}
