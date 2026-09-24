@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Caveat, Geist, JetBrains_Mono } from "next/font/google";
+import { Caveat, EB_Garamond, Geist, JetBrains_Mono } from "next/font/google";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SITE_NAME, SOCIAL_IMAGE } from "@/lib/site";
@@ -12,6 +12,7 @@ import { DialogHost } from "@/components/DialogHost";
 
 const inter = Geist({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono-face", display: "swap" });
+const serif = EB_Garamond({ subsets: ["latin"], variable: "--font-serif-face", display: "swap", weight: ["500"] });
 const handwriting = Caveat({ subsets: ["latin"], variable: "--font-hand", display: "swap", weight: ["500", "600"] });
 
 export const metadata: Metadata = {
@@ -57,7 +58,7 @@ const TRANSLATION_GUARD = `(function(){if(typeof Node!=="function"||!Node.protot
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${mono.variable} ${handwriting.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${mono.variable} ${handwriting.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: TRANSLATION_GUARD }} />
       </head>

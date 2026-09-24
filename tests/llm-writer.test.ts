@@ -7,6 +7,7 @@ import { deepseekProvider, DeepSeekReportWriter, glmProvider, LlmReportWriter, R
 import { freeFinding, PURCHASE_FOCUS } from "@/lib/report/presentation";
 import { QUESTION_IDS } from "@/lib/questions";
 import type { ReportInput } from "@/lib/report/writer";
+import type { ReportStory } from "@/lib/report/types";
 import { narrativeFixture } from "./narrative-fixture";
 import { storyFixture } from "./story-fixture";
 import { buildStoryContext } from "@/lib/report/story";
@@ -236,26 +237,48 @@ describe("Free preview and question-specific purchase", () => {
 });
 
 describe("Free preview opening", () => {
-  const teaserOut = { language: "en", title: "The Long Porch Light: Steady Signals and Quiet Stretches", opening: ["Emma, I read your chat slowly, the way you read something that matters to a friend.", "What I found looks less like a mystery and more like a porch light. Let me show you where it changed."] };
-
-  it("writes a short opening with its own prompt and a small output cap", async () => {
-    const f = await setup();
-    const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(teaserOut));
-    const { teaser } = await new DeepSeekReportWriter("test-only", undefined, request).writeTeaser(f.input);
-    expect(teaser).toMatchObject({ title: teaserOut.title, opening: teaserOut.opening, model: "deepseek-flash" });
-    const body = JSON.parse(String(request.mock.calls[0][1]?.body));
-    expect(body.messages[0].content).toBe(TEASER_SYSTEM_PROMPT);
-    expect(body.max_tokens).toBe(2500);
+  const teaserFor = (story: ReportStory) => ({
+    language: "en", title: "The Long Porch Light: Steady Signals and Quiet Stretches",
+    opening: ["Emma, I read your chat slowly, the way you read something that matters to a friend.", "What I found looks less like a mystery and more like a porch light. Let me show you where it changed."],
+    chapters: story.chapters.map(({ id, emoji, title }) => ({ id, emoji, title: `${title}, first look` })),
+    firstChapter: { blocks: story.chapters[0].blocks },
   });
 
-  it("keeps the title and opening she already read in the paid report", async () => {
+  it("writes the opening and first chapter with its own prompt and output cap", async () => {
     const f = await setup();
-    const fixed = { ...teaserOut, model: "deepseek-flash", generatedAt: 1 };
+    const out = teaserFor(f.story);
+    const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(out));
+    const { teaser } = await new DeepSeekReportWriter("test-only", undefined, request).writeTeaser(f.input);
+    expect(teaser).toMatchObject({ title: out.title, opening: out.opening, outline: out.chapters, firstBlocks: out.firstChapter.blocks, model: "deepseek-flash" });
+    const body = JSON.parse(String(request.mock.calls[0][1]?.body));
+    expect(body.messages[0].content).toBe(TEASER_SYSTEM_PROMPT);
+    expect(body.max_tokens).toBe(4000);
+  });
+
+  it("puts back everything she already read in the paid report", async () => {
+    const f = await setup();
+    const out = teaserFor(f.story);
+    const fixed = { title: out.title, opening: out.opening, outline: out.chapters, firstBlocks: out.firstChapter.blocks, model: "deepseek-flash", generatedAt: 1 };
+    const input = { ...f.input, analysis: { ...f.input.analysis, teaser: fixed } };
+    // 模型按提示把开头和第一章留空，服务器填回
+    const blank = { ...f.story, opening: [], chapters: f.story.chapters.map((c, i) => i === 0 ? { ...c, blocks: [] } : c) };
+    const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(blank));
+    const result = await new DeepSeekReportWriter("test-only", undefined, request).write(input);
+    expect(String(request.mock.calls[0][1]?.body)).toContain("firstChapterBlocks");
+    expect(result.report.story).toMatchObject({ title: fixed.title, opening: fixed.opening });
+    expect(result.report.story!.chapters.map(c => c.title)).toEqual(out.chapters.map(c => c.title));
+    expect(result.report.story!.chapters[0].blocks).toEqual(fixed.firstBlocks);
+    expect(result.report.summary.headline).toBe(fixed.title);
+  });
+
+  it("still keeps an early title and opening that came without chapters", async () => {
+    const f = await setup();
+    const out = teaserFor(f.story);
+    const fixed = { title: out.title, opening: out.opening, model: "deepseek-flash", generatedAt: 1 };
     const input = { ...f.input, analysis: { ...f.input.analysis, teaser: fixed } };
     const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(f.story));
     const result = await new DeepSeekReportWriter("test-only", undefined, request).write(input);
-    expect(String(request.mock.calls[0][1]?.body)).toContain("fixedOpening");
     expect(result.report.story).toMatchObject({ title: fixed.title, opening: fixed.opening });
-    expect(result.report.summary.headline).toBe(fixed.title);
+    expect(result.report.story!.chapters).toEqual(f.story.chapters);
   });
 });

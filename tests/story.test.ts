@@ -219,23 +219,58 @@ describe("sample report", () => {
 
 describe("free preview hook", () => {
   const opening = ["Emma, I read your chat slowly, the way you read something that matters to a friend.", "What I found looks less like a mystery and more like a porch light: steady for a long time, then easier to miss. Let me show you where the light changed, and what it looked like from your side of the door."];
-
-  it("accepts an honest title and opening, and rejects the same failures as a report", async () => {
-    const f = await setup();
-    const ok = { language: "en", title: "The Long Porch Light: Steady Signals and Quiet Stretches", opening };
-    expect(validateTeaser(ok, f.ctx, f.facts, f.upload.evidence, f.allowed).teaser).toEqual({ title: ok.title, opening });
-    expect(validateTeaser({ ...ok, title_note: "x", opening: opening.map(p => ({ p })) }, f.ctx, f.facts, f.upload.evidence, f.allowed).repairs).toEqual(["coerced:shape"]);
-    expect(() => validateTeaser({ ...ok, title: "Emma and the Porch Light: A Story" }, f.ctx, f.facts, f.upload.evidence, f.allowed)).toThrow(expect.objectContaining({ issues: ["name:title"] }));
-    expect(() => validateTeaser({ ...ok, opening: [opening[0], "He went quiet for 37 days. Leans toward: he wants the comfort of you without the effort."] }, f.ctx, f.facts, f.upload.evidence, f.allowed)).toThrow(expect.objectContaining({ issues: ["number:opening[1]", "banned:opening[1]"] }));
-    expect(() => validateTeaser({ ...ok, opening: [opening[0]] }, f.ctx, f.facts, f.upload.evidence, f.allowed)).toThrow(ReportValidationError);
+  const teaserOf = (story: ReportStory) => ({
+    language: "en", title: "The Long Porch Light: Steady Signals and Quiet Stretches", opening,
+    chapters: story.chapters.map(({ id, emoji, title }) => ({ id, emoji, title })),
+    firstChapter: { blocks: story.chapters[0].blocks },
   });
 
-  it("shows the first paragraph and only the start of the second", () => {
-    const t = publicTeaser({ title: "T", opening });
-    expect(t.first).toBe(opening[0]);
-    expect(t.next.split(" ").length).toBe(24);
-    expect(t.next.endsWith("…")).toBe(true);
-    expect(opening[1].startsWith(t.next.slice(0, -1))).toBe(true);
+  it("accepts an honest title, opening, chapter heads and first chapter, and rejects the same failures as a report", async () => {
+    const f = await setup();
+    const ok = teaserOf(f.story);
+    const check = (v: unknown) => validateTeaser(v, f.ctx, f.facts, f.upload.evidence, f.allowed);
+    expect(check(ok).teaser).toEqual({ title: ok.title, opening, outline: ok.chapters, firstBlocks: f.story.chapters[0].blocks });
+    expect(check({ ...ok, title_note: "x", opening: opening.map(p => ({ p })) }).repairs).toEqual(["coerced:shape"]);
+    expect(() => check({ ...ok, title: "Emma and the Porch Light: A Story" })).toThrow(expect.objectContaining({ issues: ["name:title"] }));
+    expect(() => check({ ...ok, opening: [opening[0], "He went quiet for 37 days. Leans toward: he wants the comfort of you without the effort."] })).toThrow(expect.objectContaining({ issues: ["number:opening[1]", "banned:opening[1]"] }));
+    expect(() => check({ ...ok, opening: [opening[0]] })).toThrow(ReportValidationError);
+    expect(() => check({ ...ok, chapters: [...ok.chapters, ok.chapters[0]] })).toThrow(expect.objectContaining({ issues: expect.arrayContaining(["chapters:count"]) }));
+  });
+
+  it("keeps the first chapter to its own messages", async () => {
+    const f = await setup();
+    const later = f.upload.evidence.find(e => chapterOf(f.ctx, e.ts) !== f.ctx.chapters[0].id)!;
+    const ok = teaserOf(f.story);
+    const { teaser, repairs } = validateTeaser({ ...ok, firstChapter: { blocks: [...ok.firstChapter.blocks, { quote: later.id }] } }, f.ctx, f.facts, f.upload.evidence, f.allowed);
+    expect(teaser.firstBlocks).toEqual(f.story.chapters[0].blocks);
+    expect(repairs).toContain(`dropped:quote:${later.id}`);
+  });
+
+  it("shows the whole opening and about half of the first chapter, and lists what is still inside", async () => {
+    const f = await setup();
+    const ok = teaserOf(f.story);
+    const t = publicTeaser({ title: ok.title, opening, outline: ok.chapters, firstBlocks: ok.firstChapter.blocks }, {
+      evidence: f.upload.evidence, youName: "Emma", liteMode: false, firstSpan: f.ctx.chapters[0].span, fmtDate: () => "Jul 1",
+    });
+    expect(t.opening).toEqual(opening);
+    const total = ok.firstChapter.blocks.length;
+    expect(t.chapter?.blocks.length).toBe(Math.ceil(total * 0.55));
+    expect(t.chapter?.blocks.length).toBeLessThan(total);
+    const quote = t.chapter!.blocks.find(b => "quote" in b);
+    expect(quote && "quote" in quote && quote.quote.date).toBe("Jul 1");
+    // 截掉的部分不外发
+    const hidden = ok.firstChapter.blocks.slice(t.chapter!.blocks.length);
+    for (const b of hidden) if ("quote" in b) expect(JSON.stringify(t)).not.toContain(f.upload.evidence.find(e => e.id === b.quote)!.text);
+    expect(t.inside.map(i => i.title)).toEqual(expect.arrayContaining(["The moment that matters most", ...ok.chapters.slice(1).map(c => c.title)]));
+  });
+
+  it("shows an early opening without a first chapter up to the start of its last paragraph", () => {
+    const t = publicTeaser({ title: "T", opening }, { evidence: [], liteMode: false, fmtDate: () => "", fallbackTitles: ["One", "Two"] });
+    expect(t.chapter).toBeNull();
+    expect(t.opening[0]).toBe(opening[0]);
+    expect(t.opening[1].split(" ").length).toBe(24);
+    expect(t.opening[1].endsWith("…")).toBe(true);
+    expect(t.inside.slice(0, 2).map(i => i.title)).toEqual(["One", "Two"]);
   });
 
   it("masks everything but the first word", () => {
@@ -283,10 +318,10 @@ describe("markdown emphasis", () => {
 
   it("cleans the teaser, the page excerpt and the story before checks", async () => {
     const f = await setup();
-    const t = validateTeaser({ language: "en", title: "The *Long* Porch Light: Steady Signals", opening: ["Emma, it is *reliable* in the best way, and I want to show you why.", "Let me show you where it changed and what it looked like from your side."] }, f.ctx, f.facts, f.upload.evidence, f.allowed);
+    const t = validateTeaser({ language: "en", title: "The *Long* Porch Light: Steady Signals", opening: ["Emma, it is *reliable* in the best way, and I want to show you why.", "Let me show you where it changed and what it looked like from your side."], chapters: f.story.chapters.map(({ id, emoji, title }) => ({ id, emoji, title })), firstChapter: { blocks: f.story.chapters[0].blocks } }, f.ctx, f.facts, f.upload.evidence, f.allowed);
     expect(t.teaser.title).toBe("The Long Porch Light: Steady Signals");
     expect(t.repairs).toContain("stripped:markdown");
-    expect(publicTeaser({ title: "A *b*", opening: ["one *two*", "three **four**"] })).toEqual({ title: "A b", first: "one two", next: "three four" });
+    expect(publicTeaser({ title: "A *b*", opening: ["one *two*", "three **four**"] }, { evidence: [], liteMode: false, fmtDate: () => "" })).toMatchObject({ title: "A b", opening: ["one two", "three four"] });
     const { story, repairs } = f.validate(withBlock(f.story, "It was *steady*, and that matters."));
     expect(JSON.stringify(story)).not.toContain("*");
     expect(repairs).toContain("stripped:markdown");

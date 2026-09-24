@@ -48,8 +48,11 @@ THE SHAPE (a story, not a form):
   her chat was like and introduce the metaphor. When storyFacts.today and storyFacts.hisLastMessage are given,
   anchor to the present: today's date and how long it has been since his last message; name gently what she is
   probably doing right now. Make clear early on how this answers her question.
-  If storyFacts.fixedOpening is present, she has already read that title and opening: copy both unchanged into
-  title and opening, and let the first chapter pick up from there without repeating them.
+  If storyFacts.fixedOpening is present, she has already read the title, the opening and (when
+  fixedOpening.firstChapterBlocks is given) the first chapter. Copy the title unchanged, write opening as [] and,
+  when firstChapterBlocks is given, write the first chapter's blocks as []: the server fills them back in. Use
+  fixedOpening.chapterHeads for every chapter's emoji and title, unchanged. Continue the story from where the
+  first chapter ends, without repeating anything she has already read.
 - chapters: exactly one per storyFacts.chapters entry, in order, copying its id and span — never split one entry into
   two acts and never merge two entries into one, even when the conversation feels like it has an early and a later
   half. A single storyFacts.chapters entry means the whole conversation is one continuous period: tell it as one
@@ -86,24 +89,37 @@ JSON shape:
 "nextStep":{"question":string,"why":string,"howToAsk":string,"watchFor":string,"responseGuide":"plans"|"conversation",
 "messageOptions":[{"tone":"warm"|"direct"|"light","text":string}],"avoid":string,"plan":string},"signoff":string}`;
 
-/** 付款前的免费预览：只写标题和开头。付款后的完整报告原样沿用它们，所以同样要真实、有据。 */
+/**
+ * 付款前的免费预览：标题、开头、各章标题和第一章正文。她读完这些再决定是否购买，
+ * 付款后的完整报告原样沿用它们，所以同样要真实、有据，也要足够好看，让她读到一半想读下去。
+ */
 export const TEASER_SYSTEM_PROMPT = `${VOICE}
 
-THE SHAPE (only the first page of her report; she reads it before deciding to buy the rest):
+THE SHAPE (the first part of her report; she reads all of it for free before deciding to buy the rest, so it must
+stand on its own as a genuinely useful read, not a sales pitch):
 - title: a memorable title built on ONE central metaphor that genuinely fits this chat, then a colon and a short
   subtitle. The metaphor must come from what the data shows, not from drama. Do not repeat the question in it,
   and never put her name in it (she may share the title publicly).
-- opening: two or three paragraphs. Greet her by name in the first sentence when a name is given. Say what reading
-  her chat was like and introduce the metaphor. When storyFacts.today and storyFacts.hisLastMessage are given,
-  anchor to the present: today's date and how long it has been since his last message; name gently what she is
-  probably doing right now. The last paragraph should lead into the evidence ("let me show you where it changed"),
-  so the rest of the report can pick up there. Never promise a verdict or a revelation the chat cannot support.
+- opening: three or four paragraphs. Greet her by name in the first sentence when a name is given. Tell her what
+  reading her chat was like: the moment you noticed the pattern, what you did, what you thought. Introduce the
+  metaphor and back it with two or three concrete things from the chat (a habit, a day, a plan, a measured fact).
+  When storyFacts.today and storyFacts.hisLastMessage are given, anchor to the present: today's date and how long
+  it has been since his last message. Make clear how this answers her question. End by leading into the evidence.
+- chapters: one heading per storyFacts.chapters entry, in order, copying its id: an emoji and a vivid title. These
+  are the chapters of the full report; she will see the titles as what is still inside, so make each one specific
+  to this chat and worth opening.
+- firstChapter: the full text of the first chapter (storyFacts.chapters[0]) as blocks. A block is {"p": "<paragraph>"}
+  or {"quote": <evidence id>}. A quote block shows the REAL message as a chat bubble. Start with a paragraph that
+  sets up the pattern, then walk through a real exchange: four to six quote blocks from evidence whose chapter is
+  storyFacts.chapters[0].id, both sides, with short paragraphs in between saying what to notice. Name one specific
+  thing that makes this pattern what it is. Never promise a verdict or a revelation the chat cannot support.
 
 ${HONESTY_RULES}
-- Length: about 150 to 250 words in total.
+- Length: about 550 to 800 words in total.
 
 JSON shape:
-{"language":"en","title":string,"opening":[string]}`;
+{"language":"en","title":string,"opening":[string],"chapters":[{"id":string,"emoji":string,"title":string}],
+"firstChapter":{"blocks":[{"p":string}|{"quote":number}]}}`;
 
 const completionSchema = z.object({ choices: z.array(z.object({
   finish_reason: z.string(), message: z.object({ content: z.string().nullable() }),
@@ -204,10 +220,32 @@ export function parseJsonContent(content: string): unknown {
   }
 }
 
+/**
+ * 把付款前写好的标题、开头、章节标题和第一章正文填进模型输出（早于 Markdown 清理写好的也清理一次）。
+ * 模型输出格式不对时原样返回，交给校验报错。
+ */
+export function withFixedOpening(raw: unknown, fixed: StoryTeaser): unknown {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) return raw;
+  const out: Record<string, unknown> = { ...raw, title: stripMarkdown(fixed.title), opening: fixed.opening.map(stripMarkdown) };
+  const chapters = (raw as { chapters?: unknown }).chapters;
+  if (Array.isArray(chapters)) {
+    out.chapters = chapters.map((c, i) => {
+      if (typeof c !== "object" || c === null) return c;
+      const head = fixed.outline?.[i];
+      return {
+        ...c,
+        ...(head ? { emoji: head.emoji, title: stripMarkdown(head.title) } : {}),
+        ...(i === 0 && fixed.firstBlocks?.length ? { blocks: fixed.firstBlocks } : {}),
+      };
+    });
+  }
+  return out;
+}
+
 /** 整个写作流程的时间上限：主模型不能把备用模型的时间占光。 */
 const TOTAL_BUDGET_MS = 240_000;
-/** 免费预览在页面上等待，预算更短。 */
-const TEASER_BUDGET_MS = 75_000;
+/** 免费预览：她先看聊天回顾，再在页面上等待，预算更短。 */
+const TEASER_BUDGET_MS = 100_000;
 const MIN_ATTEMPT_MS = 20_000;
 
 /** 付费报告与免费预览开头的写作器：DeepSeek 优先，GLM 备用。 */
@@ -225,13 +263,11 @@ export class LlmReportWriter implements ReportWriter {
     const ctx = buildStoryContext(input.analysis, input.evidence, this.now());
     const fixed = input.analysis.teaser;
     const data = JSON.stringify(storyUserData(ctx, questionLabel(input.question, input.customQuestion), input.question, facts, input.evidence, fixed));
-    const { value: validated, provider, reasons } = await this.run(REPORT_SYSTEM_PROMPT, data, raw => {
-      const { story, repairs } = validateStoryWithRepairs(raw, ctx, facts, input.evidence, allowed);
+    const { value: story, provider, reasons } = await this.run(REPORT_SYSTEM_PROMPT, data, raw => {
+      // 她付款前已经读过的部分原样填回，再整体校验：前后一致，模型也不必重抄
+      const { story, repairs } = validateStoryWithRepairs(fixed ? withFixedOpening(raw, fixed) : raw, ctx, facts, input.evidence, allowed);
       return { value: story, repairs };
     }, TOTAL_BUDGET_MS);
-    // 她付款前已经读过标题和开头：原样沿用，前后一致
-    // 早于 Markdown 清理写好的开头也在这里清理一次
-    const story = fixed ? { ...validated, title: stripMarkdown(fixed.title), opening: fixed.opening.map(stripMarkdown) } : validated;
     // 故事里合法出现的时间、日期（例如约好的 "Saturday at 2"）也要让最终的 Claim Checker 认得
     return { allowed: [...allowed, ...storyAllowedNumbers(ctx, input.evidence)], failures: reasons, report: {
       ...base, story,
@@ -242,7 +278,7 @@ export class LlmReportWriter implements ReportWriter {
     } };
   }
 
-  /** 免费预览的标题与开头（付款前）。时间预算更短；失败时页面只显示锁住的发现。 */
+  /** 免费预览的标题、开头、各章标题与第一章（付款前）。时间预算更短；失败时页面只显示锁住的发现。 */
   async writeTeaser(input: ReportInput): Promise<{ teaser: StoryTeaser; failures: string[] }> {
     const { report: base, allowed } = await new MockReportWriter().write(input);
     const facts = measuredFacts(base);
@@ -251,7 +287,7 @@ export class LlmReportWriter implements ReportWriter {
     const { value, provider, reasons } = await this.run(TEASER_SYSTEM_PROMPT, data, raw => {
       const { teaser, repairs } = validateTeaser(raw, ctx, facts, input.evidence, allowed);
       return { value: teaser, repairs };
-    }, TEASER_BUDGET_MS, { attemptMs: 30_000, maxTokens: 2500 });
+    }, TEASER_BUDGET_MS, { attemptMs: 45_000, maxTokens: 4000 });
     return { teaser: { ...value, model: provider.model, generatedAt: this.now() }, failures: reasons };
   }
 

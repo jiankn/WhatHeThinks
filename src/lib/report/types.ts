@@ -153,10 +153,18 @@ export interface ReportStory {
   signoff: string;
 }
 
-/** 付款前写好的标题与开头（免费预览展示其前一部分）。付款后的完整报告原样沿用。 */
+/** 章节的标题与 emoji（付款前就定下，免费预览列出“报告里还有什么”）。 */
+export interface ChapterHead { id: string; emoji: string; title: string }
+
+/**
+ * 付款前写好的标题、开头、各章标题与第一章正文（免费预览展示开头全文和第一章的前一部分）。
+ * 付款后的完整报告原样沿用。outline / firstBlocks 是后加的，早期写好的开头没有。
+ */
 export interface StoryTeaser {
   title: string;
   opening: string[];
+  outline?: ChapterHead[];
+  firstBlocks?: StoryBlock[];
   model: string;
   generatedAt: number;
 }

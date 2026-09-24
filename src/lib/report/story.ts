@@ -81,13 +81,23 @@ export function chapterOf(ctx: StoryContext, ts: number): string {
   return (ctx.chapters.find(c => ts >= c.from && ts < c.to) ?? ctx.chapters[ctx.chapters.length - 1]).id;
 }
 
+/** 她付款前已经读过的部分。开头与第一章正文由服务器原样填回，模型只需知道写过什么，接着往下写。 */
+function fixedFacts(t: StoryTeaser) {
+  return {
+    title: t.title,
+    opening: t.opening,
+    ...(t.outline ? { chapterHeads: t.outline } : {}),
+    ...(t.firstBlocks ? { firstChapterBlocks: t.firstBlocks } : {}),
+  };
+}
+
 /** 给模型的数据：事实、章节与带日期/章节标注的证据。 */
 export function storyUserData(ctx: StoryContext, question: string, questionId: string, facts: MeasuredFact[], evidence: EvidenceMsg[], fixedOpening?: StoryTeaser) {
   const { chapters, ...rest } = ctx;
   return {
     question, questionId,
     measuredFacts: facts.map(f => ({ id: f.id, text: f.text })),
-    storyFacts: { ...rest, chapters: chapters.map(c => ({ id: c.id, span: c.span })), ...(fixedOpening ? { fixedOpening: { title: fixedOpening.title, opening: fixedOpening.opening } } : {}) },
+    storyFacts: { ...rest, chapters: chapters.map(c => ({ id: c.id, span: c.span })), ...(fixedOpening ? { fixedOpening: fixedFacts(fixedOpening) } : {}) },
     evidence: evidence.map(e => ({
       id: e.id,
       ...(ctx.liteMode ? {} : { date: fmtDateLong(e.ts), weekday: new Date(e.ts).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }) }),
@@ -402,40 +412,99 @@ export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, fact
 
 // ── 免费预览：报告的开头（付款前） ─────────────────────────────
 
+const chapterHead = z.object({ id: z.string().max(10), emoji: z.string().trim().min(1).max(16), title: text.max(120) }).strict();
+
 export const teaserSchema = z.object({
   language: z.literal("en"),
   title: text.max(160),
-  opening: z.array(text).min(2).max(4),
+  opening: z.array(text).min(2).max(5),
+  chapters: z.array(chapterHead).min(1).max(MAX_CHAPTERS),
+  firstChapter: z.object({ blocks: z.array(block).min(2).max(30) }).strict(),
 }).strict();
 
-/** 校验付款前写好的标题与开头。只做格式规整；付款后的完整报告会原样沿用它们。 */
-export function validateTeaser(value: unknown, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): { teaser: { title: string; opening: string[] }; repairs: string[] } {
-  const plain = stripMarkdownDeep(value);
+type TeaserDraft = { title: string; opening: string[]; outline: { id: string; emoji: string; title: string }[]; firstBlocks: StoryBlock[] };
+
+/** 只规整格式：多余字段、段落写成 {p}/{text}、标题包成对象、引用编号写成字符串。 */
+function normalizeTeaser(value: unknown): { value: unknown; changed: boolean } {
+  if (!isRecord(value)) return { value, changed: false };
   let changed = false;
-  let v = plain.value;
-  if (isRecord(v)) {
-    const kept = Object.fromEntries(Object.entries(v).filter(([k]) => k in teaserSchema.shape));
-    if (Object.keys(kept).length !== Object.keys(v).length) changed = true;
-    if (Array.isArray(kept.opening)) kept.opening = kept.opening.map(o => isRecord(o) && typeof (o.p ?? o.text) === "string" ? (changed = true, o.p ?? o.text) : o);
-    if (isRecord(kept.title) && typeof kept.title.text === "string") { changed = true; kept.title = kept.title.text; }
-    v = kept;
+  const kept: Record<string, unknown> = Object.fromEntries(Object.entries(value).filter(([k]) => k in teaserSchema.shape));
+  if (Object.keys(kept).length !== Object.keys(value).length) changed = true;
+  if (Array.isArray(kept.opening)) kept.opening = kept.opening.map(o => isRecord(o) && typeof (o.p ?? o.text) === "string" ? (changed = true, o.p ?? o.text) : o);
+  if (isRecord(kept.title) && typeof kept.title.text === "string") { changed = true; kept.title = kept.title.text; }
+  if (Array.isArray(kept.chapters)) kept.chapters = kept.chapters.map(c => {
+    if (!isRecord(c)) return c;
+    const head = Object.fromEntries(Object.entries(c).filter(([k]) => k === "id" || k === "emoji" || k === "title"));
+    if (Object.keys(head).length !== Object.keys(c).length) changed = true;
+    return head;
+  });
+  // 第一章写成了数组、或把 blocks 直接放在顶层
+  const first = Array.isArray(kept.firstChapter) ? (changed = true, { blocks: kept.firstChapter }) : kept.firstChapter;
+  if (isRecord(first)) {
+    const shaped = normalizeShape({ chapters: [{ id: "c1", span: "", emoji: "x", title: "x", blocks: first.blocks }] });
+    const blocks = (shaped.value as { chapters: { blocks: unknown }[] }).chapters[0].blocks;
+    if (shaped.changed || Object.keys(first).length !== 1) changed = true;
+    kept.firstChapter = { blocks };
   }
-  const parsed = teaserSchema.safeParse(v);
+  return { value: kept, changed };
+}
+
+/**
+ * 校验付款前写好的标题、开头、各章标题和第一章正文。付款后的完整报告会原样沿用它们，
+ * 所以规则与完整报告相同：数字、禁用说法、引号内原话、英文、标题不带名字；第一章只能引用第一章的消息。
+ */
+export function validateTeaser(value: unknown, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): { teaser: TeaserDraft; repairs: string[] } {
+  const plain = stripMarkdownDeep(value);
+  const normalized = normalizeTeaser(plain.value);
+  const parsed = teaserSchema.safeParse(normalized.value);
   if (!parsed.success) {
     const issues = parsed.error.issues.slice(0, 12).map(schemaIssue);
     throw new ReportValidationError(issues, explainStoryIssues(issues));
   }
-  const { title } = parsed.data;
+  const repairs: string[] = [...(normalized.changed ? ["coerced:shape"] : []), ...(plain.changed ? ["stripped:markdown"] : [])];
   const env = textEnv(ctx, facts, evidence, allowed);
+  const { title } = parsed.data;
+
   const pruned = parsed.data.opening.map((p, i) => pruneText(`opening[${i}]`, p, env));
   const kept = pruned.filter((p): p is string => p !== null);
-  // 开头至少要两段才能在预览里截断；删不够就用原文，交给下面的校验
+  // 开头至少要两段；删不够就用原文，交给下面的校验
   const opening = kept.length >= 2 ? kept : parsed.data.opening;
-  const removed = opening === kept ? pruned.flatMap((p, i) => p !== parsed.data.opening[i] ? [`removed:sentence:opening[${i}]`] : []) : [];
-  const prose: Array<[string, string]> = [["title", title], ...opening.map((p, i): [string, string] => [`opening[${i}]`, p])];
-  const issues = [...new Set(proseIssues(prose, title, ctx, facts, evidence, allowed))];
-  if (issues.length) throw new ReportValidationError(issues, explainStoryIssues(issues));
-  return { teaser: { title, opening }, repairs: [...(changed ? ["coerced:shape"] : []), ...(plain.changed ? ["stripped:markdown"] : []), ...removed] };
+  if (opening === kept) repairs.push(...pruned.flatMap((p, i) => p !== parsed.data.opening[i] ? [`removed:sentence:opening[${i}]`] : []));
+
+  // 章节标题按顺序换回服务器给的 id；数量不对交给模型重写
+  const outline = parsed.data.chapters.map((c, i) => {
+    const id = ctx.chapters[i]?.id ?? c.id;
+    if (id !== c.id) repairs.push(`restored:chapter:${i}`);
+    return { ...c, id };
+  });
+
+  const byId = new Map(evidence.map(e => [e.id, e]));
+  const firstId = ctx.chapters[0].id;
+  const firstBlocks = parsed.data.firstChapter.blocks.flatMap((b, j): StoryBlock[] => {
+    if ("quote" in b) {
+      const e = byId.get(b.quote);
+      if (e && chapterOf(ctx, e.ts) === firstId) return [b];
+      repairs.push(`dropped:quote:${b.quote}`);
+      return [];
+    }
+    const p = pruneText(`chapters[0].blocks[${j}]`, b.p, env);
+    if (p !== b.p) repairs.push(`removed:sentence:chapters[0].blocks[${j}]`);
+    return p === null ? [] : [{ p }];
+  });
+
+  const prose: Array<[string, string]> = [
+    ["title", title], ...opening.map((p, i): [string, string] => [`opening[${i}]`, p]),
+    ...outline.map((c, i): [string, string] => [`chapters[${i}].title`, c.title]),
+    ...firstBlocks.flatMap((b, j): Array<[string, string]> => "p" in b ? [[`chapters[0].blocks[${j}]`, b.p]] : []),
+  ];
+  const issues = proseIssues(prose, title, ctx, facts, evidence, allowed);
+  if (outline.length !== ctx.chapters.length) issues.push("chapters:count");
+  if (!firstBlocks.some(b => "p" in b)) issues.push("chapters[0]:needs_prose");
+  const firstEvidence = evidence.filter(e => chapterOf(ctx, e.ts) === firstId).length;
+  if (firstBlocks.filter(b => "quote" in b).length < Math.min(2, firstEvidence)) issues.push("quotes:too_few");
+  const unique = [...new Set(issues)];
+  if (unique.length) throw new ReportValidationError(unique, explainStoryIssues(unique));
+  return { teaser: { title, opening, outline, firstBlocks }, repairs };
 }
 
 export function buildTeaserFacts(analysis: SlimAnalysis, evidence: EvidenceMsg[], now: number): TeaserFacts {
