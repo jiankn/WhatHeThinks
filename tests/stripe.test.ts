@@ -51,7 +51,7 @@ describe("verifyStripeSignature", () => {
 
 describe("createCheckoutSession", () => {
   afterEach(() => vi.unstubAllGlobals());
-  const opts = { reportId: "r1", sku: "full_report", cents: 1990, name: "Full Report", successUrl: "https://x.co/ok", cancelUrl: "https://x.co/no" };
+  const opts = { reportId: "r1", sku: "full_report", cents: 1990, name: "Full Report", successUrl: "https://x.co/ok", cancelUrl: "https://x.co/no", termsUrl: "https://x.co/terms" };
 
   async function sentBody(priceId?: string): Promise<URLSearchParams> {
     const request = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({ id: "cs_1", url: "https://checkout" })));
@@ -73,6 +73,32 @@ describe("createCheckoutSession", () => {
     const bodies = request.mock.calls.map(c => new URLSearchParams(String(c[1]?.body)));
     expect(bodies[0].get("customer_email")).toBe("me@example.com");
     expect(bodies[1].has("customer_email")).toBe(false);
+  });
+  it("在 Stripe 付款页要求勾选立即交付的同意", async () => {
+    const body = await sentBody();
+    expect(body.get("consent_collection[terms_of_service]")).toBe("required");
+    const text = body.get("custom_text[terms_of_service_acceptance][message]")!;
+    expect(text).toContain("right away");
+    expect(text).toContain("changed my mind");
+    expect(text).toContain("[Terms](https://x.co/terms)");
+  });
+  it("后台没填服务条款链接时，把同一句话放在付款按钮上方", async () => {
+    const request = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ error: { message: "You cannot collect consent to your terms of service unless a URL is set in the Stripe Dashboard." } }), { status: 400 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: "cs_1", url: "https://checkout" })));
+    vi.stubGlobal("fetch", request);
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const session = await createCheckoutSession("sk_test", opts);
+    expect(session.id).toBe("cs_1");
+    const retry = new URLSearchParams(String(request.mock.calls[1][1]?.body));
+    expect(retry.has("consent_collection[terms_of_service]")).toBe(false);
+    expect(retry.get("custom_text[submit][message]")).toContain("Terms (https://x.co/terms)");
+  });
+  it("其他错误照常抛出，不重试", async () => {
+    const request = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({ error: { message: "Invalid API key" } }), { status: 401 }));
+    vi.stubGlobal("fetch", request);
+    await expect(createCheckoutSession("sk_test", opts)).rejects.toThrow("Invalid API key");
+    expect(request).toHaveBeenCalledTimes(1);
   });
   it("未配置时按 SKU 临时定价", async () => {
     const body = await sentBody();

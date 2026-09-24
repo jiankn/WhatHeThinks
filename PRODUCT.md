@@ -1,6 +1,6 @@
 # WhatHeThinks
 
-English-language relationship chat analysis. WhatsApp TXT/ZIP and pasted messages, anonymous free preview, $9.99 one-time full report, optional accounts.
+English-language relationship chat analysis. WhatsApp TXT/ZIP and pasted messages, anonymous free preview, $19.90 one-time full report, optional accounts.
 
 ## Platform
 web

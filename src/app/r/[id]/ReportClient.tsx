@@ -9,10 +9,9 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { confirmDialog } from "@/components/DialogHost";
 import { TrashIcon } from "@/components/icons";
-import { FocusPicker } from "@/components/report/FocusPicker";
 import { FullReportView } from "@/components/report/FullReportView";
-import { Paywall } from "@/components/report/Paywall";
-import { PreviewHeading, PreviewSection } from "@/components/report/PreviewSection";
+import { CheckoutButton } from "@/components/report/Paywall";
+import { PreviewHeading } from "@/components/report/PreviewSection";
 import { PreviewTeaser } from "@/components/report/PreviewTeaser";
 import { ShareResult } from "@/components/report/ShareResult";
 import { track } from "@/lib/events";
@@ -30,7 +29,6 @@ type State =
 export function ReportClient({ id }: { id: string }) {
   const [state, setState] = useState<State>({ kind: "loading" });
   const [checkoutBusy, setCheckoutBusy] = useState(false);
-  const [focusReady, setFocusReady] = useState(true);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -84,7 +82,6 @@ export function ReportClient({ id }: { id: string }) {
   }, [generating, load]);
 
   const unlock = async () => {
-    if (!focusReady) { setCheckoutError("Save your report focus before continuing."); return; }
     setCheckoutBusy(true);
     setCheckoutError(null);
     track("checkout_click", {}, id);
@@ -195,18 +192,12 @@ export function ReportClient({ id }: { id: string }) {
           <Generating failed={view.status === "failed"} />
         ) : (
           <>
-            <PreviewTeaser reportId={id} token={token.current ?? ""} focus={`${view.question}|${view.customQuestion ?? ""}`} />
-            <PreviewSection preview={view.preview} />
-            <details className="reader-details"><summary>Change what your full report focuses on</summary><FocusPicker
+            <PreviewTeaser
               reportId={id}
               token={token.current ?? ""}
-              preview={view.preview}
-              question={view.question}
-              customQuestion={view.customQuestion}
-              onReadyChange={setFocusReady}
-              onSaved={(question, customQuestion) => setState(current => current.kind === "ok" ? { ...current, view: { ...current.view, question, customQuestion } } : current)}
-            /></details>
-            <Paywall preview={view.preview} question={view.question} busy={checkoutBusy} error={checkoutError} onUnlock={unlock} />
+              focus={`${view.question}|${view.customQuestion ?? ""}`}
+              checkout={<CheckoutButton busy={checkoutBusy} error={checkoutError} onUnlock={unlock} />}
+            />
             <ShareResult preview={view.preview} reportId={id} token={token.current ?? ""} />
           </>
         )}

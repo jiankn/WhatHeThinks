@@ -44,9 +44,22 @@ export interface CheckoutSession {
   customer_details: { email: string | null } | null;
 }
 
-export function createCheckoutSession(
+/**
+ * 数字内容付款后立即交付：欧盟 / 英国要求顾客明确同意立即交付，并知道因此不能再以改变主意为由撤回。
+ * 同意放在 Stripe 付款页（服务条款勾选框，由 Stripe 记录），我们的页面上不再单独放勾选框。
+ */
+export function consentText(termsUrl: string): string {
+  return `I want my report written right away. I understand that once it is ready I can't cancel it just because I changed my mind, and I agree to the [Terms](${termsUrl}). If it can't be written, I get a full refund.`;
+}
+
+/** 账户没在 Stripe 后台填服务条款链接时，consent_collection 会被拒绝：退一步把同一句话放在付款按钮上方。 */
+function isConsentUnavailable(err: unknown): boolean {
+  return err instanceof Error && /terms of service|consent_collection|terms_of_service/i.test(err.message);
+}
+
+export async function createCheckoutSession(
   secret: string,
-  opts: { reportId: string; sku: string; cents: number; name: string; priceId?: string; customerEmail?: string; successUrl: string; cancelUrl: string },
+  opts: { reportId: string; sku: string; cents: number; name: string; priceId?: string; customerEmail?: string; successUrl: string; cancelUrl: string; termsUrl: string },
 ): Promise<CheckoutSession> {
   // 优先用 Stripe 后台的 Price（STRIPE_PRICE_ID）；未配置时按 SKUS 临时定价。
   // 账户开了 Managed Payments，产品必须带税码：txcd_10000000 = 电子服务；标价含税，顾客付的就是标价
@@ -56,7 +69,7 @@ export function createCheckoutSession(
         quantity: 1,
         price_data: { currency: "usd", unit_amount: opts.cents, tax_behavior: "inclusive", product_data: { name: opts.name, tax_code: "txcd_10000000" } },
       };
-  return call<CheckoutSession>(secret, "POST", "/checkout/sessions", {
+  const base: Params = {
     mode: "payment",
     client_reference_id: opts.reportId,
     success_url: opts.successUrl,
@@ -66,7 +79,19 @@ export function createCheckoutSession(
     ...(opts.customerEmail ? { customer_email: opts.customerEmail } : {}),
     metadata: { reportId: opts.reportId, sku: opts.sku },
     payment_intent_data: { metadata: { reportId: opts.reportId, sku: opts.sku } },
-  });
+  };
+  const text = consentText(opts.termsUrl);
+  try {
+    return await call<CheckoutSession>(secret, "POST", "/checkout/sessions", {
+      ...base,
+      consent_collection: { terms_of_service: "required" },
+      custom_text: { terms_of_service_acceptance: { message: text } },
+    });
+  } catch (err) {
+    if (!isConsentUnavailable(err)) throw err;
+    console.warn(JSON.stringify({ evt: "checkout_consent_fallback", error: err instanceof Error ? err.message : "unknown" }));
+    return call<CheckoutSession>(secret, "POST", "/checkout/sessions", { ...base, custom_text: { submit: { message: text.replace(/\[Terms\]\(([^)]+)\)/, "Terms ($1)") } } });
+  }
 }
 
 export function getCheckoutSession(secret: string, id: string): Promise<CheckoutSession> {

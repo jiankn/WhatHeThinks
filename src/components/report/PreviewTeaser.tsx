@@ -8,7 +8,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { LockIcon, ShieldCheckIcon } from "@/components/icons";
+import { ShieldCheckIcon } from "@/components/icons";
 import { track } from "@/lib/events";
 import type { PublicBlock, TeaserData } from "@/lib/report/teaser";
 
@@ -24,15 +24,11 @@ function Block({ block }: { block: PublicBlock }) {
   </figure>;
 }
 
-/** 付款区在同一页下方：滚过去并聚焦同意勾选框，少一步操作。 */
-function goToCheckout(reportId?: string, placement = "letter") {
-  if (reportId) track("teaser_continue_click", { content: placement }, reportId);
-  document.getElementById("paywall-title")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  window.setTimeout(() => document.querySelector<HTMLInputElement>(".reader-refund-consent input")?.focus({ preventScroll: true }), 500);
-}
-
-/** focus：当前问题（侧重点）。变了之后服务器清掉旧报告，这里重新请求预写。 */
-export function PreviewTeaser({ reportId, token, focus, data: fixed }: { reportId?: string; token?: string; focus?: string; data?: TeaserData }) {
+/**
+ * focus：当前问题（侧重点），用来判断预写的完整报告是否对应当前问题。
+ * checkout：付款按钮（带价格，点了直接去 Stripe），放在渐隐处下方；开头还没写好或写失败时也照常显示。
+ */
+export function PreviewTeaser({ reportId, token, focus, data: fixed, checkout }: { reportId?: string; token?: string; focus?: string; data?: TeaserData; checkout?: React.ReactNode }) {
   const [data, setData] = useState<TeaserData | null>(fixed ?? null);
   // 只请求写一次；重复挂载（开发模式下的 StrictMode）只重新读取状态
   const posted = useRef(false);
@@ -96,6 +92,7 @@ export function PreviewTeaser({ reportId, token, focus, data: fixed }: { reportI
         <h1 id="teaser-title" className="teaser-title">{name ? `${name}, here's what I found in your chat.` : "Here's what I found in your chat."}</h1>
         {facts.hisLast && <p className="teaser-lead">His last message was {facts.hisLast.daysAgo === "earlier today" ? "earlier today" : `${facts.hisLast.daysAgo} ago`}, on {facts.hisLast.date}. Your full report starts there and works back through the whole conversation.</p>}
       </div>}
+      <div className="teaser-gate">{checkout}</div>
     </section>;
   }
 
@@ -131,7 +128,7 @@ export function PreviewTeaser({ reportId, token, focus, data: fixed }: { reportI
     </div>
 
     <div className="teaser-gate">
-      <button type="button" className="btn-primary teaser-unlock" onClick={() => goToCheckout(reportId)}><LockIcon /> Read the full report</button>
+      {checkout}
       {data.ready && <p className="teaser-ready" role="status">It&apos;s already written. It opens the moment you unlock it.</p>}
       <h3>Still inside:</h3>
       <ul className="teaser-inside">

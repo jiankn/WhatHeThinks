@@ -53,6 +53,7 @@ export async function POST(req: Request): Promise<Response> {
         // token 不经过 Stripe：回跳后报告页从 localStorage 读取
         successUrl: `${origin}/r/${row.id}?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${origin}/r/${row.id}`,
+        termsUrl: `${origin}/terms`,
       });
       await db
         .prepare(`INSERT INTO orders (id, report_id, sku, amount_cents, stripe_session_id, status, created_at) VALUES (?, ?, ?, ?, ?, 'pending', ?)`)
