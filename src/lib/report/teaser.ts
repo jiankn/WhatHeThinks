@@ -3,12 +3,21 @@
  * 生成与校验在 story.ts；这里只有露出哪些文字、如何打码。
  */
 
+/** 去掉模型偶尔写出的 Markdown 强调（*word*、**word**、_word_），页面按纯文本显示。 */
+export function stripMarkdown(text: string): string {
+  return text
+    .replace(/\*\*([^*\n]+?)\*\*/g, "$1")
+    .replace(/(^|[^\w*])\*([^*\n]+?)\*(?![\w*])/g, "$1$2")
+    .replace(/(^|[^\w])_([^_\n]+?)_(?!\w)/g, "$1$2");
+}
+
 /** 页面上露出的部分：标题、第一段全文、第二段前若干词（其余在服务器端就截掉）。 */
 export interface PublicTeaser { title: string; first: string; next: string }
 
 export function publicTeaser(t: { title: string; opening: string[] }, words = 24): PublicTeaser {
   const rest = t.opening.slice(1).join(" ").split(/\s+/);
-  return { title: t.title, first: t.opening[0], next: rest.slice(0, words).join(" ") + (rest.length > words ? "…" : "") };
+  const next = rest.slice(0, words).join(" ") + (rest.length > words ? "…" : "");
+  return { title: stripMarkdown(t.title), first: stripMarkdown(t.opening[0]), next: stripMarkdown(next) };
 }
 
 /** 打码：保留第一个词，其余字母数字换成 •，标点与空格保留。 */

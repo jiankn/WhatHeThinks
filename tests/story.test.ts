@@ -4,7 +4,7 @@ import { analyze, analyzeRoleMsgs, parseAny } from "@/lib/analysis";
 import { buildUpload, firstName, validateUpload } from "@/lib/report/payload";
 import { MockReportWriter } from "@/lib/report/mock-writer";
 import { measuredFacts, ReportValidationError } from "@/lib/report/narrative";
-import { buildStoryContext, buildTeaserFacts, chapterOf, explainStoryIssues, maskText, numberWord, publicTeaser, validateStoryWithRepairs, validateTeaser } from "@/lib/report/story";
+import { buildStoryContext, buildTeaserFacts, chapterOf, explainStoryIssues, maskText, numberWord, publicTeaser, stripMarkdown, validateStoryWithRepairs, validateTeaser } from "@/lib/report/story";
 import type { ReportStory } from "@/lib/report/types";
 import { parseJsonContent } from "@/lib/server/llm-writer";
 import { storyFixture } from "./story-fixture";
@@ -253,5 +253,24 @@ describe("single-chapter chats", () => {
     const f = await setup(true); // lite mode: always exactly one chapter
     const split = { ...f.story, chapters: [f.story.chapters[0], { ...f.story.chapters[0], title: "Later on" }] };
     expect(() => f.validate(split)).toThrow(expect.objectContaining({ issues: expect.arrayContaining(["chapters:count"]) }));
+  });
+});
+
+describe("markdown emphasis", () => {
+  it("strips *word*, **word** and _word_ but leaves other text alone", () => {
+    expect(stripMarkdown("Not because it's boring, but because it's *reliable*.")).toBe("Not because it's boring, but because it's reliable.");
+    expect(stripMarkdown("This is **the** moment, and _that_ matters.")).toBe("This is the moment, and that matters.");
+    expect(stripMarkdown("5 * 3 and snake_case_name stay; [you] stays.")).toBe("5 * 3 and snake_case_name stay; [you] stays.");
+  });
+
+  it("cleans the teaser, the page excerpt and the story before checks", async () => {
+    const f = await setup();
+    const t = validateTeaser({ language: "en", title: "The *Long* Porch Light: Steady Signals", opening: ["Emma, it is *reliable* in the best way, and I want to show you why.", "Let me show you where it changed and what it looked like from your side."] }, f.ctx, f.facts, f.upload.evidence, f.allowed);
+    expect(t.teaser.title).toBe("The Long Porch Light: Steady Signals");
+    expect(t.repairs).toContain("stripped:markdown");
+    expect(publicTeaser({ title: "A *b*", opening: ["one *two*", "three **four**"] })).toEqual({ title: "A b", first: "one two", next: "three four" });
+    const { story, repairs } = f.validate(withBlock(f.story, "It was *steady*, and that matters."));
+    expect(JSON.stringify(story)).not.toContain("*");
+    expect(repairs).toContain("stripped:markdown");
   });
 });

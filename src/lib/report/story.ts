@@ -13,8 +13,8 @@ import type { MeasuredFact } from "./narrative";
 import { ReportValidationError } from "./narrative";
 import type { SlimAnalysis } from "./payload";
 import type { ReportStory, StoryBlock, StoryTeaser } from "./types";
-import { maskText, type TeaserFacts } from "./teaser";
-export { maskText, publicTeaser, type PublicTeaser, type TeaserFacts } from "./teaser";
+import { maskText, stripMarkdown, type TeaserFacts } from "./teaser";
+export { maskText, publicTeaser, stripMarkdown, type PublicTeaser, type TeaserFacts } from "./teaser";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_CHAPTERS = 4;
@@ -282,14 +282,27 @@ function normalizeShape(value: unknown): { value: unknown; changed: boolean } {
   return { value: { ...top, opening, chapters }, changed };
 }
 
+/** 把对象里所有字符串的 Markdown 强调去掉；返回是否有改动。 */
+function stripMarkdownDeep(value: unknown): { value: unknown; changed: boolean } {
+  let changed = false;
+  const walk = (v: unknown): unknown => {
+    if (typeof v === "string") { const s = stripMarkdown(v); if (s !== v) changed = true; return s; }
+    if (Array.isArray(v)) return v.map(walk);
+    if (isRecord(v)) return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)]));
+    return v;
+  };
+  return { value: walk(value), changed };
+}
+
 export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): { story: ReportStory; repairs: string[] } {
-  const normalized = normalizeShape(value);
+  const plain = stripMarkdownDeep(value);
+  const normalized = normalizeShape(plain.value);
   const parsed = storySchema.safeParse(normalized.value);
   if (!parsed.success) {
     const issues = parsed.error.issues.slice(0, 12).map(schemaIssue);
     throw new ReportValidationError(issues, explainStoryIssues(issues));
   }
-  const repairs: string[] = normalized.changed ? ["coerced:shape"] : [];
+  const repairs: string[] = [...(normalized.changed ? ["coerced:shape"] : []), ...(plain.changed ? ["stripped:markdown"] : [])];
   const byId = new Map(evidence.map(e => [e.id, e]));
   const raw = parsed.data;
   const chapters = raw.chapters.map((c, i) => {
@@ -323,8 +336,9 @@ export const teaserSchema = z.object({
 
 /** 校验付款前写好的标题与开头。只做格式规整；付款后的完整报告会原样沿用它们。 */
 export function validateTeaser(value: unknown, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): { teaser: { title: string; opening: string[] }; repairs: string[] } {
+  const plain = stripMarkdownDeep(value);
   let changed = false;
-  let v = value;
+  let v = plain.value;
   if (isRecord(v)) {
     const kept = Object.fromEntries(Object.entries(v).filter(([k]) => k in teaserSchema.shape));
     if (Object.keys(kept).length !== Object.keys(v).length) changed = true;
@@ -341,7 +355,7 @@ export function validateTeaser(value: unknown, ctx: StoryContext, facts: Measure
   const prose: Array<[string, string]> = [["title", title], ...opening.map((p, i): [string, string] => [`opening[${i}]`, p])];
   const issues = [...new Set(proseIssues(prose, title, ctx, facts, evidence, allowed))];
   if (issues.length) throw new ReportValidationError(issues, explainStoryIssues(issues));
-  return { teaser: { title, opening }, repairs: changed ? ["coerced:shape"] : [] };
+  return { teaser: { title, opening }, repairs: [...(changed ? ["coerced:shape"] : []), ...(plain.changed ? ["stripped:markdown"] : [])] };
 }
 
 export function buildTeaserFacts(analysis: SlimAnalysis, evidence: EvidenceMsg[], now: number): TeaserFacts {
