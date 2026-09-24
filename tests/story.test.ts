@@ -4,7 +4,7 @@ import { analyze, analyzeRoleMsgs, parseAny } from "@/lib/analysis";
 import { buildUpload, firstName, validateUpload } from "@/lib/report/payload";
 import { MockReportWriter } from "@/lib/report/mock-writer";
 import { measuredFacts, ReportValidationError } from "@/lib/report/narrative";
-import { buildStoryContext, buildTeaserFacts, chapterOf, explainStoryIssues, maskText, numberWord, publicTeaser, stripMarkdown, validateStoryWithRepairs, validateTeaser } from "@/lib/report/story";
+import { buildStoryContext, buildTeaserFacts, chapterOf, explainStoryIssues, maskText, numberWord, publicTeaser, storyUserData, stripMarkdown, validateStoryWithRepairs, validateTeaser } from "@/lib/report/story";
 import type { ReportStory } from "@/lib/report/types";
 import { parseJsonContent } from "@/lib/server/llm-writer";
 import { storyFixture } from "./story-fixture";
@@ -55,9 +55,11 @@ describe("story context", () => {
     for (const e of f.upload.evidence) expect(f.ctx.chapters.map(c => c.id)).toContain(chapterOf(f.ctx, e.ts));
   });
 
-  it("uses a single untimed chapter and no dates in lite mode", async () => {
+  it("uses thematic chapters and no dates in lite mode", async () => {
     const f = await setup(true);
-    expect(f.ctx.chapters).toEqual([expect.objectContaining({ id: "c1", span: "The messages you pasted" })]);
+    expect(f.ctx.thematic).toBe(true);
+    expect(f.ctx.chapters.length).toBeGreaterThan(1);
+    expect(f.ctx.chapters.every(c => c.span === "Across the messages you pasted")).toBe(true);
     expect(f.ctx.today).toBeUndefined();
     expect(f.ctx.hisLastMessage).toBeUndefined();
   });
@@ -145,12 +147,14 @@ describe("story contract", () => {
     const f = await setup();
     expect(() => f.validate({ ...f.story, chapters: f.story.chapters.slice(0, 1) })).toThrow(expect.objectContaining({ issues: expect.arrayContaining(["chapters:count"]) }));
     const noQuotes = { ...f.story, chapters: f.story.chapters.map(c => ({ ...c, blocks: c.blocks.filter(b => "p" in b) })) };
-    expect(() => f.validate(noQuotes)).toThrow(expect.objectContaining({ issues: ["quotes:too_few"] }));
+    expect(() => f.validate(noQuotes)).toThrow(expect.objectContaining({ issues: expect.arrayContaining(["quotes:too_few"]) }));
   });
 
   it("allows gentle negations and measured shares written in words", async () => {
     const f = await setup();
-    expect(() => f.validate(withBlock(f.story, "I am not telling you those weeks were fake. His share of starts fell to about seventeen percent. It gives him an easy opening if he wants to make a plan. I can't tell you what he thinks or feels, and he says he feels busy."))).not.toThrow();
+    const text = "I am not telling you those weeks were fake. His share of starts fell to about seventeen percent. It gives him an easy opening if he wants to make a plan. I can't tell you what he thinks or feels, and he says he feels busy.";
+    const { story } = f.validate(withBlock(f.story, text));
+    expect(story.chapters[0].blocks.at(-1)).toEqual({ p: text });
   });
 
   it("accepts exact quotes of the evidence in prose, ignoring case and punctuation", async () => {
@@ -196,7 +200,8 @@ describe("messy model output", () => {
     expect(story.read).toBe(f.story.read);
     expect(story.nextStep.why).toBe(f.story.nextStep.why);
     expect(story.chapters[0].blocks.slice(0, 3)).toEqual([{ p: "A plain string paragraph about the start." }, { quote: q.quote }, { p: "A paragraph with an empty quote slot." }]);
-    expect(repairs).toEqual(["coerced:shape"]);
+    // 同一条消息在本章后面又引用了一次：去掉重复的那一条
+    expect(repairs).toEqual(["coerced:shape", `dropped:quote:${q.quote}`]);
   });
 });
 
@@ -297,14 +302,14 @@ describe("free preview hook", () => {
     const facts = buildTeaserFacts(f.upload.analysis, f.upload.evidence, NOW);
     expect(facts.hisLast).toBeUndefined();
     expect(facts.change).toBeUndefined();
-    expect(facts.chapters).toBe(1);
+    expect(facts.chapters).toBe(f.ctx.chapters.length);
   });
 });
 
-describe("single-chapter chats", () => {
-  it("rejects a story that splits storyFacts' one chapter into two", async () => {
-    const f = await setup(true); // lite mode: always exactly one chapter
-    const split = { ...f.story, chapters: [f.story.chapters[0], { ...f.story.chapters[0], title: "Later on" }] };
+describe("chapter count", () => {
+  it("rejects a story that adds a chapter storyFacts did not ask for", async () => {
+    const f = await setup(true);
+    const split = { ...f.story, chapters: [...f.story.chapters, { ...f.story.chapters[0], id: "c9", title: "Later on" }] };
     expect(() => f.validate(split)).toThrow(expect.objectContaining({ issues: expect.arrayContaining(["chapters:count"]) }));
   });
 });
@@ -350,5 +355,55 @@ describe("pre-written report on the free preview", () => {
     const exposed = JSON.stringify(ready);
     for (const b of f.story.chapters.flatMap(c => c.blocks)) if ("p" in b) expect(exposed).not.toContain(b.p);
     expect(exposed).not.toContain(f.story.read);
+  });
+});
+
+describe("fixes from the first live flagship report", () => {
+  it("removes estimated odds and predictions but keeps measured shares written in words", async () => {
+    const f = await setup();
+    const odds = "I'd give this reading a good amount of weight, maybe forty percent, because it fits the evidence.";
+    const prediction = "The only question is whether the melody is enough, because he's not likely to change the tune.";
+    const keep = "The rest of this paragraph stays.";
+    const { story, repairs } = f.validate(withBlock(withBlock(f.story, `${odds} ${keep}`), `${prediction} ${keep}`));
+    const text = JSON.stringify(story);
+    expect(text).not.toContain("forty percent");
+    expect(text).not.toContain("likely to change");
+    expect(text).toContain(keep);
+    expect(repairs.filter(r => r.startsWith("removed:sentence"))).toHaveLength(2);
+    for (const t of ["He will never text first.", "This is going to fade.", "He won't change.", "That is fifty-fifty."]) {
+      expect(f.validate(withBlock(f.story, `${t} ${keep}`)).story.chapters[0].blocks.at(-1)).toEqual({ p: keep });
+    }
+  });
+
+  it("splits a steady chat with no turning point into themed chapters that can quote any date", () => {
+    const raw = readFileSync("reports/test-data/WhatsApp-Nora-Theo-fictional.txt", "utf8");
+    const up = buildUpload(analyze(parseAny(raw), "Nora", "Theo"), { question: "overview", youName: "Nora", himName: "Theo" });
+    const ctx = buildStoryContext(up.analysis, up.evidence, NOW);
+    expect(up.analysis.turningPoints).toHaveLength(0);
+    expect(ctx.thematic).toBe(true);
+    expect(ctx.chapters.map(c => c.id)).toEqual(["c1", "c2", "c3"]);
+    expect(ctx.chapters[0].span).toBe("Across the whole chat");
+    const data = storyUserData(ctx, "overview", "overview", [], up.evidence);
+    expect(data.storyFacts.thematic).toBe(true);
+    expect(data.evidence.every(e => !("chapter" in e))).toBe(true);
+    expect(ctx.recurring.length).toBeGreaterThan(0);
+  });
+
+  it("requires a quote of a recurring line when the chat has one", async () => {
+    const f = await setup();
+    const ids = new Set(f.ctx.recurring.flatMap(r => r.evidenceIds));
+    if (!ids.size) return;
+    const without = { ...f.story, chapters: f.story.chapters.map(c => ({ ...c, blocks: c.blocks.filter(b => !("quote" in b && ids.has(b.quote))) })) };
+    expect(() => f.validate(without)).toThrow(expect.objectContaining({ issues: expect.arrayContaining([expect.stringMatching(/^recurring:unused:/)]) }));
+    expect(explainStoryIssues(["recurring:unused:4,9"])[0]).toContain("4,9");
+  });
+
+  it("drops a message option that repeats the suggested message word for word", async () => {
+    const f = await setup();
+    const n = f.story.nextStep;
+    const dup = { ...f.story, nextStep: { ...n, messageOptions: [{ tone: "warm" as const, text: n.question }, ...n.messageOptions.slice(1)] } };
+    const { story, repairs } = f.validate(dup);
+    expect(story.nextStep.messageOptions.map(m => m.text)).not.toContain(n.question);
+    expect(repairs).toContain("dropped:duplicate_option");
   });
 });

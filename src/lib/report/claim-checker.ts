@@ -33,6 +33,10 @@ const BANNED: [RegExp, string][] = [
   [/\bhe (loves|doesn't love|does not love) you\b/i, "mind reading"],
   [/\b\d+% chance\b/i, "prediction"],
   [/\b(will|going to) (break up|fail|end)\b/i, "prediction"],
+  [/\bfifty[- ]fifty\b/i, "odds"],
+  [/\b(?:is|are|was|were|isn't|aren't|not|very|quite|more|less|most|least|seems|looks) likely to\b|\bunlikely to\b/i, "prediction"],
+  [/\b(?:he|it|this|that|things)(?:'ll| will) (?:never|always)\b|\b(?:won't|will not|isn't going to|is not going to) (?:ever )?change\b/i, "prediction"],
+  [/\b(?:he|it|this|that|things)(?:'s| is| are) going to\b/i, "prediction"],
   [/\b(leave|dump) him\b/i, "directive"],
   // 条件句（"if he wants to make a plan"）和转述（"he says he feels"）不是读心
   [/(?<!\b(?:said|says|say|if|whether) )\bhe (thinks|feels|wants) /i, "mind reading"],
