@@ -30,7 +30,7 @@
     "GOOGLE_CLIENT_ID": "810001412993-r1qeqgt9klps7059ic6btirlnf4ql0u4.apps.googleusercontent.com",
     "TURNSTILE_SITE_KEY": "0x4AAAAAAFAGYxW9wYYM6md9",
     // 写报告：先 DEEPSEEK_MODEL，失败再用 GLM_MODEL（key 在 FALLBACK_API_KEY）
-    "GLM_MODEL": "glm-4.7",
+    "GLM_MODEL": "glm-5.3-flashx",
     "DEEPSEEK_MODEL": "deepseek-flash",
     // Stripe 测试模式价格（WhatHeThinks 沙盒）；转正式收款时换成 live price
     "STRIPE_PRICE_ID": "price_1UIeNtInIVPJpCcmSfeOuIVg"

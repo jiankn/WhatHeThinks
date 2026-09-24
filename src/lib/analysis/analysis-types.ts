@@ -149,6 +149,14 @@ export interface Preview {
 }
 
 /** analyze() 的完整输出。 */
+/** 同一人在多个不同周几乎逐字重复的一句话。ids：首次与最近两次出现。 */
+export interface RecurringLine {
+  sender: Role;
+  count: number;
+  weeks: number;
+  ids: number[];
+}
+
 export interface Analysis {
   totals: { Y: PersonMetrics; H: PersonMetrics };
   totalSessions: number;
@@ -162,4 +170,8 @@ export interface Analysis {
   evidence: EvidenceMsg[];
   preview: Preview;
   enoughForTurningPoints: boolean;
+  /** 较新的分析才有；旧报告没有。 */
+  recurring?: RecurringLine[];
+  /** 双方最后一条消息（任意类型）。 */
+  last?: { Y?: { id: number; ts: number }; H?: { id: number; ts: number } };
 }

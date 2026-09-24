@@ -67,7 +67,9 @@ export interface SeriesPoint {
 export type ModuleKey = "summary" | "interest" | "investment" | "timeline" | "mixedSignals" | "nextStep";
 
 export interface FullReport {
-  /** English, evidence-led interpretation. Absent on legacy and fictional reports. */
+  /** v3 起：按章节讲的故事式解读。有它时页面按故事渲染。 */
+  story?: ReportStory;
+  /** v2 的英文分栏解读。旧报告才有。 */
   narrative?: ReportNarrative;
   summary: { headline: string; paragraphs: string[]; claims: Claim[] };
   interest: { level: InterestLevel; trendDeclining: boolean; dimensions: Dim[]; note: string; claims: Claim[] };
@@ -121,4 +123,32 @@ export interface ReportNarrative {
     avoid?: string;
     plan?: string;
   };
+}
+
+/** 故事里的一段：正文，或引用一条证据（页面按原消息渲染成聊天气泡）。 */
+export type StoryBlock = { p: string } | { quote: number };
+
+export interface StoryChapter {
+  /** 与服务器给出的章节一一对应（c1、c2…），span 由服务器写入。 */
+  id: string;
+  span: string;
+  emoji: string;
+  title: string;
+  blocks: StoryBlock[];
+}
+
+export interface ReportStory {
+  language: "en";
+  question: string;
+  /** 她的名字，服务器写入，用于把证据里的 [you] 换回名字显示。 */
+  youName?: string;
+  title: string;
+  opening: string[];
+  chapters: StoryChapter[];
+  turn: { text: string; evidenceIds: number[] };
+  otherReading: string;
+  read: string;
+  yourSide: string;
+  nextStep: ReportNarrative["nextStep"] & { messageOptions: MessageOption[]; avoid: string; plan: string };
+  signoff: string;
 }

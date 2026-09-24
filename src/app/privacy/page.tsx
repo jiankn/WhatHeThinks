@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <Prose eyebrow="Privacy" title="Privacy Policy" updated="2026-09-22">
+    <Prose eyebrow="Privacy" title="Privacy Policy" updated="2026-09-24">
       <p>
         WhatHeThinks is built to minimize how much of your conversation leaves your device. This policy explains exactly
         what happens to your data. The short version: <strong>your full chat export never leaves your device</strong>,
@@ -26,7 +26,9 @@ export default function PrivacyPage() {
       <h2>What happens on your device</h2>
       <p>
         When you upload or paste a chat, it is read, parsed and analyzed inside your web browser. The full conversation
-        is never sent to our servers. Participant names stay on your device — the analysis only uses “You” and “Him”.
+        is never sent to our servers. The analysis only uses “You” and “Him”. The one exception: the first word of your
+        own name as it appears in the chat is sent with your report so it can address you by name. His name never leaves
+        your device.
       </p>
 
       <h2>What we store</h2>
@@ -38,6 +40,10 @@ export default function PrivacyPage() {
         <li>
           <strong>Up to 120 example messages</strong>, each shortened to 300 characters, used as evidence in your report.
           Before they leave your device, names, email addresses, phone numbers and links are replaced.
+        </li>
+        <li>
+          <strong>Your first name</strong>, taken from your chat display name, so your report can speak to you by name. It
+          is never included in a shared summary. His name is not stored.
         </li>
         <li>
           <strong>The question you chose</strong> and, if you wrote one, your custom question.
@@ -93,7 +99,7 @@ export default function PrivacyPage() {
         </li>
         <li>
           <strong>DeepSeek</strong> — writing your English-language report. We send your selected or custom question,
-          measured patterns and up to 120 redacted message excerpts to its API. We do not send your full export,
+          measured patterns, your first name and up to 120 redacted message excerpts to its API. We do not send your full export,
           payment details, account email or private report key. Avoid including identifying information in your custom question.
         </li>
         <li>

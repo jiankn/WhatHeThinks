@@ -132,7 +132,7 @@ export function IdentifyStep({
       >
         Analyze our chat <ArrowRightIcon />
       </button>
-      <p className="mt-3 text-center text-xs text-muted">Names stay on your device. We only use “You” and “Him”.</p>
+      <p className="mt-3 text-center text-xs text-muted">His name stays on your device. Your first name is used only so your report can speak to you.</p>
     </section>
   );
 }

@@ -2,7 +2,8 @@
  * 浏览器 → 服务器的上传数据。详见 docs/PRD.md §5.3。
  *
  * 只上传派生数据：聚合指标、周序列、转折点、混合信号，以及 ≤120 条证据摘录。
- * 真实姓名、邮箱、电话在离开浏览器前被替换。完整聊天永不上传。
+ * 证据里的姓名、邮箱、电话在离开浏览器前被替换；只单独上传“你”的名字（首个词），
+ * 用于报告称呼她。他的名字从不上传。完整聊天永不上传。
  */
 
 import type {
@@ -33,7 +34,19 @@ export interface SlimWeek extends Omit<WeekBucket, "Y" | "H"> {
 export type SlimAnalysis = Omit<Analysis, "totals" | "weeks" | "evidence"> & {
   totals: { Y: SlimPersonMetrics; H: SlimPersonMetrics };
   weeks: SlimWeek[];
+  /** 她的名字（聊天显示名的首个词），报告用来称呼她；取不到时不传。 */
+  youName?: string;
 };
+
+const FIRST_NAME_RE = /^\p{L}[\p{L}'’-]{1,23}$/u;
+const NOT_A_NAME = new Set(["me", "you", "i", "my", "him", "her"]);
+
+/** 从聊天显示名取名字：首个字母词，首字母大写；电话号码、“Me”之类返回 undefined。 */
+export function firstName(display: string): string | undefined {
+  const word = display.normalize("NFC").split(/[\s._,|/()-]+/).map(t => t.replace(/[^\p{L}'’-]/gu, "")).find(t => /\p{L}/u.test(t));
+  if (!word || !FIRST_NAME_RE.test(word) || NOT_A_NAME.has(word.toLowerCase())) return undefined;
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
 
 export interface ReportUpload {
   v: typeof PAYLOAD_VERSION;
@@ -112,6 +125,8 @@ export function buildUpload(
         : undefined,
     analysis: {
       ...rest,
+      recurring: rest.recurring?.map((r) => ({ ...r, ids: r.ids.filter((id) => keep.has(id)) })).filter((r) => r.ids.length),
+      ...(firstName(opts.youName) ? { youName: firstName(opts.youName) } : {}),
       totals: { Y: slimPerson(totals.Y, keep), H: slimPerson(totals.H, keep) },
       weeks: weeks.map((w) => ({ ...w, Y: slimPerson(w.Y), H: slimPerson(w.H) })),
     },
@@ -143,6 +158,18 @@ export function validateUpload(body: unknown): string | null {
   if (!Array.isArray(a.mixedSignals) || a.mixedSignals.length > 20) return "invalid mixedSignals";
   if (!isObj(a.interest)) return "invalid interest";
   if (!Array.isArray(a.range) || !isNum(a.range[0]) || !isNum(a.range[1])) return "invalid range";
+  if (a.youName !== undefined && (typeof a.youName !== "string" || !FIRST_NAME_RE.test(a.youName))) return "invalid youName";
+  if (a.recurring !== undefined) {
+    if (!Array.isArray(a.recurring) || a.recurring.length > 12) return "invalid recurring";
+    for (const r of a.recurring) {
+      if (!isObj(r) || (r.sender !== "Y" && r.sender !== "H") || !isNum(r.count) || !isNum(r.weeks)) return "invalid recurring";
+      if (!Array.isArray(r.ids) || r.ids.length > 3 || !r.ids.every(isNum)) return "invalid recurring";
+    }
+  }
+  if (a.last !== undefined) {
+    if (!isObj(a.last)) return "invalid last";
+    for (const who of [a.last.Y, a.last.H]) if (who !== undefined && (!isObj(who) || !isNum(who.id) || !isNum(who.ts))) return "invalid last";
+  }
 
   const p = a.preview;
   if (!isObj(p) || !isNum(p.totalMessages) || !isNum(p.activeDays)) return "invalid preview";

@@ -283,6 +283,17 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .reader-options li { grid-template-columns: minmax(0, 1fr) auto; }
   .reader-options span { grid-column: 1 / -1; }
 }
+/* v3 story report: chapters with the real messages as chat bubbles. */
+.story-chapter-emoji { display: block; font-size: 30px; margin-bottom: 10px; }
+.story-chapter h2 { margin-bottom: 4px; }
+.reader-section .story-span { font-size: 12px; color: #626262; margin: 0 0 22px; letter-spacing: .02em; }
+.story-bubble { display: flex; flex-direction: column; max-width: min(78%, 460px); margin: 18px 0; }
+.story-bubble blockquote { margin: 0; padding: 10px 14px; border-radius: 16px 16px 16px 4px; background: #f1f1f1; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
+.story-bubble figcaption { font-size: 11px; color: #626262; margin: 5px 8px 0; }
+.story-bubble.is-you { margin-left: auto; align-items: flex-end; }
+.story-bubble.is-you blockquote { background: #e7f3e9; border-radius: 16px 16px 4px 16px; }
+.reader-section h2.story-subhead { margin-top: 34px; }
+.reader-section .story-signoff { font-style: italic; margin-top: 30px; font-size: 16px; }
 .reader-question { background: #f2f5f1; padding: 24px; border-radius: 12px; margin: 24px 0; }
 .reader-question > p { font-size: 21px; line-height: 1.55; }
 .reader-question button { text-decoration: underline; text-underline-offset: 4px; font-size: 12px; min-height: 44px; }
@@ -311,10 +322,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .reader-paywall ul { display: grid; gap: 14px; margin: 25px 0; font-size: 14px; }
 .reader-paywall li { display: flex; align-items: baseline; gap: 10px; }
 .reader-paywall li::before { content: '✓'; }
-.reader-price { display: flex; align-items: center; gap: 15px; margin: 30px 0 20px; }
-.reader-price strong { font-weight: 550; font-size: 32px; }
-.reader-price span { color: #626262; font-size: 12px; }
-.reader-refund-consent { display: flex; align-items: flex-start; gap: 10px; margin: -4px 0 16px; color: #4f4f4f; font-size: 12px; line-height: 1.55; text-align: left; cursor: pointer; }
+.reader-refund-consent { display: flex; align-items: flex-start; gap: 10px; margin: 24px 0 16px; color: #4f4f4f; font-size: 12px; line-height: 1.55; text-align: left; cursor: pointer; }
 .reader-refund-consent input { width: 17px; height: 17px; margin-top: 1px; flex: 0 0 auto; accent-color: #171717; }
 .reader-refund-consent:has(input:focus-visible) { outline: 2px solid #33724a; outline-offset: 4px; border-radius: 2px; }
 .reader-paywall > .btn-primary { width: 100%; }
@@ -442,7 +450,6 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .reader-preview-metrics { gap: 15px; }
   .reader-preview-metrics dd { font-size: 22px; gap: 6px; }
   .reader-paywall { padding: 24px 20px; }
-  .reader-price { flex-wrap: wrap; gap: 8px 15px; }
   .v3-share-editor { grid-template-columns: 1fr; }
   .v3-card-preview { width: 100%; }
   .v3-share-page .v3-share-card { padding: 28px; }

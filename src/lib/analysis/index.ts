@@ -14,6 +14,7 @@ import { findTurningPoints } from "./turningPoints";
 import { computeInterest } from "./interest";
 import { computeMixedSignals } from "./mixedSignals";
 import { selectEvidence } from "./evidence";
+import { findRecurring } from "./recurring";
 import { buildPreview } from "./preview";
 
 export * from "./analysis-types";
@@ -65,7 +66,12 @@ export function analyzeRoleMsgs(
   const { hits: mixedSignals, breadcrumbing } = liteMode
     ? { hits: [], breadcrumbing: false }
     : computeMixedSignals(msgs, ev, sessions, range);
-  const evidence = selectEvidence(msgs, turningPoints, mixedSignals);
+  const recurring = liteMode ? [] : findRecurring(msgs);
+  const evidence = selectEvidence(msgs, turningPoints, mixedSignals, recurring);
+  const lastOf = (sender: RoleMsg["sender"]) => {
+    for (let i = msgs.length - 1; i >= 0; i--) if (msgs[i].sender === sender) return { id: msgs[i].id, ts: msgs[i].ts };
+    return undefined;
+  };
 
   const partial: Omit<Analysis, "preview"> = {
     totals,
@@ -79,6 +85,8 @@ export function analyzeRoleMsgs(
     breadcrumbing,
     evidence,
     enoughForTurningPoints,
+    recurring,
+    last: { Y: lastOf("Y"), H: lastOf("H") },
   };
   return { ...partial, preview: buildPreview(partial, liteMode) };
 }

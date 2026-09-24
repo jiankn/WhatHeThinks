@@ -34,11 +34,21 @@ const BANNED: [RegExp, string][] = [
   [/\b\d+% chance\b/i, "prediction"],
   [/\b(will|going to) (break up|fail|end)\b/i, "prediction"],
   [/\b(leave|dump) him\b/i, "directive"],
-  [/(?<!he said )\bhe (thinks|feels|wants) /i, "mind reading"],
+  // 条件句（"if he wants to make a plan"）和转述（"he says he feels"）不是读心
+  [/(?<!\b(?:said|says|say|if|whether) )\bhe (thinks|feels|wants) /i, "mind reading"],
 ];
 
+/** "I can't tell you what he thinks or feels" 这类否定式免责声明恰恰是在拒绝读心，检查前先去掉。 */
+const DISCLAIMER = /\b(?:can't|cannot|can not|won't|will not|don't|do not|not going to|not)\s+(?:tell you|know|say|claim to know|pretend to know|guess|see)\s+(?:what|how|whether|why)\s+he\s+(?:thinks|feels|wants)(?:\s+(?:or|and)\s+(?:how he\s+)?(?:thinks|feels|wants))?/gi;
+
+/** 命中的禁用说法（确定性、指控、诊断、读心、预测、指令）。 */
+export function bannedHits(text: string): string[] {
+  const t = text.replace(DISCLAIMER, "§");
+  return BANNED.flatMap(([re, why]) => { const m = re.exec(t); return m ? [`${why}: "${m[0]}"`] : []; });
+}
+
 const HEDGE = /\b(may|might|could|can|suggests?|consistent with|one possible|often|tends?)\b/i;
-const CAPS_WORD = /\b[A-Z]{4,}\b/;
+export const CAPS_WORD = /\b[A-Z]{4,}\b/;
 
 /** 剔除所有已登记字符串后，若仍含数字，则为未登记（编造）的数字。 */
 export function unregisteredNumbers(text: string, allowed: string[]): string[] {
@@ -51,10 +61,7 @@ function checkText(path: string, text: string, ctx: CheckContext, out: Violation
   for (const n of unregisteredNumbers(text, ctx.allowed)) {
     out.push({ path, kind: "number", detail: `unregistered number "${n}"` });
   }
-  for (const [re, why] of BANNED) {
-    const m = re.exec(text);
-    if (m) out.push({ path, kind: "banned", detail: `${why}: "${m[0]}"` });
-  }
+  for (const detail of bannedHits(text)) out.push({ path, kind: "banned", detail });
   const caps = CAPS_WORD.exec(text);
   if (caps) out.push({ path, kind: "tone", detail: `all-caps "${caps[0]}"` });
 }

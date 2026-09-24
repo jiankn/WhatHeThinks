@@ -82,3 +82,8 @@
   .sample-story-final { padding: 26px 22px; }
   .sample-story-final .btn-primary { width: 100%; }
 }
+
+/* The sample renders the same story layout as a paid report. */
+.sample-story .sample-story-report { width: 100%; max-width: 720px; margin: 0 0 24px; padding-top: 10px; border-top: 1px solid #e5e5e5; }
+.sample-story .sample-story-report-title { font-size: clamp(28px, 3.6vw, 38px); line-height: 1.25; font-weight: 550; letter-spacing: -.03em; }
+.sample-story .sample-story-report .reader-intro { margin-top: 30px; }
