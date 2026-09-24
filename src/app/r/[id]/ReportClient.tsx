@@ -196,7 +196,7 @@ export function ReportClient({ id }: { id: string }) {
               reportId={id}
               token={token.current ?? ""}
               focus={`${view.question}|${view.customQuestion ?? ""}`}
-              checkout={<CheckoutButton busy={checkoutBusy} error={checkoutError} onUnlock={unlock} />}
+              checkout={ready => <CheckoutButton busy={checkoutBusy} error={checkoutError} onUnlock={unlock} ready={ready} />}
             />
             <ShareResult preview={view.preview} reportId={id} token={token.current ?? ""} />
           </>

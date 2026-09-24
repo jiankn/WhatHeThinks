@@ -26,9 +26,9 @@ function Block({ block }: { block: PublicBlock }) {
 
 /**
  * focus：当前问题（侧重点），用来判断预写的完整报告是否对应当前问题。
- * checkout：付款按钮（带价格，点了直接去 Stripe），放在渐隐处下方；开头还没写好或写失败时也照常显示。
+ * checkout：按完整报告是否已写好（ready）画出付款按钮（点了直接去 Stripe），放在渐隐处下方；开头还没写好或写失败时也照常显示。
  */
-export function PreviewTeaser({ reportId, token, focus, data: fixed, checkout }: { reportId?: string; token?: string; focus?: string; data?: TeaserData; checkout?: React.ReactNode }) {
+export function PreviewTeaser({ reportId, token, focus, data: fixed, checkout }: { reportId?: string; token?: string; focus?: string; data?: TeaserData; checkout?: (ready: boolean) => React.ReactNode }) {
   const [data, setData] = useState<TeaserData | null>(fixed ?? null);
   // 只请求写一次；重复挂载（开发模式下的 StrictMode）只重新读取状态
   const posted = useRef(false);
@@ -92,7 +92,7 @@ export function PreviewTeaser({ reportId, token, focus, data: fixed, checkout }:
         <h1 id="teaser-title" className="teaser-title">{name ? `${name}, here's what I found in your chat.` : "Here's what I found in your chat."}</h1>
         {facts.hisLast && <p className="teaser-lead">His last message was {facts.hisLast.daysAgo === "earlier today" ? "earlier today" : `${facts.hisLast.daysAgo} ago`}, on {facts.hisLast.date}. Your full report starts there and works back through the whole conversation.</p>}
       </div>}
-      <div className="teaser-gate">{checkout}</div>
+      <div className="teaser-gate">{checkout?.(!!data.ready)}</div>
     </section>;
   }
 
@@ -128,8 +128,8 @@ export function PreviewTeaser({ reportId, token, focus, data: fixed, checkout }:
     </div>
 
     <div className="teaser-gate">
-      {checkout}
-      {data.ready && <p className="teaser-ready" role="status">It&apos;s already written. It opens the moment you unlock it.</p>}
+      {checkout?.(!!data.ready)}
+      {data.ready && <p className="teaser-ready" role="status">Your report is already written. It opens right here the moment you pay.</p>}
       <h3>Still inside:</h3>
       <ul className="teaser-inside">
         {opening.inside.map((item, i) => <li key={i}><span aria-hidden="true">{item.emoji}</span> {item.title}</li>)}
