@@ -223,11 +223,23 @@ export function WrappedSlides({ wrapped: w, youName, himName, index, onIndex, on
   const { title, sub, content } = body[slide];
 
   return <section className="wr" aria-labelledby="wr-title">
-    <div className="wr-top">
-      <button type="button" className="wr-back" onClick={() => onIndex(at - 1)} disabled={at === 0} aria-label="Previous">
-        <ArrowLeftIcon className="h-5 w-5" />
-      </button>
-      <div className="wr-progress" aria-hidden="true"><span style={{ width: `${((at + 1) / slides.length) * 100}%` }} /></div>
+    <div className="v3-setup-progress wr-top">
+      {at > 0 ? (
+        <button type="button" onClick={() => onIndex(at - 1)} className="flow-back" aria-label="Previous">
+          <ArrowLeftIcon className="" /> Back
+        </button>
+      ) : (
+        <span />
+      )}
+      <ol className="v3-step-dots" aria-label={`Slide ${at + 1} of ${slides.length}`}>
+        {slides.map((s, i) => (
+          <li
+            key={s}
+            aria-current={i === at ? "step" : undefined}
+            className={i <= at ? "is-complete" : ""}
+          />
+        ))}
+      </ol>
       <span className="wr-count">{at + 1} of {slides.length}</span>
     </div>
     <div key={slide} className="wr-slide">
