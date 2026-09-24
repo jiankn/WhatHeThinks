@@ -6,8 +6,9 @@ import { buildStoryContext, storyAllowedNumbers, stripMarkdown, storyUserData, v
 import type { StoryTeaser } from "@/lib/report/types";
 import type { ReportInput, ReportWriter } from "@/lib/report/writer";
 
-export const DEEPSEEK_MODEL = "deepseek-flash";
-export const GLM_MODEL = "glm-5.3-flashx";
+// 付费报告卖的是文字质量（口吻、贴切的比喻、读出细节），用各家的旗舰模型；flash 版本仍可通过环境变量切回。
+export const DEEPSEEK_MODEL = "deepseek-v4-pro";
+export const GLM_MODEL = "glm-5.3";
 const VOICE = `You are the narrator of a private WhatHeThinks reading. Your voice: an honest, funny,
 emotionally sharp friend who has read thousands of chat logs and genuinely cares about the reader. The reader is a
 woman who came to you for an honest read of her chat with a man; she usually arrives anxious and already senses something.
@@ -173,15 +174,18 @@ export interface ChatProvider {
 }
 
 export function glmProvider(apiKey: string, model: string = GLM_MODEL): ChatProvider {
-  // glm-5.3-flashx 思考关不掉，只能选 low/high/max；low 实测约 30 秒写完一份故事版报告。
+  // glm-5.x 思考关不掉，只能选 low/high/max；glm-5.3-flashx 用 low 实测约 30 秒写完一份故事版报告。
   // glm-4.x 仍可关闭思考。GLM-5.3-Flash（非 flashx）5 分钟都写不完，不要用。
+  // 旗舰 glm-5.3 比 flashx 慢，给更长的单次时限。
   const extra = /^glm-4/.test(model) ? { thinking: { type: "disabled" } } : { reasoning_effort: "low" };
-  return { id: "glm", url: "https://open.bigmodel.cn/api/paas/v4/chat/completions", model, apiKey, extra, maxTokens: 10_000, temperature: 0.8, timeoutMs: 90_000 };
+  const timeoutMs = /flash/.test(model) ? 90_000 : 120_000;
+  return { id: "glm", url: "https://open.bigmodel.cn/api/paas/v4/chat/completions", model, apiKey, extra, maxTokens: 10_000, temperature: 0.8, timeoutMs };
 }
 
 export function deepseekProvider(apiKey: string, model: string = DEEPSEEK_MODEL): ChatProvider {
-  // 故事版约 3k 输出 token，实测 17 秒左右
-  return { id: "deepseek", url: "https://api.deepseek.com/chat/completions", model, apiKey, extra: { thinking: { type: "disabled" } }, maxTokens: 8000, temperature: 0.8, timeoutMs: 60_000 };
+  // 故事版约 3k 输出 token，flash 实测 17 秒左右；pro 输出更慢，给更长的单次时限
+  const timeoutMs = /flash/.test(model) ? 60_000 : 110_000;
+  return { id: "deepseek", url: "https://api.deepseek.com/chat/completions", model, apiKey, extra: { thinking: { type: "disabled" } }, maxTokens: 8000, temperature: 0.8, timeoutMs };
 }
 
 /** 从 start 处的 { 开始，找到与之配对的 }（跳过字符串里的括号）；没有配对返回 -1。 */
@@ -245,7 +249,7 @@ export function withFixedOpening(raw: unknown, fixed: StoryTeaser): unknown {
 /** 整个写作流程的时间上限：主模型不能把备用模型的时间占光。 */
 const TOTAL_BUDGET_MS = 240_000;
 /** 免费预览：她先看聊天回顾，再在页面上等待，预算更短。 */
-const TEASER_BUDGET_MS = 100_000;
+const TEASER_BUDGET_MS = 110_000;
 const MIN_ATTEMPT_MS = 20_000;
 
 /** 付费报告与免费预览开头的写作器：DeepSeek 优先，GLM 备用。 */
@@ -287,7 +291,7 @@ export class LlmReportWriter implements ReportWriter {
     const { value, provider, reasons } = await this.run(TEASER_SYSTEM_PROMPT, data, raw => {
       const { teaser, repairs } = validateTeaser(raw, ctx, facts, input.evidence, allowed);
       return { value: teaser, repairs };
-    }, TEASER_BUDGET_MS, { attemptMs: 45_000, maxTokens: 4000 });
+    }, TEASER_BUDGET_MS, { attemptMs: 60_000, maxTokens: 4000 });
     return { teaser: { ...value, model: provider.model, generatedAt: this.now() }, failures: reasons };
   }
 

@@ -4,8 +4,8 @@
 interface __BaseEnv_CloudflareEnv {
 	DB: D1Database;
 	ASSETS: Fetcher;
-	GLM_MODEL: "glm-5.3-flashx";
-	DEEPSEEK_MODEL: "deepseek-flash";
+	GLM_MODEL: "glm-5.3";
+	DEEPSEEK_MODEL: "deepseek-v4-pro";
 	STRIPE_SECRET_KEY: string;
 	STRIPE_WEBHOOK_SECRET: string;
 	STRIPE_PRICE_ID: string;
