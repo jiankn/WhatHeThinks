@@ -34,16 +34,17 @@ const BANNED: [RegExp, string][] = [
   [/\b\d+% chance\b/i, "prediction"],
   [/\b(will|going to) (break up|fail|end)\b/i, "prediction"],
   [/\bfifty[- ]fifty\b/i, "odds"],
-  [/\b(?:is|are|was|were|isn't|aren't|not|very|quite|more|less|most|least|seems|looks) likely to\b|\bunlikely to\b/i, "prediction"],
+  [/\b(?:is|are|was|were|isn't|aren't|not|very|quite|more|less|most|least|seems|looks) likely to\b|\bunlikely to\b|\bwill (?:most )?(?:likely|probably)\b|\b(?:likely|probably) will\b/i, "prediction"],
   [/\b(?:he|it|this|that|things)(?:'ll| will) (?:never|always)\b|\b(?:won't|will not|isn't going to|is not going to) (?:ever )?change\b/i, "prediction"],
   [/\b(?:he|it|this|that|things)(?:'s| is| are) going to\b/i, "prediction"],
   [/\b(leave|dump) him\b/i, "directive"],
-  // 条件句（"if he wants to make a plan"）和转述（"he says he feels"）不是读心
-  [/(?<!\b(?:said|says|say|if|whether) )\bhe (thinks|feels|wants) /i, "mind reading"],
+  // 条件句（"if he wants to make a plan"）、转述（"he says he feels"）和问法（"how he feels"）不是读心；
+  // 句末的 "all he wants." 同样要拦
+  [/(?<!\b(?:said|says|say|if|whether|how) )\bhe (thinks|feels|wants)\b/i, "mind reading"],
 ];
 
 /** 句子里出现过否定/不确定的说法（"I can't tell you...", "there's no way to know..."）。 */
-const HEDGE_WORD = /\b(?:can't|cannot|can not|won't|will not|don't|do not|didn't|isn't|is not|impossible to know|no way to know|not knowable)\b/i;
+const HEDGE_WORD = /\b(?:can't|cannot|can not|won't|will not|don't|do not|doesn't|does not|didn't|isn't|is not|impossible to know|no way to know|not knowable)\b/i;
 
 /**
  * "What I cannot tell you is what he wants" 这类整句都在否认自己会读心的说法，

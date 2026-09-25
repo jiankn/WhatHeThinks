@@ -106,7 +106,7 @@ class Composer {
   constructor(private readonly input: ReportInput) {
     this.a = input.analysis;
     this.lite = input.analysis.preview.liteMode;
-    this.recent = lastValidWeeks(this.a.weeks, 6);
+    this.recent = lastValidWeeks(this.a.weeks, 6, this.a.range[1]);
     this.evidenceIds = new Set(input.evidence.map((e) => e.id));
     this.seed = hash(input.reportId);
   }

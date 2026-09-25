@@ -7,6 +7,7 @@ import { measuredFacts, ReportValidationError } from "@/lib/report/narrative";
 import { buildStoryContext, buildTeaserFacts, chapterOf, explainStoryIssues, maskText, numberWord, publicTeaser, storyUserData, stripMarkdown, validateStoryWithRepairs, validateTeaser } from "@/lib/report/story";
 import type { ReportStory } from "@/lib/report/types";
 import { parseJsonContent } from "@/lib/server/llm-writer";
+import { lastValidWeeks } from "@/lib/report/window";
 import { storyFixture } from "./story-fixture";
 import { genChat } from "./synth";
 
@@ -462,5 +463,46 @@ describe("fixes from the second live report", () => {
     if (heads.length < 2) return;
     const teaser = { language: "en", title: "The Long Porch Light: Steady Signals", opening: ["Emma, I read your chat slowly and carefully.", "Let me show you what I found in it."], chapters: heads, firstChapter: { blocks: f.story.chapters[0].blocks } };
     expect(() => validateTeaser(teaser, f.ctx, f.facts, f.upload.evidence, f.allowed)).toThrow(expect.objectContaining({ issues: expect.arrayContaining(["unique:chapters[1].title:heading"]) }));
+  });
+});
+
+describe("fixes from the DeepSeek V4 Pro report", () => {
+  const raw = readFileSync("reports/test-data/WhatsApp-Nora-Theo-fictional.txt", "utf8");
+  const up = buildUpload(analyze(parseAny(raw), "Nora", "Theo"), { question: "overview", youName: "Nora", himName: "Theo" });
+  const ctx = buildStoryContext(up.analysis, up.evidence, NOW);
+  const validate = (value: unknown) => validateStoryWithRepairs(value, ctx, [], up.evidence, []);
+  const lastBlock = (s: ReportStory) => s.chapters[0].blocks.at(-1);
+
+  it("tells the model where the chat ends, not how many days ago", () => {
+    expect(ctx.chatEnds).toEqual({ date: "September 21", lastFrom: "him" });
+    const facts = storyUserData(ctx, "overview", "overview", [], up.evidence).storyFacts as Record<string, unknown>;
+    expect(facts.chatEnds).toEqual({ date: "September 21", lastFrom: "him" });
+    expect(facts).not.toHaveProperty("daysSinceEnd");
+    expect(facts.hisLastMessage).not.toHaveProperty("daysAgo");
+  });
+
+  it.each([
+    "You have not heard anything from him since.",
+    "He sent it on September 21, and then nothing.",
+    "Today is Thursday, and the chat is still silent.",
+    "It does not explain the three-day silence after a warm weekend.",
+  ])("drops a sentence that treats the time after the chat ends as silence: %s", sentence => {
+    const story = storyFixture(ctx, up.evidence);
+    const { story: out, repairs } = validate(withBlock(story, `${sentence} The routine holds.`));
+    expect(lastBlock(out)).toEqual({ p: "The routine holds." });
+    expect(repairs.some(r => r.startsWith("removed:sentence:"))).toBe(true);
+  });
+
+  it("keeps a quiet stretch inside the chat", () => {
+    const story = storyFixture(ctx, up.evidence);
+    const p = "In the middle of August the chat goes quiet for a while.";
+    expect(lastBlock(validate(withBlock(story, p)).story)).toEqual({ p });
+  });
+
+  it("does not count a last week that is only one day long as a recent week", () => {
+    const end = up.analysis.range[1];
+    expect(lastValidWeeks(up.analysis.weeks, 6).H.plansConcrete).toBe(5);
+    expect(lastValidWeeks(up.analysis.weeks, 6, end).H.plansConcrete).toBe(6);
+    expect(lastValidWeeks(up.analysis.weeks, 6, end).weeks).toBe(6);
   });
 });

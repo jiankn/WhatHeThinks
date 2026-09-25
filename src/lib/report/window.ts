@@ -68,8 +68,17 @@ function finish(weeks: SlimWeek[]): WindowAgg {
   };
 }
 
-/** 最近 n 个非稀疏周（与 interest.ts 的"近期"口径一致）。 */
-export function lastValidWeeks(weeks: SlimWeek[], n: number): WindowAgg {
-  const valid = weeks.filter((w) => !w.sparse);
+const DAY = 24 * 60 * 60 * 1000;
+
+/**
+ * 最近 n 个非稀疏周（与 interest.ts 的"近期"口径一致）。
+ * end 是聊天最后一条消息的时间：聊天在最后一个自然周的前三天就结束时，这一周只有一两天，
+ * 算作"最近一周"会把最近的次数算少（每周三约一次饭，聊天停在周一，"最近六周"就只剩五次），
+ * 前面还有足够的周时就不算它。
+ */
+export function lastValidWeeks(weeks: SlimWeek[], n: number, end?: number): WindowAgg {
+  let valid = weeks.filter((w) => !w.sparse);
+  const last = valid.at(-1);
+  if (end !== undefined && last && valid.length > n && end - last.weekStart < 3 * DAY) valid = valid.slice(0, -1);
   return finish((valid.length ? valid : weeks).slice(-n));
 }

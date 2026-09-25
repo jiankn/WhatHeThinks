@@ -113,6 +113,13 @@ describe("bannedHits：读心免责声明", () => {
     expect(bannedHits("He feels this is the right time.")).not.toEqual([]);
   });
 
+  it("拦住 \"will likely\" 式预测和句末的 \"all he wants.\"；\"how he feels\" 是问法，放行", () => {
+    expect(bannedHits("That question is too big for a text and will likely scare him off.")).not.toEqual([]);
+    expect(bannedHits("If he stays on the surface, you have your answer: the carousel is all he wants.")).not.toEqual([]);
+    expect(bannedHits("It does not settle how he feels, but it helps.")).toEqual([]);
+    expect(bannedHits("Nobody knows how he feels about it.")).toEqual([]);
+  });
+
   it("否定词在另一句时不放行本句的读心", () => {
     expect(bannedHits("I don't know much about him. He wants you to stay.")).not.toEqual([]);
   });

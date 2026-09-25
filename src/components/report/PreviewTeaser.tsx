@@ -90,7 +90,7 @@ export function PreviewTeaser({ reportId, token, focus, data: fixed, checkout }:
         <p>I&apos;m reading your chat now. The first chapter usually takes under a minute.</p>
       </div> : <div>
         <h1 id="teaser-title" className="teaser-title">{name ? `${name}, here's what I found in your chat.` : "Here's what I found in your chat."}</h1>
-        {facts.hisLast && <p className="teaser-lead">His last message was {facts.hisLast.daysAgo === "earlier today" ? "earlier today" : `${facts.hisLast.daysAgo} ago`}, on {facts.hisLast.date}. Your full report starts there and works back through the whole conversation.</p>}
+        {facts.hisLast && <p className="teaser-lead">His last message in your chat is from {facts.hisLast.date}. Your full report starts there and works back through the whole conversation.</p>}
       </div>}
       <div className="teaser-gate">{checkout?.(!!data.ready)}</div>
     </section>;

@@ -57,7 +57,11 @@ function mechanics(o: PromptOptions): string {
   The title has no digits and never her name.${o.lite ? `
 - liteMode: there are no timestamps. Never mention dates, weekdays, delays or trends over time.` : `
 - Dates only from evidence.date, storyFacts or chapter spans. Name a weekday only when the evidence gives it
-  (evidence.weekday, or the message says it); "the weekend" stays "the weekend".`}
+  (evidence.weekday, or the message says it); "the weekend" stays "the weekend".
+- Her chat ends on storyFacts.chatEnds.date. It is an export with no date of its own, so she may have made it days
+  before today and you cannot know what came after. Never say or imply that nothing has come since, that anyone has
+  gone quiet since, or that the time after the chat ends is a silence, and never make it the moment that matters.
+  Gaps inside the chat (messages that got no reply) are evidence as usual.`}
 - He is only "he"/"him" ([him] in messages); [you] is her.`;
 }
 
@@ -87,7 +91,7 @@ export function reportPrompt(o: PromptOptions): string {
   const opening = fixed === "none"
     ? `- title: ONE central metaphor that fits what the data shows, a colon, a short subtitle.
 - opening: two to four paragraphs. Greet her by name. What reading her chat was like, the metaphor, and how this
-  answers her question.${o.lite ? "" : " Anchor to storyFacts.today and how long since his last message."}`
+  answers her question.${o.lite ? "" : " Anchor to where her chat ends (storyFacts.chatEnds)."}`
     : `- She has already read the title${fixed === "firstChapter" ? ", the opening, the chapter headings and the first chapter" : " and the opening"}
   (storyFacts.fixedOpening). Copy the title unchanged and write "opening": []${fixed === "firstChapter" ? `. Copy every
   chapter's emoji and title from fixedOpening.chapterHeads and write the first chapter's "blocks": []` : ""}. The
@@ -130,7 +134,7 @@ THE SHAPE (the first part of her report; she reads it for free before deciding, 
 genuinely useful read, not a sales pitch):
 - title: ONE central metaphor that fits what the data shows, a colon, a short subtitle.
 - opening: three or four paragraphs. Greet her by name. The moment you noticed the pattern, the metaphor, and two
-  or three concrete things behind it.${o.lite ? "" : " Anchor to storyFacts.today and how long since his last message."} Do not state or
+  or three concrete things behind it.${o.lite ? "" : " Anchor to where her chat ends (storyFacts.chatEnds)."} Do not state or
   paraphrase her question: she may still change it. End by leading into the evidence.
 ${chapterRules(o, "teaser")}
 - firstChapter: the full first chapter as blocks: a paragraph setting up the pattern, then four to six quotes${o.thematic ? "" : " from its period"}, both

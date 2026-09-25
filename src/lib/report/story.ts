@@ -31,6 +31,13 @@ export interface StoryContext {
   /** 今天是星期几，例如 "Thursday"。 */
   todayWeekday?: string;
   hisLastMessage?: { date: string; weekday?: string; daysAgo: string; evidenceId: number | null };
+  /**
+   * 聊天记录在哪天结束、最后一条是谁发的。导出的聊天不带导出日期，她可能几天前就导出了，
+   * 所以结束之后有没有消息无从得知。
+   */
+  chatEnds?: { date: string; lastFrom: "you" | "him" };
+  /** 聊天结束那天到今天隔了几天（英文单词）；给检查用，不交给模型。 */
+  daysSinceEnd?: string;
   /** 证据消息在整段聊天里重复的次数与周数（只含重复过的），按消息 id。 */
   repeats: Record<number, { times: number; weeks: number }>;
   chapters: StoryChapterSpec[];
@@ -83,10 +90,14 @@ export function buildStoryContext(analysis: SlimAnalysis, evidence: EvidenceMsg[
   });
   const his = analysis.last?.H;
   const days = his ? Math.floor(now / DAY_MS) - Math.floor(his.ts / DAY_MS) : NaN;
+  const endGap = Math.floor(now / DAY_MS) - Math.floor(end / DAY_MS);
+  const lastFrom = his && his.ts >= (analysis.last?.Y?.ts ?? -Infinity) ? "him" as const : "you" as const;
   const timed = chapters.length > 1 ? { chapters, thematic: false } : themes(evidence.length, "Across the whole chat", chapters[0].span);
   return {
     youName: analysis.youName, liteMode, today: fmtDateLong(now), todayWeekday: weekdayOf(now), ...timed, recurring, repeats,
     hisLastMessage: his && days >= 0 ? { date: fmtDateLong(his.ts), weekday: weekdayOf(his.ts), daysAgo: daysAgoText(days), evidenceId: ids.has(his.id) ? his.id : null } : undefined,
+    chatEnds: { date: fmtDateLong(end), lastFrom },
+    ...(endGap >= 1 ? { daysSinceEnd: numberWord(endGap) } : {}),
   };
 }
 
@@ -124,11 +135,13 @@ function fixedFacts(t: StoryTeaser) {
 
 /** 给模型的数据：事实、章节与带日期/章节标注的证据。 */
 export function storyUserData(ctx: StoryContext, question: string, questionId: string, facts: MeasuredFact[], evidence: EvidenceMsg[], fixedOpening?: StoryTeaser) {
-  const { chapters, repeats, ...rest } = ctx;
+  // 离今天几天不交给模型：聊天结束之后的空白不是证据（见 silenceClaim）
+  const { chapters, repeats, daysSinceEnd: _gap, hisLastMessage, ...rest } = ctx;
+  const his = hisLastMessage && { date: hisLastMessage.date, weekday: hisLastMessage.weekday, evidenceId: hisLastMessage.evidenceId };
   return {
     question, questionId,
     measuredFacts: facts.map(f => ({ id: f.id, text: f.text })),
-    storyFacts: { ...rest, chapters: chapters.map(c => ({ id: c.id, span: c.span })), ...(fixedOpening ? { fixedOpening: fixedFacts(fixedOpening) } : {}) },
+    storyFacts: { ...rest, ...(his ? { hisLastMessage: his } : {}), chapters: chapters.map(c => ({ id: c.id, span: c.span })), ...(fixedOpening ? { fixedOpening: fixedFacts(fixedOpening) } : {}) },
     evidence: evidence.map(e => ({
       id: e.id,
       ...(ctx.liteMode ? {} : { date: fmtDateLong(e.ts), weekday: new Date(e.ts).toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }) }),
@@ -223,10 +236,36 @@ function normQuote(s: string): string {
   return s.toLowerCase().replace(/’/g, "'").replace(/[^\p{L}\p{N}\s']/gu, " ").replace(/\s+/g, " ").trim();
 }
 
-interface TextEnv { nums: Set<string>; corpus: string[] }
+interface TextEnv {
+  nums: Set<string>;
+  corpus: string[];
+  /** 最后一条是他发的时，聊天结束的日期：和"没消息"写在一起就是在说导出之后的事。 */
+  hisEnd?: string;
+  daysSinceEnd?: string;
+}
 
 function textEnv(ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): TextEnv {
-  return { nums: allowedNumbers(ctx, facts, evidence, allowed), corpus: evidence.map(e => normQuote(e.text)) };
+  return {
+    nums: allowedNumbers(ctx, facts, evidence, allowed), corpus: evidence.map(e => normQuote(e.text)),
+    hisEnd: ctx.chatEnds?.lastFrom === "him" ? ctx.chatEnds.date : undefined, daysSinceEnd: ctx.daysSinceEnd,
+  };
+}
+
+/** 一直延续到现在的"没联系"（现在完成时 + since）。 */
+const SINCE_SILENCE = /\b(?:haven't|have not|hasn't|has not)\s+(?:heard|written|texted|replied|messaged|reached out|said (?:a word|anything))\b[^.!?]{0,40}\bsince\b|\b(?:nothing|no (?:word|reply|message|messages|answer|text))(?: (?:at all|from him|from you))? since\b|\bsilence since\b|\bquiet ever since\b/i;
+const GAP_WORDS = /\b(?:silen(?:ce|t)|quiet|nothing|absence|no (?:word|reply|message|messages|answer|text))\b/i;
+
+/**
+ * 把聊天结束之后说成"他再没联系"：导出不带日期，她可能几天前就导出了，这段时间有没有消息无从得知。
+ * 聊天里面的空白（她发了几条他没回）是证据，照常可以写；这里只拦延续到今天的说法、
+ * 和今天或聊天结束日期（最后一条是他发的时）写在一起的"没消息"，以及"四天没消息"这种正好等于结束至今天数的说法。
+ */
+function silenceClaim(t: string, env: TextEnv): boolean {
+  if (SINCE_SILENCE.test(t)) return true;
+  if (!GAP_WORDS.test(t)) return false;
+  if (/\btoday\b|\bright now\b/i.test(t)) return true;
+  if (env.hisEnd && t.includes(env.hisEnd)) return true;
+  return Boolean(env.daysSinceEnd && new RegExp(`\\b${env.daysSinceEnd}[- ]days?\\b`, "i").test(t));
 }
 
 const WORD_VALUE: Record<string, number> = Object.fromEntries([
@@ -257,6 +296,7 @@ function textIssueKinds(path: string, t: string, env: TextEnv): string[] {
   else if (found.some(n => !env.nums.has(n))) kinds.push("number");
   if (bannedHits(t).length || EXTRA_BANNED.some(([re]) => re.test(t)) || spelledOdds(t, env.nums)) kinds.push("banned");
   if (CAPS_WORD.test(t)) kinds.push("tone");
+  if (silenceClaim(t, env)) kinds.push("silence");
   // 正文里双引号内三个词以上的内容必须逐字出自证据；建议她发的话不算
   if (!path.startsWith("nextStep.") && path !== "title" && path !== "question") {
     for (const m of t.matchAll(QUOTED_RE)) {
@@ -268,7 +308,7 @@ function textIssueKinds(path: string, t: string, env: TextEnv): string[] {
 }
 
 /** 可以靠删掉个别句子修好的问题。 */
-const SENTENCE_KINDS = new Set(["banned", "number", "misquote", "tone"]);
+const SENTENCE_KINDS = new Set(["banned", "number", "misquote", "tone", "silence"]);
 
 /**
  * 删掉违规的句子，保留其余内容。一整段都不合规时返回 null（由调用方决定删段或失败）。
@@ -436,6 +476,7 @@ export function explainStoryIssues(issues: string[]): string[] {
       case "number": return `${at}: contains a number that is not in measuredFacts, storyFacts or the evidence. Remove it, or copy the measured fact exactly. Never write evidence ids in prose, and never count occurrences yourself.`;
       case "banned": return `${at}: remove certainty, accusations, diagnoses, probabilities or percent odds (including spelled-out ones like "forty percent"), predictions ("likely to", "will never", "won't change", "is going to"), directives, and any "he thinks/feels/wants" stated as a fact about him.`;
       case "tone": return `${at}: no all-caps words.`;
+      case "silence": return `${at}: her chat ends on storyFacts.chatEnds.date and the export has no date, so you cannot know whether anything came after it. Do not say or imply that nothing has come since, or call the time after the chat ends a silence. Say "your chat ends on" that date instead.`;
       case "chapters": return "chapters: write exactly one chapter per storyFacts.chapters entry, in order.";
       case "quotes": return `chapters: quote at least ${MIN_QUOTES} different messages across the story with quote blocks (evidence ids from the matching chapter, or any date when storyFacts.thematic is true).`;
       case "recurring": return `chapters: quote at least one of the lines in storyFacts.recurring with a quote block (evidence ids ${rest.slice(1).join(":")}) and say what the repetition shows.`;
