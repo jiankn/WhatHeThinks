@@ -1,0 +1,44 @@
+# 部署后把新增或更新的网址推送给 IndexNow（Bing、Yandex 等）。
+# 部署本身由 Cloudflare Git 集成负责；这里只等它上线，再提交。
+name: IndexNow
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      all:
+        description: "提交 sitemap 里的全部网址"
+        type: boolean
+        default: true
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 手动提交全部网址
+        if: github.event_name == 'workflow_dispatch' && inputs.all
+        run: node scripts/indexnow.mjs --all
+
+      # 先存下部署前的 sitemap，新版本上线后对比出变化的网址
+      - name: 保存部署前的 sitemap
+        if: github.event_name == 'push'
+        run: node scripts/indexnow.mjs --snapshot "$RUNNER_TEMP/before.xml"
+      - name: 等 Cloudflare 部署完成
+        if: github.event_name == 'push'
+        run: node scripts/indexnow.mjs --wait-build "$GITHUB_SHA"
+      - name: 提交变化的网址
+        if: github.event_name == 'push'
+        run: node scripts/indexnow.mjs --changed-since "$RUNNER_TEMP/before.xml"

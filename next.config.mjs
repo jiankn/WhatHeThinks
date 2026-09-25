@@ -29,6 +29,9 @@ const securityHeaders = [
 const nextConfig = {
   reactStrictMode: true,
   devIndicators: false,
+  // Cloudflare 自动构建时用提交号作 buildId，GitHub Action 靠它判断这次提交是否已上线（见 .github/workflows/indexnow.yml）。
+  // 本地构建没有这个变量，返回 null 走 Next.js 默认的随机 ID。
+  generateBuildId: async () => process.env.WORKERS_CI_COMMIT_SHA || null,
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
