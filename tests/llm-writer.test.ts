@@ -25,6 +25,8 @@ async function setup(lite = false, seed = 5) {
 const completion = (value: unknown, finish = "stop") => new Response(JSON.stringify({ choices: [{ finish_reason: finish, message: { content: JSON.stringify(value) } }] }));
 
 afterEach(() => vi.useRealTimers());
+// 样例故事很短：这些测试只看流程，不查篇幅（篇幅另有测试）
+const NO_LENGTH = { checkLength: false };
 
 describe("English grounded report contract", () => {
   it("accepts direct evidence-led English without forcing a hedge into each interpretation", async () => {
@@ -96,7 +98,7 @@ describe("DeepSeek report writer", () => {
   it("uses DeepSeek JSON output, passes custom questions as data, and locks charts and statistics", async () => {
     const f = await setup();
     const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(f.story));
-    const result = await new DeepSeekReportWriter("test-only-key", "deepseek-flash", request).write(f.input);
+    const result = await new DeepSeekReportWriter("test-only-key", "deepseek-flash", request, NO_LENGTH).write(f.input);
     expect(request).toHaveBeenCalledTimes(1);
     expect(request.mock.calls[0][0]).toBe("https://api.deepseek.com/chat/completions");
     const body = JSON.parse(String(request.mock.calls[0][1]?.body));
@@ -117,7 +119,7 @@ describe("DeepSeek report writer", () => {
   it("corrects an invalid language response once, then succeeds", async () => {
     const f = await setup();
     const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion({ ...f.story, read: "这段聊天不能证明对方的感受，需要进一步沟通。" })).mockResolvedValueOnce(completion(f.story));
-    const result = await new DeepSeekReportWriter("test-only", undefined, request).write(f.input);
+    const result = await new DeepSeekReportWriter("test-only", undefined, request, NO_LENGTH).write(f.input);
     expect(request).toHaveBeenCalledTimes(2);
     expect(String(request.mock.calls[1][1]?.body)).toContain("Write every field in English only.");
     expect(result.report.meta.writer).toBe("llm");
@@ -126,16 +128,16 @@ describe("DeepSeek report writer", () => {
   it.each(["malformed", "truncated", "server", "empty"])("fails closed after two %s responses", async failure => {
     const f = await setup();
     const request = vi.fn<typeof fetch>().mockImplementation(async () => failure === "server" ? new Response("private provider error", { status: 503 }) : failure === "malformed" ? new Response("not json") : failure === "empty" ? completion(null) : completion(f.story, "length"));
-    await expect(new DeepSeekReportWriter("test-only", undefined, request).write(f.input)).rejects.toThrow("Report model request failed");
+    await expect(new DeepSeekReportWriter("test-only", undefined, request, NO_LENGTH).write(f.input)).rejects.toThrow("Report model request failed");
     expect(request).toHaveBeenCalledTimes(2);
   });
 
   it("does not retry a rejected API key or call the provider with a missing key", async () => {
     const f = await setup();
     const request = vi.fn<typeof fetch>().mockResolvedValue(new Response("unauthorized", { status: 401 }));
-    await expect(new DeepSeekReportWriter("", undefined, request).write(f.input)).rejects.toThrow();
+    await expect(new DeepSeekReportWriter("", undefined, request, NO_LENGTH).write(f.input)).rejects.toThrow();
     expect(request).not.toHaveBeenCalled();
-    await expect(new DeepSeekReportWriter("bad-test-key", undefined, request).write(f.input)).rejects.toMatchObject({ reasons: ["deepseek:1:http:401"] });
+    await expect(new DeepSeekReportWriter("bad-test-key", undefined, request, NO_LENGTH).write(f.input)).rejects.toMatchObject({ reasons: ["deepseek:1:http:401"] });
     expect(request).toHaveBeenCalledTimes(1);
   });
 
@@ -145,7 +147,7 @@ describe("DeepSeek report writer", () => {
     const request = vi.fn<typeof fetch>().mockImplementation((_url, init) => new Promise((_resolve, reject) => {
       init?.signal?.addEventListener("abort", () => reject(new Error("aborted")), { once: true });
     }));
-    const pending = new DeepSeekReportWriter("test-only", undefined, request).write(f.input);
+    const pending = new DeepSeekReportWriter("test-only", undefined, request, NO_LENGTH).write(f.input);
     const assertion = expect(pending).rejects.toThrow();
     await vi.advanceTimersByTimeAsync(361_000);
     await assertion;
@@ -182,7 +184,7 @@ describe("Model fallback chain (order as configured)", () => {
   const GLM_URL = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
   const DS_URL = "https://api.deepseek.com/chat/completions";
   const writer = (request: typeof fetch, glmKey = "glm-test", dsKey = "ds-test") =>
-    new LlmReportWriter([glmProvider(glmKey), deepseekProvider(dsKey)], request);
+    new LlmReportWriter([glmProvider(glmKey), deepseekProvider(dsKey)], request, Date.now, NO_LENGTH);
 
   it("calls GLM-5.3 on the domestic endpoint with low reasoning, and accepts fenced JSON", async () => {
     const f = await setup();
@@ -282,7 +284,7 @@ describe("Free preview opening", () => {
     // 模型按提示把开头和第一章留空，服务器填回
     const blank = { ...f.story, opening: [], chapters: f.story.chapters.map((c, i) => i === 0 ? { ...c, blocks: [] } : c) };
     const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(blank));
-    const result = await new DeepSeekReportWriter("test-only", undefined, request).write(input);
+    const result = await new DeepSeekReportWriter("test-only", undefined, request, NO_LENGTH).write(input);
     expect(String(request.mock.calls[0][1]?.body)).toContain("firstChapterBlocks");
     expect(result.report.story).toMatchObject({ title: fixed.title, opening: fixed.opening });
     expect(result.report.story!.chapters.map(c => c.title)).toEqual(out.chapters.map(c => c.title));
@@ -296,7 +298,7 @@ describe("Free preview opening", () => {
     const fixed = { title: out.title, opening: out.opening, model: "deepseek-flash", generatedAt: 1 };
     const input = { ...f.input, analysis: { ...f.input.analysis, teaser: fixed } };
     const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(f.story));
-    const result = await new DeepSeekReportWriter("test-only", undefined, request).write(input);
+    const result = await new DeepSeekReportWriter("test-only", undefined, request, NO_LENGTH).write(input);
     expect(result.report.story).toMatchObject({ title: fixed.title, opening: fixed.opening });
     expect(result.report.story!.chapters).toEqual(f.story.chapters);
   });
@@ -309,5 +311,33 @@ describe("Model timeouts", () => {
     expect(deepseekProvider("k", "deepseek-v4-pro").timeoutMs).toBe(180_000);
     expect(glmProvider("k", "glm-5.3-flashx").timeoutMs).toBe(90_000);
     expect(glmProvider("k").timeoutMs).toBe(180_000);
+  });
+});
+
+describe("Report length", () => {
+  it("asks once for a longer story, then accepts the rewrite even if it is still short", async () => {
+    const f = await setup();
+    const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(f.story)).mockResolvedValueOnce(completion(f.story));
+    const result = await new DeepSeekReportWriter("test-only", undefined, request).write(f.input);
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(result.failures?.[0]).toMatch(/^deepseek:1:validation:length:\d+:1800:2600$/);
+    const retry = JSON.parse(String(request.mock.calls[1][1]?.body));
+    expect(retry.messages[0].content).toContain("words of prose; write 1800 to 2600");
+  });
+
+  it.each([["a broken rewrite", () => completion({ chapters: [] })], ["a failed request", () => new Response("down", { status: 503 })]])("keeps the short first draft after %s instead of failing the paid report", async (_label, second) => {
+    const f = await setup();
+    const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(f.story)).mockResolvedValueOnce(second());
+    const result = await new DeepSeekReportWriter("test-only", undefined, request).write(f.input);
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(result.report.story!.chapters.length).toBe(f.story.chapters.length);
+    expect(result.failures?.at(-1)).toBe("deepseek:kept:first_draft");
+  });
+
+  it("gives long chats a longer target and more quotes per chapter", () => {
+    const base = { thematic: true, lite: false, routine: false };
+    expect(reportPrompt(base)).toContain("1800 to 2600 words of prose");
+    expect(reportPrompt({ ...base, long: true })).toContain("2500 to 3500 words of prose");
+    expect(reportPrompt({ ...base, long: true })).toContain("five to nine quotes each");
   });
 });

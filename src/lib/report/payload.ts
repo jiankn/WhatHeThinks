@@ -168,6 +168,7 @@ export function validateUpload(body: unknown): string | null {
     for (const r of a.recurring) {
       if (!isObj(r) || (r.sender !== "Y" && r.sender !== "H") || !isNum(r.count) || !isNum(r.weeks)) return "invalid recurring";
       if (!Array.isArray(r.ids) || r.ids.length > 3 || !r.ids.every(isNum)) return "invalid recurring";
+      if ((r.firstTs !== undefined && !isNum(r.firstTs)) || (r.lastTs !== undefined && !isNum(r.lastTs))) return "invalid recurring";
     }
   }
   if (a.repeats !== undefined) {

@@ -334,6 +334,21 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .story-chapter-emoji { display: block; font-size: 30px; margin-bottom: 10px; }
 .story-chapter h2 { margin-bottom: 4px; font-family: var(--font-serif); font-weight: 500; font-size: 30px; letter-spacing: -.01em; }
 .reader-section .story-span { font-size: 12px; color: #626262; margin: 0 0 22px; letter-spacing: .02em; }
+/* 一目了然：关键日期与反复出现的话 */
+.glance-dates { list-style: none; margin: 18px 0 30px; padding: 0; border-left: 2px solid #e5e5e5; }
+.glance-dates > li { position: relative; display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 14px; padding: 12px 0 12px 18px; font-size: 14px; }
+.glance-dates > li::before { content: ""; position: absolute; left: -6px; top: 18px; width: 10px; height: 10px; border-radius: 50%; background: #cfcfcf; }
+.glance-dates > li.is-shift::before { background: #c0563a; }
+.glance-dates > li.is-lastPlan::before { background: #d9a13b; }
+.glance-dates > li > div > strong { font-weight: 550; }
+.glance-dates .reader-before-after { margin: 12px 0 0; }
+.glance-when { color: #626262; font-size: 13px; padding-top: 1px; }
+.glance-lines { list-style: none; margin: 18px 0 0; padding: 0; }
+.glance-lines > li { padding: 14px 0; border-bottom: 1px solid #e5e5e5; }
+.glance-lines blockquote { margin: 0 0 6px; font-size: 15px; }
+.glance-lines p { margin: 0; color: #626262; font-size: 12.5px; }
+.glance-lines p span { font-weight: 550; color: #1f1f1f; }
+@media (max-width: 560px) { .glance-dates > li { grid-template-columns: 1fr; gap: 4px; } }
 .story-bubble { display: flex; flex-direction: column; max-width: min(78%, 460px); margin: 18px 0; }
 .story-bubble blockquote { margin: 0; padding: 10px 14px; border-radius: 16px 16px 16px 4px; background: #f1f1f1; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
 .story-bubble figcaption { font-size: 11px; color: #626262; margin: 5px 8px 0; }

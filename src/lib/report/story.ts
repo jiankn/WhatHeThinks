@@ -38,6 +38,8 @@ export interface StoryContext {
   chatEnds?: { date: string; lastFrom: "you" | "him" };
   /** 聊天结束那天到今天隔了几天（英文单词）；给检查用，不交给模型。 */
   daysSinceEnd?: string;
+  /** 长聊天（消息多）写得更长；不交给模型，由提示词和字数检查使用。 */
+  lengthTier?: "standard" | "long";
   /** 证据消息在整段聊天里重复的次数与周数（只含重复过的），按消息 id。 */
   repeats: Record<number, { times: number; weeks: number }>;
   chapters: StoryChapterSpec[];
@@ -70,6 +72,7 @@ const weekdayOf = (ts: number) => new Date(ts).toLocaleDateString("en-US", { wee
 
 export function buildStoryContext(analysis: SlimAnalysis, evidence: EvidenceMsg[], now: number): StoryContext {
   const liteMode = analysis.preview.liteMode;
+  const lengthTier = analysis.preview.totalMessages >= LONG_CHAT_MESSAGES ? "long" as const : "standard" as const;
   const ids = new Set(evidence.map(e => e.id));
   const repeats = Object.fromEntries((analysis.repeats ?? []).filter(r => ids.has(r.id)).map(r => [r.id, { times: r.times, weeks: r.weeks }]));
   const recurring = (analysis.recurring ?? []).map(r => ({
@@ -77,7 +80,7 @@ export function buildStoryContext(analysis: SlimAnalysis, evidence: EvidenceMsg[
     weeks: `${numberWord(r.weeks)} different weeks`,
     evidenceIds: r.ids.filter(id => ids.has(id)),
   })).filter(r => r.evidenceIds.length);
-  if (liteMode) return { youName: analysis.youName, liteMode, recurring, repeats, ...themes(evidence.length, "Across the messages you pasted", "The messages you pasted") };
+  if (liteMode) return { youName: analysis.youName, liteMode, lengthTier, recurring, repeats, ...themes(evidence.length, "Across the messages you pasted", "The messages you pasted", lengthTier === "long") };
 
   const [start, end] = analysis.range;
   const cuts = [...new Set(analysis.turningPoints.map(t => t.date))].filter(d => d > start && d <= end).sort((a, b) => a - b).slice(0, MAX_CHAPTERS - 1);
@@ -92,18 +95,34 @@ export function buildStoryContext(analysis: SlimAnalysis, evidence: EvidenceMsg[
   const days = his ? Math.floor(now / DAY_MS) - Math.floor(his.ts / DAY_MS) : NaN;
   const endGap = Math.floor(now / DAY_MS) - Math.floor(end / DAY_MS);
   const lastFrom = his && his.ts >= (analysis.last?.Y?.ts ?? -Infinity) ? "him" as const : "you" as const;
-  const timed = chapters.length > 1 ? { chapters, thematic: false } : themes(evidence.length, "Across the whole chat", chapters[0].span);
+  const timed = chapters.length > 1 ? { chapters, thematic: false } : themes(evidence.length, "Across the whole chat", chapters[0].span, lengthTier === "long");
   return {
-    youName: analysis.youName, liteMode, today: fmtDateLong(now), todayWeekday: weekdayOf(now), ...timed, recurring, repeats,
+    youName: analysis.youName, liteMode, lengthTier, today: fmtDateLong(now), todayWeekday: weekdayOf(now), ...timed, recurring, repeats,
     hisLastMessage: his && days >= 0 ? { date: fmtDateLong(his.ts), weekday: weekdayOf(his.ts), daysAgo: daysAgoText(days), evidenceId: ids.has(his.id) ? his.id : null } : undefined,
     chatEnds: { date: fmtDateLong(end), lastFrom },
     ...(endGap >= 1 ? { daysSinceEnd: numberWord(endGap) } : {}),
   };
 }
 
-/** 主题章节数：证据够多时三章，少一些两章，太少就只写一章。 */
-function themes(evidenceCount: number, span: string, singleSpan: string): { chapters: StoryChapterSpec[]; thematic: boolean } {
-  const n = evidenceCount >= 30 ? 3 : evidenceCount >= 12 ? 2 : 1;
+/** 消息数达到这么多就算长聊天：多写一章、篇幅更长。 */
+const LONG_CHAT_MESSAGES = 1500;
+
+/**
+ * 付费报告的篇幅（英文词数，只算正文，不含引用的聊天气泡）：target 写进提示词，
+ * 低于 floor 时第一次会带着说明让模型补写，补写后仍偏短也接受，不能因为字数让一份付费报告作废。
+ */
+export function storyLength(ctx: Pick<StoryContext, "lengthTier">): { min: number; max: number; floor: number } {
+  return ctx.lengthTier === "long" ? { min: 2500, max: 3500, floor: 2200 } : { min: 1800, max: 2600, floor: 1600 };
+}
+
+/** 故事正文的英文词数（引用的聊天原文不算）。 */
+export function storyWords(s: ReportStory): number {
+  return proseEntries(s).filter(([path]) => path !== "question").reduce((n, [, t]) => n + (t.match(/[A-Za-z0-9’']+/g)?.length ?? 0), 0);
+}
+
+/** 主题章节数：证据够多时三章（长聊天四章），少一些两章，太少就只写一章。 */
+function themes(evidenceCount: number, span: string, singleSpan: string, long = false): { chapters: StoryChapterSpec[]; thematic: boolean } {
+  const n = long && evidenceCount >= 40 ? 4 : evidenceCount >= 30 ? 3 : evidenceCount >= 12 ? 2 : 1;
   if (n === 1) return { chapters: [{ id: "c1", span: singleSpan, from: -Infinity, to: Infinity }], thematic: false };
   return { chapters: Array.from({ length: n }, (_, i) => ({ id: `c${i + 1}`, span, from: -Infinity, to: Infinity })), thematic: true };
 }
@@ -136,7 +155,7 @@ function fixedFacts(t: StoryTeaser) {
 /** 给模型的数据：事实、章节与带日期/章节标注的证据。 */
 export function storyUserData(ctx: StoryContext, question: string, questionId: string, facts: MeasuredFact[], evidence: EvidenceMsg[], fixedOpening?: StoryTeaser) {
   // 离今天几天不交给模型：聊天结束之后的空白不是证据（见 silenceClaim）
-  const { chapters, repeats, daysSinceEnd: _gap, hisLastMessage, ...rest } = ctx;
+  const { chapters, repeats, daysSinceEnd: _gap, lengthTier: _tier, hisLastMessage, ...rest } = ctx;
   const his = hisLastMessage && { date: hisLastMessage.date, weekday: hisLastMessage.weekday, evidenceId: hisLastMessage.evidenceId };
   return {
     question, questionId,
@@ -166,7 +185,8 @@ export const storySchema = z.object({
     span: z.string().max(80),
     emoji: z.string().trim().min(1).max(16),
     title: text.max(120),
-    blocks: z.array(block).min(2).max(60),
+    // 长聊天一章可能有九条引用加各自的说明：上限放宽，免得补写时因为块数把整份报告拖垮
+    blocks: z.array(block).min(2).max(90),
   }).strict()).min(1).max(MAX_CHAPTERS),
   turn: z.object({ text, evidenceIds: z.array(z.number().int().nonnegative()).max(40) }).strict(),
   otherReading: text,
@@ -239,6 +259,8 @@ function normQuote(s: string): string {
 interface TextEnv {
   nums: Set<string>;
   corpus: string[];
+  /** 反复出现的原话（规整后）与它在整段聊天里的次数，长的在前。 */
+  lineCounts: { text: string; times: number }[];
   /** 最后一条是他发的时，聊天结束的日期：和"没消息"写在一起就是在说导出之后的事。 */
   hisEnd?: string;
   daysSinceEnd?: string;
@@ -247,8 +269,42 @@ interface TextEnv {
 function textEnv(ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[]): TextEnv {
   return {
     nums: allowedNumbers(ctx, facts, evidence, allowed), corpus: evidence.map(e => normQuote(e.text)),
+    lineCounts: [...new Map(evidence.filter(e => ctx.repeats[e.id]).map(e => [normQuote(e.text), ctx.repeats[e.id].times])).entries()]
+      .filter(([text]) => text.length >= 8).map(([text, times]) => ({ text, times })).sort((a, b) => b.text.length - a.text.length),
     hisEnd: ctx.chatEnds?.lastFrom === "him" ? ctx.chatEnds.date : undefined, daysSinceEnd: ctx.daysSinceEnd,
   };
+}
+
+/** 数据里的名字和编号不该出现在正文里。 */
+const JARGON = /\bmeasured ?facts?\b|\bstory ?facts\b|\bfact f\d+\b|\bf\d{1,2}\b/i;
+
+const COUNT_AFTER = /^ (?:[a-z']+ ){0,4}?((?:twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety) (?:one|two|three|four|five|six|seven|eight|nine)\b|[a-z]+|\d+) times\b/;
+
+/** "sixty two" / "twelve" / "41" → 数值；认不出返回 undefined。 */
+function countValue(s: string): number | undefined {
+  if (/^\d+$/.test(s)) return Number(s);
+  const parts = s.split(" ").map(w => WORD_VALUE[w]);
+  return parts.every(v => v !== undefined) ? parts.reduce((a, b) => a + b, 0) : undefined;
+}
+
+/**
+ * 把一句反复出现的话配错了次数（"How was work, sixty-two times"，实际 58 次）：
+ * 句子里出现某句原话，紧跟着（四个词以内）"N times"，N 与它在整段聊天里的次数对不上。
+ */
+function wrongCount(t: string, env: TextEnv): boolean {
+  const norm = ` ${normQuote(t)} `;
+  const used: Array<[number, number]> = [];
+  for (const { text, times } of env.lineCounts) {
+    for (let i = norm.indexOf(` ${text} `); i >= 0; i = norm.indexOf(` ${text} `, i + 1)) {
+      const end = i + text.length + 1;
+      if (used.some(([a, b]) => i < b && end > a)) continue;
+      used.push([i, end]);
+      const m = COUNT_AFTER.exec(norm.slice(end, end + 60));
+      const n = m ? countValue(m[1]) : undefined;
+      if (n !== undefined && n !== times) return true;
+    }
+  }
+  return false;
 }
 
 /** 一直延续到现在的"没联系"（现在完成时 + since）。 */
@@ -297,6 +353,8 @@ function textIssueKinds(path: string, t: string, env: TextEnv): string[] {
   if (bannedHits(t).length || EXTRA_BANNED.some(([re]) => re.test(t)) || spelledOdds(t, env.nums)) kinds.push("banned");
   if (CAPS_WORD.test(t)) kinds.push("tone");
   if (silenceClaim(t, env)) kinds.push("silence");
+  if (JARGON.test(t)) kinds.push("jargon");
+  if (wrongCount(t, env)) kinds.push("count");
   // 正文里双引号内三个词以上的内容必须逐字出自证据；建议她发的话不算
   if (!path.startsWith("nextStep.") && path !== "title" && path !== "question") {
     for (const m of t.matchAll(QUOTED_RE)) {
@@ -308,7 +366,7 @@ function textIssueKinds(path: string, t: string, env: TextEnv): string[] {
 }
 
 /** 可以靠删掉个别句子修好的问题。 */
-const SENTENCE_KINDS = new Set(["banned", "number", "misquote", "tone", "silence"]);
+const SENTENCE_KINDS = new Set(["banned", "number", "misquote", "tone", "silence", "jargon", "count"]);
 
 /**
  * 删掉违规的句子，保留其余内容。一整段都不合规时返回 null（由调用方决定删段或失败）。
@@ -317,7 +375,9 @@ const SENTENCE_KINDS = new Set(["banned", "number", "misquote", "tone", "silence
 function pruneText(path: string, t: string, env: TextEnv): string | null {
   if (!textIssueKinds(path, t, env).some(k => SENTENCE_KINDS.has(k))) return t;
   const kept = t.split(/(?<=[.!?])\s+/).filter(s => !textIssueKinds(path, s, env).some(k => SENTENCE_KINDS.has(k)));
-  return kept.length ? kept.join(" ") : null;
+  const out = kept.join(" ").trim();
+  // 删到只剩标点（"."、"—"）也算删空
+  return /[\p{L}\p{N}].*[\p{L}\p{N}]/u.test(out) ? out : null;
 }
 
 /** 这么长的句子在前文出现过，就是在复述（模型凑字数时常把整段数字或同一组引用再讲一遍）。 */
@@ -476,6 +536,9 @@ export function explainStoryIssues(issues: string[]): string[] {
       case "number": return `${at}: contains a number that is not in measuredFacts, storyFacts or the evidence. Remove it, or copy the measured fact exactly. Never write evidence ids in prose, and never count occurrences yourself.`;
       case "banned": return `${at}: remove certainty, accusations, diagnoses, probabilities or percent odds (including spelled-out ones like "forty percent"), predictions ("likely to", "will never", "won't change", "is going to"), directives, and any "he thinks/feels/wants" stated as a fact about him.`;
       case "tone": return `${at}: no all-caps words.`;
+      case "length": return `The story is only ${rest[0]} words of prose; write ${rest[1]} to ${rest[2]}. Add depth where it is thin: more quotes in each chapter with what each one shows, and a fuller turn, otherReading and read. Every added sentence must say something new from the evidence; never pad or repeat.`;
+      case "jargon": return `${at}: never name measuredFacts, storyFacts, fact ids like f6 or "the measured facts" in prose; just state the fact.`;
+      case "count": return `${at}: a repeated line is given the wrong count. Copy each line's count from its own evidence.repeats note.`;
       case "silence": return `${at}: her chat ends on storyFacts.chatEnds.date and the export has no date, so you cannot know whether anything came after it. Do not say or imply that nothing has come since, or call the time after the chat ends a silence. Say "your chat ends on" that date instead.`;
       case "chapters": return "chapters: write exactly one chapter per storyFacts.chapters entry, in order.";
       case "quotes": return `chapters: quote at least ${MIN_QUOTES} different messages across the story with quote blocks (evidence ids from the matching chapter, or any date when storyFacts.thematic is true).`;
@@ -550,10 +613,22 @@ function normalizeShape(value: unknown): { value: unknown; changed: boolean } {
 }
 
 /** 把对象里所有字符串的 Markdown 强调去掉；返回是否有改动。 */
+/**
+ * 模型偶尔把数据里的编号当引用写进正文（"measured fact f6 shows that…"、"The measured facts back this up: …"）。
+ * 读者看不懂这些编号，把这段引导语去掉，事实本身留下；剩下去不掉的交给 jargon 检查删句。
+ */
+const FACT_REF = /\b(?:the )?measured facts? (?:f\d+ )?(?:shows?|says|confirms?|backs? this up|tells? the story|are stark)(?: that)?[,:]?\s+(\S)/gi;
+export function scrubFactRefs(text: string): string {
+  return text.replace(FACT_REF, (m, next: string, offset: number) => {
+    const before = text.slice(0, offset).trimEnd();
+    return before === "" || /[.!?:—–-]$/.test(before) ? next.toUpperCase() : next;
+  });
+}
+
 function stripMarkdownDeep(value: unknown): { value: unknown; changed: boolean } {
   let changed = false;
   const walk = (v: unknown): unknown => {
-    if (typeof v === "string") { const s = stripMarkdown(v); if (s !== v) changed = true; return s; }
+    if (typeof v === "string") { const s = scrubFactRefs(stripMarkdown(v)); if (s !== v) changed = true; return s; }
     if (Array.isArray(v)) return v.map(walk);
     if (isRecord(v)) return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)]));
     return v;
@@ -561,7 +636,7 @@ function stripMarkdownDeep(value: unknown): { value: unknown; changed: boolean }
   return { value: walk(value), changed };
 }
 
-export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[], opts: { fixedHeads?: boolean } = {}): { story: ReportStory; repairs: string[] } {
+export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, facts: MeasuredFact[], evidence: EvidenceMsg[], allowed: string[], opts: { fixedHeads?: boolean; minWords?: number } = {}): { story: ReportStory; repairs: string[] } {
   const plain = stripMarkdownDeep(value);
   const normalized = normalizeShape(plain.value);
   const parsed = storySchema.safeParse(normalized.value);
@@ -602,6 +677,9 @@ export function validateStoryWithRepairs(value: unknown, ctx: StoryContext, fact
     repairs.push("dropped:duplicate_option");
   }
   const issues = collectIssues(story, ctx, facts, evidence, allowed, opts.fixedHeads);
+  // 删掉违规句子之后再数：删多了同样算偏短
+  const words = storyWords(story);
+  if (opts.minWords && words < opts.minWords) issues.push(`length:${words}:${storyLength(ctx).min}:${storyLength(ctx).max}`);
   if (issues.length) throw new ReportValidationError(issues, explainStoryIssues(issues));
   return { story, repairs };
 }

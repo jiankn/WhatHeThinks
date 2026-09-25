@@ -8,6 +8,8 @@ import { buildStoryContext, buildTeaserFacts, chapterOf, explainStoryIssues, mas
 import type { ReportStory } from "@/lib/report/types";
 import { parseJsonContent } from "@/lib/server/llm-writer";
 import { lastValidWeeks } from "@/lib/report/window";
+import { scrubFactRefs, storyLength, storyWords } from "@/lib/report/story";
+import { buildHighlights } from "@/lib/report/highlights";
 import { storyFixture } from "./story-fixture";
 import { genChat } from "./synth";
 
@@ -504,5 +506,69 @@ describe("fixes from the DeepSeek V4 Pro report", () => {
     expect(lastValidWeeks(up.analysis.weeks, 6).H.plansConcrete).toBe(5);
     expect(lastValidWeeks(up.analysis.weeks, 6, end).H.plansConcrete).toBe(6);
     expect(lastValidWeeks(up.analysis.weeks, 6, end).weeks).toBe(6);
+  });
+});
+
+describe("length tiers and the at-a-glance section", () => {
+  const raw = readFileSync("reports/test-data/WhatsApp-Nora-Theo-fictional.txt", "utf8");
+  const up = buildUpload(analyze(parseAny(raw), "Nora", "Theo"), { question: "overview", youName: "Nora", himName: "Theo" });
+
+  it("treats a chat with many messages as long", () => {
+    const ctx = buildStoryContext(up.analysis, up.evidence, NOW);
+    expect(ctx.lengthTier).toBe("standard");
+    expect(storyLength(ctx)).toEqual({ min: 1800, max: 2600, floor: 1600 });
+    const long = buildStoryContext({ ...up.analysis, preview: { ...up.analysis.preview, totalMessages: 2000 } }, up.evidence, NOW);
+    expect(long.lengthTier).toBe("long");
+    expect(storyLength(long).min).toBe(2500);
+    expect(storyUserData(long, "overview", "overview", [], up.evidence).storyFacts).not.toHaveProperty("lengthTier");
+  });
+
+  it("rejects a story shorter than the floor and counts prose only", async () => {
+    const f = await setup();
+    const words = storyWords(f.story);
+    expect(words).toBeGreaterThan(0);
+    expect(() => validateStoryWithRepairs(f.story, f.ctx, f.facts, f.upload.evidence, f.allowed, { minWords: words + 1 })).toThrow(expect.objectContaining({ issues: expect.arrayContaining([expect.stringMatching(/^length:/)]) }));
+    expect(() => validateStoryWithRepairs(f.story, f.ctx, f.facts, f.upload.evidence, f.allowed, { minWords: words })).not.toThrow();
+  });
+
+  it("builds key dates and repeated lines from the data, without storing message text", () => {
+    const h = buildHighlights(up.analysis, up.evidence, []);
+    expect(h.milestones[0].kind).toBe("start");
+    expect(h.milestones.at(-1)).toMatchObject({ kind: "end", date: up.analysis.range[1] });
+    expect(h.milestones.some(m => m.kind === "busiest")).toBe(true);
+    // 他每周都约，直到最后：没有"最后一次提出计划"
+    expect(h.milestones.some(m => m.kind === "lastPlan")).toBe(false);
+    expect(h.lines.length).toBeGreaterThan(0);
+    expect(h.lines.every(l => l.weeks >= 3 && up.evidence.some(e => e.id === l.evidenceId))).toBe(true);
+    // 日期范围只在首尾都在证据里时给出，而且一定是先后两天
+    expect(h.lines.every(l => l.firstTs === undefined || (l.lastTs !== undefined && l.firstTs < l.lastTs))).toBe(true);
+    expect(h.lines[0].firstTs).toBe(up.analysis.recurring!.find(r => r.ids.includes(h.lines[0].evidenceId))!.firstTs);
+    const oldAnalysis = { ...up.analysis, recurring: up.analysis.recurring!.map(({ firstTs: _f, lastTs: _l, ...r }) => r) };
+    expect(buildHighlights(oldAnalysis, up.evidence, []).lines.every(l => l.firstTs === undefined)).toBe(true);
+    const json = JSON.stringify(h);
+    expect(up.evidence.slice(0, 20).some(e => e.text.length > 12 && json.includes(e.text))).toBe(false);
+  });
+});
+
+describe("fixes from the long-chat test", () => {
+  const raw = readFileSync("reports/test-data/WhatsApp-Nora-Theo-fictional.txt", "utf8");
+  const up = buildUpload(analyze(parseAny(raw), "Nora", "Theo"), { question: "overview", youName: "Nora", himName: "Theo" });
+  const ctx = buildStoryContext(up.analysis, up.evidence, NOW);
+  const validate = (value: unknown) => validateStoryWithRepairs(value, ctx, [], up.evidence, []);
+
+  it("drops the lead-in when the model cites a fact id, and keeps the fact", () => {
+    expect(scrubFactRefs("That sounds promising, but measured fact f6 shows that around this day his share dropped.")).toBe("That sounds promising, but around this day his share dropped.");
+    expect(scrubFactRefs("The measured facts back this up: his questions fell.")).toBe("His questions fell.");
+    expect(scrubFactRefs("Measured fact f8 shows lately his replies are quick.")).toBe("Lately his replies are quick.");
+  });
+
+  it("removes a sentence that still names the data, or gives a repeated line the wrong count", () => {
+    const story = storyFixture(ctx, up.evidence);
+    for (const bad of ["One more measured fact before I go.", "As f3 says, the rhythm holds.", "Any food allergies I should have checked, sent thirty times."]) {
+      const { story: out } = validate(withBlock(story, `${bad} The routine holds.`));
+      expect(out.chapters[0].blocks.at(-1), bad).toEqual({ p: "The routine holds." });
+    }
+    const right = "Any food allergies I should have checked, sent twelve times.";
+    expect(validate(withBlock(story, right)).story.chapters[0].blocks.at(-1)).toEqual({ p: right });
   });
 });

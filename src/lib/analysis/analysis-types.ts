@@ -162,6 +162,9 @@ export interface RecurringLine {
   count: number;
   weeks: number;
   ids: number[];
+  /** 第一次与最近一次出现的时间（较新的分析才有）：上传时 ids 会按证据筛掉一部分，不能拿它们推算。 */
+  firstTs?: number;
+  lastTs?: number;
 }
 
 export interface Analysis {

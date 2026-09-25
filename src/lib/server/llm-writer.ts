@@ -2,8 +2,8 @@ import { z } from "zod";
 import { questionLabel } from "@/lib/questions";
 import { MockReportWriter } from "@/lib/report/mock-writer";
 import { measuredFacts, ReportValidationError } from "@/lib/report/narrative";
-import { buildStoryContext, storyAllowedNumbers, stripMarkdown, storyUserData, validateStoryWithRepairs, validateTeaser, type StoryContext } from "@/lib/report/story";
-import type { StoryTeaser } from "@/lib/report/types";
+import { buildStoryContext, storyAllowedNumbers, storyLength, stripMarkdown, storyUserData, validateStoryWithRepairs, validateTeaser, type StoryContext } from "@/lib/report/story";
+import type { ReportStory, StoryTeaser } from "@/lib/report/types";
 import type { ReportInput, ReportWriter } from "@/lib/report/writer";
 
 // DeepSeek 用 V4 Pro（deepseek-v4-pro，关闭思考）；GLM 备用用旗舰 glm-5.3。质量靠提示词与校验把关。
@@ -23,6 +23,8 @@ export interface PromptOptions {
   routine: boolean;
   /** 聊天中途有明确的转折（按时间分了两章以上）：标题和"最关键的时刻"要围绕这个转折。 */
   shift?: boolean;
+  /** 长聊天：篇幅更长、每章引用更多。 */
+  long?: boolean;
   /** 她付款前读过的部分：无 / 只有标题和开头 / 还有章节标题和第一章。 */
   fixed?: "none" | "opening" | "firstChapter";
 }
@@ -58,6 +60,8 @@ function mechanics(o: PromptOptions): string {
   for word; otherwise paraphrase without quote marks.
 - Numbers only as written in measuredFacts, storyFacts or the evidence; never count yourself, never write evidence ids.
   An evidence.repeats count already includes the message you quote: "sent fourteen times", never "fourteen times before".
+  Each line's count comes from its own evidence.repeats note; never move a count from one line to another.
+  Never name measuredFacts, storyFacts, fact ids (f6) or "the measured facts" in prose: just state the fact.
   The title has no digits and never her name.${o.lite ? `
 - liteMode: there are no timestamps. Never mention dates, weekdays, delays or trends over time.` : `
 - Dates only from evidence.date, storyFacts or chapter spans. Name a weekday only when the evidence gives it
@@ -77,9 +81,10 @@ function chapterRules(o: PromptOptions, n: "report" | "teaser"): string {
     : `Each storyFacts.chapters entry is a period of time; quote only evidence whose chapter matches.`;
   return n === "report"
     ? `- chapters: exactly one per storyFacts.chapters entry, in order, copying id and span. ${layout}
-  Each has an emoji, a vivid title and blocks: four to eight quotes each, at least ten different messages in all,
+  Each has an emoji, a vivid title (no dates: the page shows the span under it) and blocks: ${o.long ? "five to nine quotes each, at least fourteen different messages in all" : "four to eight quotes each, at least ten different messages in all"},
   with prose saying what to notice.${o.routine ? " Quote at least one storyFacts.recurring line, ideally the same line from two dates." : ""}`
-    : `- chapters: one heading per storyFacts.chapters entry, in order, copying its id: an emoji and a specific title.
+    : `- chapters: one heading per storyFacts.chapters entry, in order, copying its id: an emoji and a specific title
+  (no dates: the page shows the span under it).
   She sees these as what is still inside the report. ${layout} A later chapter's title must name its theme, not
   promise a unique moment.`;
 }
@@ -122,7 +127,7 @@ ${chapterRules(o, "report")}
   name. Her next move is something she says or does, not something she withholds. Never hint that she should find
   someone else ("you deserve someone who...").
 - signoff: one or two warm lines.
-- Length: about 1800 to 2600 words, spent on evidence and what it shows.
+- Length: ${o.long ? "2500 to 3500" : "1800 to 2600"} words of prose (quotes not counted), spent on evidence and what it shows.${o.long ? " This is a long chat with months of messages: give each chapter room." : ""}
 
 ${mechanics(o)}
 
@@ -167,6 +172,7 @@ export function promptOptions(ctx: StoryContext, fixed?: StoryTeaser): PromptOpt
   return {
     thematic: ctx.thematic, lite: ctx.liteMode, routine: ctx.recurring.length > 0,
     shift: !ctx.thematic && ctx.chapters.length > 1,
+    long: ctx.lengthTier === "long",
     fixed: !fixed ? "none" : fixed.outline && fixed.firstBlocks ? "firstChapter" : "opening",
   };
 }
@@ -279,7 +285,9 @@ export function parseJsonContent(content: string): unknown {
  */
 export function withFixedOpening(raw: unknown, fixed: StoryTeaser): unknown {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) return raw;
-  const out: Record<string, unknown> = { ...raw, title: stripMarkdown(fixed.title), opening: fixed.opening.map(stripMarkdown) };
+  // 早先的预览偶尔留下只剩标点的一段：填回前去掉，免得付费报告在格式检查上失败
+  const opening = fixed.opening.map(stripMarkdown).filter(p => /[\p{L}\p{N}].*[\p{L}\p{N}]/u.test(p));
+  const out: Record<string, unknown> = { ...raw, title: stripMarkdown(fixed.title), opening };
   const chapters = (raw as { chapters?: unknown }).chapters;
   if (Array.isArray(chapters)) {
     out.chapters = chapters.map((c, i) => {
@@ -305,7 +313,8 @@ const MIN_ATTEMPT_MS = 20_000;
 export class LlmReportWriter implements ReportWriter {
   readonly name = "llm" as const;
   private readonly providers: ChatProvider[];
-  constructor(providers: ChatProvider[], private readonly request: typeof fetch = fetch, private readonly now: () => number = Date.now) {
+  /** opts.checkLength：付费报告偏短时补写一次（默认开启；只有测试会关掉）。 */
+  constructor(providers: ChatProvider[], private readonly request: typeof fetch = fetch, private readonly now: () => number = Date.now, private readonly opts: { checkLength?: boolean } = {}) {
     this.providers = providers.filter(p => p.apiKey.trim());
   }
 
@@ -316,11 +325,24 @@ export class LlmReportWriter implements ReportWriter {
     const ctx = buildStoryContext(input.analysis, input.evidence, this.now());
     const fixed = input.analysis.teaser;
     const data = JSON.stringify(storyUserData(ctx, questionLabel(input.question, input.customQuestion), input.question, facts, input.evidence, fixed));
-    const { value: story, provider, reasons } = await this.run(reportPrompt(promptOptions(ctx, fixed)), data, raw => {
+    // 篇幅只在第一次成稿时把关：偏短就带着说明补写一次。补写后仍偏短也接受；
+    // 补写这次不管因为什么失败，都退回第一稿（它只是偏短，其余全部合格），不让字数把付费报告拖到失败
+    let checkLength = this.opts.checkLength ?? true;
+    let firstDraft: { value: ReportStory; provider: ChatProvider } | undefined;
+    const check = (raw: unknown, minWords?: number) =>
       // 她付款前已经读过的部分原样填回，再整体校验：前后一致，模型也不必重抄
-      const { story, repairs } = validateStoryWithRepairs(fixed ? withFixedOpening(raw, fixed) : raw, ctx, facts, input.evidence, allowed, { fixedHeads: Boolean(fixed?.outline) });
-      return { value: story, repairs };
-    }, TOTAL_BUDGET_MS);
+      validateStoryWithRepairs(fixed ? withFixedOpening(raw, fixed) : raw, ctx, facts, input.evidence, allowed, { fixedHeads: Boolean(fixed?.outline), minWords });
+    const { value: story, provider, reasons } = await this.run(reportPrompt(promptOptions(ctx, fixed)), data, (raw, from) => {
+      const minWords = checkLength ? storyLength(ctx).floor : undefined;
+      checkLength = false;
+      try {
+        const { story, repairs } = check(raw, minWords);
+        return { value: story, repairs };
+      } catch (err) {
+        if (minWords && err instanceof ReportValidationError && err.issues.every(i => i.startsWith("length:"))) firstDraft = { value: check(raw).story, provider: from };
+        throw err;
+      }
+    }, TOTAL_BUDGET_MS, { keep: () => firstDraft });
     // 故事里合法出现的时间、日期（例如约好的 "Saturday at 2"）也要让最终的 Claim Checker 认得
     return { allowed: [...allowed, ...storyAllowedNumbers(ctx, input.evidence)], failures: reasons, report: {
       ...base, story,
@@ -348,7 +370,10 @@ export class LlmReportWriter implements ReportWriter {
    * 按顺序尝试各家模型：每家最多两次（第二次带上校验失败的具体原因），
    * 都不合格才失败。所有模型走同一套校验，换模型不降低标准。
    */
-  private async run<T>(system: string, data: string, validate: (raw: unknown) => { value: T; repairs: string[] }, budgetMs: number, limits: { attemptMs?: number; maxTokens?: number } = {}): Promise<{ value: T; provider: ChatProvider; reasons: string[] }> {
+  /**
+   * limits.keep：某次尝试失败后，若已有一份可以用的稿子（例如只是偏短的第一稿），就直接用它，不再往下试。
+   */
+  private async run<T>(system: string, data: string, validate: (raw: unknown, provider: ChatProvider) => { value: T; repairs: string[] }, budgetMs: number, limits: { attemptMs?: number; maxTokens?: number; keep?: () => { value: T; provider: ChatProvider } | undefined } = {}): Promise<{ value: T; provider: ChatProvider; reasons: string[] }> {
     if (!this.providers.length) throw new ProviderError(false, ["missing_api_key"]);
     const attemptMs = (p: ChatProvider) => Math.min(p.timeoutMs, limits.attemptMs ?? Infinity);
     const deadline = Date.now() + budgetMs;
@@ -384,12 +409,15 @@ export class LlmReportWriter implements ReportWriter {
           // 内容审核拦截（GLM 的 sensitive）重试同一家没有意义，直接换模型
           if (choice.finish_reason === "sensitive") throw new ProviderError(false, ["finish:sensitive"]);
           if (choice.finish_reason !== "stop" || !choice.message.content) throw new ProviderError(true, [`finish:${choice.finish_reason}${choice.message.content ? "" : ":empty"}`]);
-          const { value, repairs } = validate(parseJsonContent(choice.message.content));
+          const { value, repairs } = validate(parseJsonContent(choice.message.content), provider);
           // 自动修复过的也记下来，便于观察每家模型的问题分布
           reasons.push(...repairs.map(r => `${provider.id}:${attempt + 1}:${r}`));
           return { value, provider, reasons };
         } catch (err) {
           reasons.push(...failureReason(err).map(r => `${provider.id}:${attempt + 1}:${r}`));
+          // 补写失败（或第一稿之后的任何失败）时，用手上那份合格的稿子
+          const kept = attempt > 0 || index > 0 ? limits.keep?.() : undefined;
+          if (kept) return { value: kept.value, provider: kept.provider, reasons: [...reasons, `${kept.provider.id}:kept:first_draft`] };
           if (err instanceof ProviderError && !err.retryable) break;
           correction = err instanceof ReportValidationError
             ? `\nThe previous attempt failed validation. Generate a fresh complete object in exactly the JSON shape above (every text field is a plain string) and fix each of these:\n- ${err.hints.join("\n- ")}`
@@ -403,7 +431,7 @@ export class LlmReportWriter implements ReportWriter {
 
 /** 只用 DeepSeek 的写作器（测试与单模型场景）。 */
 export class DeepSeekReportWriter extends LlmReportWriter {
-  constructor(apiKey: string, model: string = DEEPSEEK_MODEL, request: typeof fetch = fetch) {
-    super([deepseekProvider(apiKey, model)], request);
+  constructor(apiKey: string, model: string = DEEPSEEK_MODEL, request: typeof fetch = fetch, opts: { checkLength?: boolean } = {}) {
+    super([deepseekProvider(apiKey, model)], request, Date.now, opts);
   }
 }

@@ -18,14 +18,16 @@ function norm(text: string): string {
 export function findRecurring(msgs: RoleMsg[]): RecurringLine[] {
   if (!msgs.length) return [];
   const start = msgs[0].ts;
-  const groups = new Map<string, { sender: RoleMsg["sender"]; weeks: Set<number>; ids: number[] }>();
+  const groups = new Map<string, { sender: RoleMsg["sender"]; weeks: Set<number>; ids: number[]; firstTs: number; lastTs: number }>();
   for (const m of msgs) {
     if (m.type !== "text") continue;
     const key = norm(m.text);
     if (key.length < MIN_CHARS) continue;
-    const g = groups.get(`${m.sender}:${key}`) ?? { sender: m.sender, weeks: new Set<number>(), ids: [] };
+    const g = groups.get(`${m.sender}:${key}`) ?? { sender: m.sender, weeks: new Set<number>(), ids: [], firstTs: m.ts, lastTs: m.ts };
     g.weeks.add(Math.floor((m.ts - start) / WEEK_MS));
     g.ids.push(m.id);
+    g.firstTs = Math.min(g.firstTs, m.ts);
+    g.lastTs = Math.max(g.lastTs, m.ts);
     groups.set(`${m.sender}:${key}`, g);
   }
   return [...groups.values()]
@@ -33,7 +35,7 @@ export function findRecurring(msgs: RoleMsg[]): RecurringLine[] {
     // 他的话优先，其次按出现周数
     .sort((a, b) => Number(b.sender === "H") - Number(a.sender === "H") || b.weeks.size - a.weeks.size || a.ids[0] - b.ids[0])
     .slice(0, MAX_LINES)
-    .map(g => ({ sender: g.sender, count: g.ids.length, weeks: g.weeks.size, ids: [g.ids[0], ...g.ids.slice(-2)].filter((id, i, a) => a.indexOf(id) === i) }));
+    .map(g => ({ sender: g.sender, count: g.ids.length, weeks: g.weeks.size, ids: [g.ids[0], ...g.ids.slice(-2)].filter((id, i, a) => a.indexOf(id) === i), firstTs: g.firstTs, lastTs: g.lastTs }));
 }
 
 /**

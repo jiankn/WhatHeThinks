@@ -18,6 +18,7 @@ import type {
   TPNarrative,
 } from "./types";
 import { lastValidWeeks, type WindowAgg } from "./window";
+import { buildHighlights } from "./highlights";
 import type { ReportInput, ReportWriter } from "./writer";
 
 export const MOCK_VERSION = "mock-2";
@@ -153,6 +154,7 @@ class Composer {
       timeline,
       mixedSignals,
       nextStep,
+      highlights: buildHighlights(this.a, this.input.evidence, timeline.points),
       order: ORDER[this.input.question],
       meta: { writer: "mock", version: MOCK_VERSION, generatedAt: Date.now() },
     };

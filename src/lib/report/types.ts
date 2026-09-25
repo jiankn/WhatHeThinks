@@ -66,9 +66,28 @@ export interface SeriesPoint {
 
 export type ModuleKey = "summary" | "interest" | "investment" | "timeline" | "mixedSignals" | "nextStep";
 
+/**
+ * 程序直接从数据算出的"一目了然"：关键日期和反复出现的话。不经过模型，不会写错。
+ * 只存日期、次数和证据编号，不存消息原文：原文随证据 30 天后删除，这里也就跟着看不到了。
+ */
+export interface ReportHighlights {
+  milestones: {
+    date: number;
+    kind: "start" | "busiest" | "shift" | "lastPlan" | "end";
+    /** busiest / lastPlan 按周说（"Week of Mar 18"）。 */
+    week?: boolean;
+    text: string;
+    rows?: BeforeAfterRow[];
+  }[];
+  /** firstTs / lastTs：第一次和最近一次出现的日期；其中一条不在证据里时不给，免得把中间某次当成第一次。 */
+  lines: { from: "you" | "him"; evidenceId: number; times: number; weeks: number; firstTs?: number; lastTs?: number }[];
+}
+
 export interface FullReport {
   /** v3 起：按章节讲的故事式解读。有它时页面按故事渲染。 */
   story?: ReportStory;
+  /** 较新的报告才有。 */
+  highlights?: ReportHighlights;
   /** v2 的英文分栏解读。旧报告才有。 */
   narrative?: ReportNarrative;
   summary: { headline: string; paragraphs: string[]; claims: Claim[] };
