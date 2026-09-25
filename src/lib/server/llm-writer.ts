@@ -21,6 +21,8 @@ export interface PromptOptions {
   lite: boolean;
   /** 有反复出现的原话。 */
   routine: boolean;
+  /** 聊天中途有明确的转折（按时间分了两章以上）：标题和"最关键的时刻"要围绕这个转折。 */
+  shift?: boolean;
   /** 她付款前读过的部分：无 / 只有标题和开头 / 还有章节标题和第一章。 */
   fixed?: "none" | "opening" | "firstChapter";
 }
@@ -41,7 +43,8 @@ function priorities(o: PromptOptions): string {
    never manufacture trouble or urgency.${o.routine ? `
    This chat has lines repeated across many weeks (storyFacts.recurring). Weigh both readings seriously: a
    comfortable ritual, or a script in which little new gets said. Say plainly which the evidence fits better and what
-   is missing, without calling his feelings fake or insincere.` : ""}
+   is missing, without calling his feelings fake or insincere, or vouching that they are sincere.${o.shift ? `
+   This chat also changes partway through (the chapters split there): that measured change outweighs the repetition.` : ""}` : ""}
 3. Describe behavior, never his mind: no "he thinks", "he feels" or "he wants" in any sense, no diagnoses or labels,
    no odds or percentage weights, no predictions about what he will do. Give weight in words ("I give it real weight").
 4. Every section brings something new. Never repeat a sentence, a list of numbers or an exchange you already used;
@@ -54,6 +57,7 @@ function mechanics(o: PromptOptions): string {
   Quote both sides. Never quote the same message twice. In prose, text in double quotes must match a message word
   for word; otherwise paraphrase without quote marks.
 - Numbers only as written in measuredFacts, storyFacts or the evidence; never count yourself, never write evidence ids.
+  An evidence.repeats count already includes the message you quote: "sent fourteen times", never "fourteen times before".
   The title has no digits and never her name.${o.lite ? `
 - liteMode: there are no timestamps. Never mention dates, weekdays, delays or trends over time.` : `
 - Dates only from evidence.date, storyFacts or chapter spans. Name a weekday only when the evidence gives it
@@ -89,7 +93,7 @@ const RESPONSE_SHAPE = `{"language":"en","question":string,"title":string,"openi
 export function reportPrompt(o: PromptOptions): string {
   const fixed = o.fixed ?? "none";
   const opening = fixed === "none"
-    ? `- title: ONE central metaphor that fits what the data shows, a colon, a short subtitle.
+    ? `- title: ONE central metaphor that fits what the data shows, a colon, a short subtitle.${shiftTitle(o)}
 - opening: two to four paragraphs. Greet her by name. What reading her chat was like, the metaphor, and how this
   answers her question.${o.lite ? "" : " Anchor to where her chat ends (storyFacts.chatEnds)."}`
     : `- She has already read the title${fixed === "firstChapter" ? ", the opening, the chapter headings and the first chapter" : " and the opening"}
@@ -104,14 +108,19 @@ THE SHAPE:
 ${opening}
 ${chapterRules(o, "report")}
 - turn: one paragraph on the moment or shift that matters most, with its evidenceIds (the page heads it "The moment
-  that matters most"). If every candidate is part of the routine, say that the routine itself is what matters.
+  that matters most").${o.shift ? ` The chat changes where the chapters split: the turn is that change, told with the
+  measured facts that moved and the messages on either side of it. Lines that repeat can be part of it, but never
+  present the routine as the main story while the measured change is there.` : " If every candidate is part of the routine, say that the routine itself is what matters."}
 - otherReading: the strongest honest non-dramatic explanation, and how much weight you give it, in words.
 - read: your overall read in calibrated words ("leans toward", "fits best", "cannot yet tell"). It answers her question.
 - yourSide: what her side shows, what she did well, a gentle note on protecting her energy. Never blame her.
 - nextStep: question = the one message you would send, as she would text it; why; howToAsk (tone, timing); watchFor;
   responseGuide "plans" or "conversation"; messageOptions: warm, direct and light versions, each worded differently
   from question; avoid: what not to send now and why; plan: the next two weeks with decision points, the choice hers.
-  No tests, strategic silence, jealousy tactics, ultimatums, or telling her to stay or leave.
+  No tests, strategic silence, jealousy tactics, ultimatums, or telling her to stay or leave. Never advise her to
+  pull back, stop initiating, go quiet for a while or wait to see whether he reaches out: that is a test by another
+  name. Her next move is something she says or does, not something she withholds. Never hint that she should find
+  someone else ("you deserve someone who...").
 - signoff: one or two warm lines.
 - Length: about 1800 to 2600 words, spent on evidence and what it shows.
 
@@ -132,7 +141,7 @@ ${priorities(o)}
 
 THE SHAPE (the first part of her report; she reads it for free before deciding, so it must stand on its own as a
 genuinely useful read, not a sales pitch):
-- title: ONE central metaphor that fits what the data shows, a colon, a short subtitle.
+- title: ONE central metaphor that fits what the data shows, a colon, a short subtitle.${shiftTitle(o)}
 - opening: three or four paragraphs. Greet her by name. The moment you noticed the pattern, the metaphor, and two
   or three concrete things behind it.${o.lite ? "" : " Anchor to where her chat ends (storyFacts.chatEnds)."} Do not state or
   paraphrase her question: she may still change it. End by leading into the evidence.
@@ -148,10 +157,16 @@ JSON shape:
 "firstChapter":{"blocks":[{"p":string}|{"quote":number}]}}`;
 }
 
+/** 聊天中途有转折时，标题要点出这个变化。 */
+function shiftTitle(o: PromptOptions): string {
+  return o.shift ? " The chat changes where the chapters split: the title names that change, not only the routine." : "";
+}
+
 /** 这份聊天的提示词选项。 */
 export function promptOptions(ctx: StoryContext, fixed?: StoryTeaser): PromptOptions {
   return {
     thematic: ctx.thematic, lite: ctx.liteMode, routine: ctx.recurring.length > 0,
+    shift: !ctx.thematic && ctx.chapters.length > 1,
     fixed: !fixed ? "none" : fixed.outline && fixed.firstBlocks ? "firstChapter" : "opening",
   };
 }

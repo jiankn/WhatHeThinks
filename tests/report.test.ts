@@ -120,6 +120,28 @@ describe("bannedHits：读心免责声明", () => {
     expect(bannedHits("Nobody knows how he feels about it.")).toEqual([]);
   });
 
+  it("拦住 Emma 报告里漏掉的读心、预言、比重和冷处理建议", () => {
+    for (const bad of [
+      "These apologies suggest he knows his replies have slowed.",
+      "The affection is not fake: those lines come too consistently to be insincere.",
+      "That will put him on the defensive and likely get a brief answer.",
+      "I give this reading real weight, maybe half the story.",
+      "Step back from initiating for a few days and see if he reaches out on his own.",
+      "It might be time to step back and let him reach for you.",
+      "He prefers to stay on the surface.",
+      "So I give the busy explanation real weight, more than half, but not all of it.",
+      "You deserve someone who matches your pace, not someone who leaves you waiting.",
+    ]) expect(bannedHits(bad), bad).not.toEqual([]);
+    for (const ok of [
+      "I cannot tell whether he knows how this lands.",
+      "No chat can show whether it is sincere.",
+      "Protecting your energy does not mean pulling back or testing him.",
+      "The warm lines are real, and they repeat.",
+      "I give real weight to the fact that he started half your conversations.",
+      "You deserve to know where you stand.",
+    ]) expect(bannedHits(ok), ok).toEqual([]);
+  });
+
   it("否定词在另一句时不放行本句的读心", () => {
     expect(bannedHits("I don't know much about him. He wants you to stay.")).not.toEqual([]);
   });

@@ -38,9 +38,22 @@ const BANNED: [RegExp, string][] = [
   [/\b(?:he|it|this|that|things)(?:'ll| will) (?:never|always)\b|\b(?:won't|will not|isn't going to|is not going to) (?:ever )?change\b/i, "prediction"],
   [/\b(?:he|it|this|that|things)(?:'s| is| are) going to\b/i, "prediction"],
   [/\b(leave|dump) him\b/i, "directive"],
+  // "you deserve someone who…" 是在暗示她换个人
+  [/\byou deserve (?:someone|somebody|a (?:man|guy|partner|person)) who\b/i, "directive"],
   // 条件句（"if he wants to make a plan"）、转述（"he says he feels"）和问法（"how he feels"）不是读心；
   // 句末的 "all he wants." 同样要拦
-  [/(?<!\b(?:said|says|say|if|whether|how) )\bhe (thinks|feels|wants)\b/i, "mind reading"],
+  [/(?<!\b(?:said|says|say|if|whether|how) )\bhe (thinks|feels|wants|knows|prefers|believes|realizes)\b/i, "mind reading"],
+  // 替他担保真心是读心（"the affection is not fake"、"too consistent to be insincere"、"his words are sincere"）；
+  // "whether it is sincere" 是在提问，"I am not telling you those weeks were fake" 是免责，都放行
+  [/(?<!\b(?:whether|if) (?:it|this|that|he|his \w+|the \w+) )\b(?:(?:is|are|was|were)(?: not|n't) (?:fake|insincere)|to be (?:fake|insincere)|(?:is|are|was|were) sincere)\b/i, "mind reading"],
+  // 预言他的反应（"that will put him on the defensive and likely get a brief answer"）
+  [/\bwill (?:put|make|push|scare|drive) him\b|\band likely\b/i, "prediction"],
+  // 给某种解读分比重（"maybe half the story"）
+  [/\b(?:half|a third|a quarter|two thirds|three quarters) (?:of )?the (?:story|picture|explanation)\b/i, "odds"],
+  // "I give it real weight, more than half"；实测比例（"half your conversations"）放行
+  [/\b(?:weight|odds|chance|confident|confidence)\b[^.!?]{0,50}\b(?:(?:more|less) than |about |maybe |roughly |nearly |almost )?half\b(?! (?:of )?(?:the |your |his |our )?(?:conversations|messages|questions|replies|chats|time))/i, "odds"],
+  // 换个说法的冷处理试探：先不主动、等他来找
+  [/\bstep(?:s|ping)? back (?:from (?:initiating|texting|reaching out)|and let him)\b|\blet him (?:reach|come to you|make the (?:next|first) move|be the one)\b|\bsee (?:if|whether) he reaches out\b|\bwait (?:for him|until he|to see (?:if|whether) he)\b|\bstop (?:initiating|texting first|reaching out)\b|\bgo quiet\b/i, "directive"],
 ];
 
 /** 句子里出现过否定/不确定的说法（"I can't tell you...", "there's no way to know..."）。 */
@@ -53,14 +66,14 @@ const HEDGE_WORD = /\b(?:can't|cannot|can not|won't|will not|don't|do not|doesn'
 function stripHedgedMindReading(text: string): string {
   return text
     .split(/(?<=[.!?])\s+/)
-    .map(sentence => HEDGE_WORD.test(sentence) ? sentence.replace(/\bhe (thinks|feels|wants)\b/gi, "he [withheld]") : sentence)
+    .map(sentence => HEDGE_WORD.test(sentence) ? sentence.replace(/\bhe (thinks|feels|wants|knows|prefers|believes|realizes)\b/gi, "he [withheld]") : sentence)
     .join(" ")
     // 转述他自己说的话（"he answered that he feels it too"）或是在提问（"want to know whether he wants..."）
-    .replace(REPORTED_OR_OPEN, m => m.replace(/\bhe (thinks|feels|wants)\b/gi, "he [withheld]"));
+    .replace(REPORTED_OR_OPEN, m => m.replace(/\bhe (thinks|feels|wants|knows|prefers|believes|realizes)\b/gi, "he [withheld]"));
 }
 
 /** 他说过/写过/回答过……，或她想知道/好奇……，后面紧跟（同一句、四十个字符内）的 he thinks/feels/wants。 */
-const REPORTED_OR_OPEN = /\b(?:said|says|told (?:you|her|me)|tells (?:you|her|me)|wrote|writes|answered|replied|texted|messaged|admitted|mentioned|want to know|wants to know|wonder|wondering|ask(?:ed)? (?:him )?whether|ask(?:ed)? (?:him )?if)\b[^.!?]{0,40}?\bhe (?:thinks|feels|wants)\b/gi;
+const REPORTED_OR_OPEN = /\b(?:said|says|told (?:you|her|me)|tells (?:you|her|me)|wrote|writes|answered|replied|texted|messaged|admitted|mentioned|want to know|wants to know|wonder|wondering|ask(?:ed)? (?:him )?whether|ask(?:ed)? (?:him )?if)\b[^.!?]{0,40}?\bhe (?:thinks|feels|wants|knows|prefers|believes|realizes)\b/gi;
 
 /** 命中的禁用说法（确定性、指控、诊断、读心、预测、指令）。 */
 export function bannedHits(text: string): string[] {
