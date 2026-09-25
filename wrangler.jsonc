@@ -32,7 +32,7 @@
     // 写报告：先 DEEPSEEK_MODEL，失败再用 GLM_MODEL（key 在 FALLBACK_API_KEY）
     "GLM_MODEL": "glm-5.3",
     "DEEPSEEK_MODEL": "deepseek-v4-pro",
-    // Stripe 测试模式价格（WhatHeThinks 沙盒）；转正式收款时换成 live price
-    "STRIPE_PRICE_ID": "price_1UIeNtInIVPJpCcmSfeOuIVg"
+    // Stripe 正式环境价格（WhatHeThinks，acct_1UIeJcEZNTfiq4JD）：$19.90 含税，税码 txcd_10000000
+    "STRIPE_PRICE_ID": "price_1UJP07EZNTfiq4JDvJSAhwVV"
   }
 }
