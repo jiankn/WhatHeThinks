@@ -8,8 +8,8 @@ import { LANDING_PAGES, LANDING_UPDATED } from "@/content/landing";
 import { SITE_URL } from "@/lib/site";
 import { GUIDES, GUIDES_UPDATED } from "@/content/guides";
 
-const HOME_UPDATED = "2026-09-22";
-const TOOLS_UPDATED = "2026-09-22";
+const HOME_UPDATED = "2026-09-25";
+const TOOLS_UPDATED = "2026-09-25";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

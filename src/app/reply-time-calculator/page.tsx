@@ -15,7 +15,7 @@ const c: ToolContent = {
     { q: "Is my chat uploaded?", a: "No. The tool reads your chat in your browser. Nothing is sent to our servers." },
     {
       q: "Does a slower reply mean he's losing interest?",
-      a: "Not by itself. It means more when it slows for weeks alongside other changes, like fewer conversations started or fewer plans.",
+      a: "Not by itself. It means more when it slows for weeks alongside other changes, like [fewer conversations started](/who-texts-first) or fewer plans. See [signs he is losing interest](/is-he-losing-interest) for what to compare.",
     },
   ],
 };

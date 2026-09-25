@@ -120,6 +120,8 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .v3-scenario-details dt { font-weight: 550; margin-bottom: 7px; }
 .v3-scenario-details dd, .v3-scenario-details details p, .v3-scenario-details li { color: #626262; line-height: 1.8; font-size: 14px; }
 .v3-scenario-details details { border-top: 1px solid #e5e5e5; padding: 18px 0; }
+.v3-inline-link { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.v3-scenario-details details a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .v3-scenario-details summary { cursor: pointer; font-weight: 500; }
 .v3-scenario-details details p, .v3-scenario-details ul { margin-top: 15px; }
 .v3-related { display: block; text-decoration: underline; text-underline-offset: 3px; font-size: 14px; padding: 12px 0; }

@@ -40,7 +40,7 @@ export interface LandingPage {
   simple?: boolean;
 }
 
-export const LANDING_UPDATED = "2026-09-22";
+export const LANDING_UPDATED = "2026-09-25";
 
 export const LANDING_PAGES: LandingPage[] = [
   {

@@ -1,3 +1,5 @@
+import { LinkedText } from "./LinkedText";
+
 /** FAQ 列表：内容服务端渲染在 HTML 中（折叠但存在，可被索引）。不输出 FAQPage schema。 */
 export function Faq({ items, title = "Questions" }: { items: { q: string; a: string }[]; title?: string }) {
   return (
@@ -14,7 +16,7 @@ export function Faq({ items, title = "Questions" }: { items: { q: string; a: str
                 +
               </span>
             </summary>
-            <p className="mt-2 text-muted">{f.a}</p>
+            <p className="mt-2 text-muted [&_a]:underline [&_a]:underline-offset-2"><LinkedText text={f.a} /></p>
           </details>
         ))}
       </div>
