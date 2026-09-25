@@ -51,7 +51,7 @@ Mind-reading rules exempt negated disclaimers ("I can't tell you what he feels")
 
 ## Failure behavior
 
-DeepSeek: JSON mode, non-thinking, 8,000 output tokens, 60 s per attempt. GLM-5.3-FlashX: JSON mode, `reasoning_effort: "low"` (thinking cannot be turned off), 10,000 output tokens, 90 s per attempt. Temperature 0.8 for both. Two attempts per model within a 240 s total budget. If the model repeats or restarts its JSON, the longest complete object is used. Authentication/configuration errors fail immediately; missing API configuration blocks new checkout before payment.
+DeepSeek V4 Pro (`deepseek-v4-pro`): JSON mode, non-thinking, 8,000 output tokens, 180 s per attempt. GLM-5.3: JSON mode, `reasoning_effort: "low"` (thinking cannot be turned off), 10,000 output tokens, 180 s per attempt. Temperature 0.8 for both. Two attempts per model within a 360 s total budget (the free preview keeps its shorter 60 s per attempt, 110 s total). If the model repeats or restarts its JSON, the longest complete object is used. Authentication/configuration errors fail immediately; missing API configuration blocks new checkout before payment.
 
 No silent template fallback; invalid reports are not saved as ready. Existing Stripe fulfillment attempts a full refund on terminal failure. No message content, provider body or secret is logged. Processing is disclosed on the privacy page, which the paywall links to.
 

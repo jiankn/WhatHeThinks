@@ -6,8 +6,8 @@ import { buildStoryContext, storyAllowedNumbers, stripMarkdown, storyUserData, v
 import type { StoryTeaser } from "@/lib/report/types";
 import type { ReportInput, ReportWriter } from "@/lib/report/writer";
 
-// DeepSeek 用 V4.1 Flash（deepseek-flash）；GLM 备用用旗舰 glm-5.3。质量靠提示词与校验把关。
-export const DEEPSEEK_MODEL = "deepseek-flash";
+// DeepSeek 用 V4 Pro（deepseek-v4-pro，关闭思考）；GLM 备用用旗舰 glm-5.3。质量靠提示词与校验把关。
+export const DEEPSEEK_MODEL = "deepseek-v4-pro";
 export const GLM_MODEL = "glm-5.3";
 /**
  * 提示词按这份聊天拼出来：只放用得上的规则（按主题还是按时间分章、有没有写好的开头、有没有时间戳、
@@ -206,15 +206,15 @@ export interface ChatProvider {
 export function glmProvider(apiKey: string, model: string = GLM_MODEL): ChatProvider {
   // glm-5.x 思考关不掉，只能选 low/high/max；glm-5.3-flashx 用 low 实测约 30 秒写完一份故事版报告。
   // glm-4.x 仍可关闭思考。GLM-5.3-Flash（非 flashx）5 分钟都写不完，不要用。
-  // 旗舰 glm-5.3 比 flashx 慢，给更长的单次时限。
+  // 旗舰 glm-5.3 比 flashx 慢，单次给 180 秒。
   const extra = /^glm-4/.test(model) ? { thinking: { type: "disabled" } } : { reasoning_effort: "low" };
-  const timeoutMs = /flash/.test(model) ? 90_000 : 120_000;
+  const timeoutMs = /flash/.test(model) ? 90_000 : 180_000;
   return { id: "glm", url: "https://open.bigmodel.cn/api/paas/v4/chat/completions", model, apiKey, extra, maxTokens: 10_000, temperature: 0.8, timeoutMs };
 }
 
 export function deepseekProvider(apiKey: string, model: string = DEEPSEEK_MODEL): ChatProvider {
-  // 故事版约 3k 输出 token，flash 实测 17 秒左右；pro 输出更慢，给更长的单次时限
-  const timeoutMs = /flash/.test(model) ? 60_000 : 110_000;
+  // 故事版约 3k 输出 token，flash 实测 17 秒左右；pro 输出更慢，单次给 180 秒
+  const timeoutMs = /flash/.test(model) ? 60_000 : 180_000;
   return { id: "deepseek", url: "https://api.deepseek.com/chat/completions", model, apiKey, extra: { thinking: { type: "disabled" } }, maxTokens: 8000, temperature: 0.8, timeoutMs };
 }
 
@@ -277,7 +277,7 @@ export function withFixedOpening(raw: unknown, fixed: StoryTeaser): unknown {
 }
 
 /** 整个写作流程的时间上限：主模型不能把备用模型的时间占光。 */
-const TOTAL_BUDGET_MS = 240_000;
+const TOTAL_BUDGET_MS = 360_000;
 /** 免费预览：她先看聊天回顾，再在页面上等待，预算更短。 */
 const TEASER_BUDGET_MS = 110_000;
 const MIN_ATTEMPT_MS = 20_000;

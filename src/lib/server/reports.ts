@@ -258,7 +258,7 @@ export function getPregen(row: ReportRow): PregenState | null {
 }
 
 /** 超过这么久仍是 pending，视为中断，允许重新开始。 */
-const PREGEN_STALE_MS = 300_000;
+const PREGEN_STALE_MS = 420_000;
 
 /** 抢占预写资格：没写过、侧重点变了、或上一次中断。失败过的不自动重试（付款后照常生成）。 */
 export async function claimPregen(db: D1Database, id: string, key: string, now = Date.now()): Promise<boolean> {

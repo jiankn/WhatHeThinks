@@ -147,7 +147,7 @@ describe("DeepSeek report writer", () => {
     }));
     const pending = new DeepSeekReportWriter("test-only", undefined, request).write(f.input);
     const assertion = expect(pending).rejects.toThrow();
-    await vi.advanceTimersByTimeAsync(121_000);
+    await vi.advanceTimersByTimeAsync(361_000);
     await assertion;
     expect(request).toHaveBeenCalledTimes(2);
   });
@@ -207,7 +207,7 @@ describe("Model fallback chain (order as configured)", () => {
     expect(request.mock.calls.map(c => c[0])).toEqual([GLM_URL, GLM_URL, DS_URL]);
     expect(String(request.mock.calls[1][1]?.body)).toContain("Write every field in English only.");
     expect(String(request.mock.calls[2][1]?.body)).not.toContain("previous attempt");
-    expect(result.report.meta).toMatchObject({ model: "deepseek-flash", version: "deepseek-en-3" });
+    expect(result.report.meta).toMatchObject({ model: "deepseek-v4-pro", version: "deepseek-en-3" });
     expect(result.failures).toEqual(["glm:1:validation:language:english_required", "glm:2:validation:language:english_required"]);
   });
 
@@ -238,8 +238,9 @@ describe("Model fallback chain (order as configured)", () => {
     const pending = writer(request).write(f.input);
     await vi.advanceTimersByTimeAsync(181_000);
     const result = await pending;
-    expect(request.mock.calls.map(c => c[0])).toEqual([GLM_URL, GLM_URL, DS_URL]);
-    expect(result.report.meta.model).toBe("deepseek-flash");
+    // GLM 一次就用满 180 秒，剩下的时间留给 DeepSeek，不再重试 GLM
+    expect(request.mock.calls.map(c => c[0])).toEqual([GLM_URL, DS_URL]);
+    expect(result.report.meta.model).toBe("deepseek-v4-pro");
   });
 });
 
@@ -267,7 +268,7 @@ describe("Free preview opening", () => {
     const out = teaserFor(f.story);
     const request = vi.fn<typeof fetch>().mockResolvedValueOnce(completion(out));
     const { teaser } = await new DeepSeekReportWriter("test-only", undefined, request).writeTeaser(f.input);
-    expect(teaser).toMatchObject({ title: out.title, opening: out.opening, outline: out.chapters, firstBlocks: out.firstChapter.blocks, model: "deepseek-flash" });
+    expect(teaser).toMatchObject({ title: out.title, opening: out.opening, outline: out.chapters, firstBlocks: out.firstChapter.blocks, model: "deepseek-v4-pro" });
     const body = JSON.parse(String(request.mock.calls[0][1]?.body));
     expect(body.messages[0].content).toContain("THE SHAPE (the first part of her report");
     expect(body.max_tokens).toBe(4000);
@@ -304,9 +305,9 @@ describe("Free preview opening", () => {
 describe("Model timeouts", () => {
   it("gives flagship models more time per attempt than flash models", () => {
     expect(deepseekProvider("k", "deepseek-flash").timeoutMs).toBe(60_000);
-    expect(deepseekProvider("k").timeoutMs).toBe(60_000);
-    expect(deepseekProvider("k", "deepseek-v4-pro").timeoutMs).toBe(110_000);
+    expect(deepseekProvider("k").timeoutMs).toBe(180_000);
+    expect(deepseekProvider("k", "deepseek-v4-pro").timeoutMs).toBe(180_000);
     expect(glmProvider("k", "glm-5.3-flashx").timeoutMs).toBe(90_000);
-    expect(glmProvider("k").timeoutMs).toBe(120_000);
+    expect(glmProvider("k").timeoutMs).toBe(180_000);
   });
 });
