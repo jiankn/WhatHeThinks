@@ -9,5 +9,33 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 export default function Home() {
-  return <><script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml({ "@context": "https://schema.org", "@type": "WebApplication", name: SITE_NAME, url: SITE_URL, applicationCategory: "LifestyleApplication", operatingSystem: "Web" })} /><ScenarioLanding /></>;
+  const homepageUrl = `${SITE_URL}/`;
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        name: SITE_NAME,
+        url: homepageUrl,
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        name: SITE_NAME,
+        url: homepageUrl,
+        inLanguage: "en",
+        publisher: { "@id": `${SITE_URL}/#organization` },
+      },
+      {
+        "@type": "WebApplication",
+        name: SITE_NAME,
+        url: homepageUrl,
+        applicationCategory: "LifestyleApplication",
+        operatingSystem: "Web",
+      },
+    ],
+  };
+
+  return <><script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(structuredData)} /><ScenarioLanding /></>;
 }
