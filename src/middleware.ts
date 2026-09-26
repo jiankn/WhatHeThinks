@@ -7,6 +7,7 @@ export function middleware(request: NextRequest) {
   const canonicalUrl = new URL(request.url);
   const pathname = canonicalUrl.pathname;
   const redirectsFromWww = canonicalUrl.hostname === "www.whathethinks.com";
+  const redirectsToHttps = canonicalUrl.protocol !== "https:";
   const removesTrailingSlash =
     pathname.length > 1 &&
     pathname.endsWith("/") &&
@@ -15,14 +16,17 @@ export function middleware(request: NextRequest) {
     !pathname.startsWith("/.well-known/") &&
     !/\.[^/]+$/.test(pathname.slice(0, -1));
 
-  if (!redirectsFromWww && !removesTrailingSlash) {
+  if (!redirectsFromWww && !redirectsToHttps && !removesTrailingSlash) {
     return NextResponse.next();
+  }
+
+  if (redirectsFromWww || redirectsToHttps) {
+    canonicalUrl.port = "";
+    canonicalUrl.protocol = "https:";
   }
 
   if (redirectsFromWww) {
     canonicalUrl.hostname = "whathethinks.com";
-    canonicalUrl.port = "";
-    canonicalUrl.protocol = "https:";
   }
 
   if (removesTrailingSlash) {

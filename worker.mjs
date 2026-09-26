@@ -21,16 +21,20 @@ function shouldRemoveTrailingSlash(pathname) {
 function canonicalRedirect(request) {
   const url = new URL(request.url);
   const redirectsFromWww = url.hostname === WWW_HOST;
+  const redirectsToHttps = url.protocol !== "https:";
   const removesTrailingSlash = shouldRemoveTrailingSlash(url.pathname);
 
-  if (!redirectsFromWww && !removesTrailingSlash) {
+  if (!redirectsFromWww && !redirectsToHttps && !removesTrailingSlash) {
     return undefined;
+  }
+
+  if (redirectsFromWww || redirectsToHttps) {
+    url.port = "";
+    url.protocol = "https:";
   }
 
   if (redirectsFromWww) {
     url.hostname = CANONICAL_HOST;
-    url.port = "";
-    url.protocol = "https:";
   }
 
   if (removesTrailingSlash) {
